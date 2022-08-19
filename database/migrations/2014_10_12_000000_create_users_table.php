@@ -23,6 +23,7 @@ return new class extends Migration
             $table->boolean('admin')->default(false);
             $table->string('profile_image')->nullable();
             $table->string('locale', 5)->default('de');
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
             $table->rememberToken();
             $table->timestamps();
         });
