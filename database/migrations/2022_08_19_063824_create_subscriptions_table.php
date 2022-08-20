@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('transfer_text')->nullable();
             $table->string('memo')->nullable();
             $table->timestamps();
+
+            $table->unique(['club_id', 'name']);
         });
     }
 

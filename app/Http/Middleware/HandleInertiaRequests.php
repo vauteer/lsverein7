@@ -36,19 +36,26 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request)
     {
         $user = Auth::user();
+        $club = $user?->club;
         $locale = 'de';
 
         $data = [
-            'auth' => $user ? [
-                'user' => [
+            'auth' => [
+                'user' => $user ? [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
                     'profileUrl' => $user->profileUrl(),
                     'admin' => $user->admin,
-                ]
-            ] : [
-                'user' => null
+                    'clubAdmin' => $user->isClubAdmin(),
+                ] : null,
+                'club' => $club ? [
+                    'id' => $club->id,
+                    'name' => $club->name,
+                    'logoUrl' => $club->logoUrl(),
+                    'showName' => $club->display !== 2,
+                    'showLogo' => $club->display < 3,
+                ] : null,
             ],
             'locale' => $locale,
             'flash' => [

@@ -6,17 +6,19 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { MenuIcon, XIcon } from '@heroicons/vue/outline'
 import { usePage } from "@inertiajs/inertia-vue3";
 
-defineProps({
-    auth: Object,
-});
-
 const user = computed(() => usePage().props.value.auth.user);
+const club = computed(() => usePage().props.value.auth.club);
 const flashSuccess = computed(() => usePage().props.value.flash.success);
 const flashError = computed(() => usePage().props.value.flash.error);
 
 const getNavigation = computed(() => {
     return [
-        { name: 'Benutzer', route: 'users', visible: user.value.admin },
+        { name: 'Vereine', route: 'clubs', visible: user.value.admin },
+        { name: 'Abteilungen', route: 'sections', visible: user.value.clubAdmin },
+        { name: 'Beiträge', route: 'subscriptions', visible: user.value.clubAdmin },
+        { name: 'Funktionen', route: 'roles', visible: user.value.clubAdmin },
+        { name: 'Ereignise', route: 'events', visible: user.value.clubAdmin },
+        { name: 'Benutzer', route: 'users', visible: user.value.clubAdmin },
         { name: 'Backups', route: 'backups', visible: user.value.admin },
     ];
 })
@@ -32,7 +34,11 @@ let logout = () => {
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex items-center">
-                        <div>
+                        <div v-if="club" class="flex items-center">
+                            <img v-if="club.showLogo" class="h-10 mr-3" :src="club.logoUrl" alt="logo" />
+                            <div v-if="club.showName" class="text-white text-xl">{{ club.name }}</div>
+                        </div>
+                        <div v-else>
                             <div class="text-white text-xl ml-12">LS-Verein<span class="text-sm"> by</span></div>
                             <img class="h-10 -mt-3" src="/logo.png" alt="Workflow" />
                         </div>

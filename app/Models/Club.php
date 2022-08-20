@@ -28,6 +28,7 @@ class Club extends Model
     public function Users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)
+            ->withPivot(['admin'])
             ->withTimestamps();
     }
 
@@ -44,5 +45,46 @@ class Club extends Model
     public function Subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
+    }
+
+    public static function logoPath($stub = ''):string
+    {
+        return storage_path('app/public/logo') .
+            DIRECTORY_SEPARATOR .
+            trim($stub, DIRECTORY_SEPARATOR);
+    }
+
+    public function logoURL(): string
+    {
+        return $this->logo ? asset('storage/logo/' . $this->logo) : asset('images/no_logo.png');
+    }
+
+    public static function removeOrphanLogos():int {
+        $count = 0;
+
+        foreach (glob(self::logoPath('*')) as $filename) {
+            $customer = Club::where('logo', basename($filename))->first();
+            if ($customer === null) {
+                unlink($filename);
+                $count++;
+            }
+        }
+
+        return $count;
+    }
+
+    public static function displayStyles(): array {
+        return [
+            '1' => 'Logo + Name',
+            '2' => 'Logo',
+            '3' => 'Name',
+        ];
+    }
+
+    public static function languages(): array {
+        return [
+            'de' => 'Deutsch',
+            'en' => 'English',
+        ];
     }
 }

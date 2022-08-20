@@ -15,9 +15,11 @@ return new class extends Migration
     {
         Schema::create('sections', function (Blueprint $table) {
             $table->id()->from(200);
-            $table->string('name');
             $table->foreignId('club_id')->nullable()->constrained()->onDelete('cascade');
+            $table->string('name');
             $table->timestamps();
+
+            $table->unique(['club_id', 'name']);
         });
     }
 

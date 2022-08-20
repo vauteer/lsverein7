@@ -49,7 +49,20 @@ class User extends Authenticatable
     public function Clubs(): BelongsToMany
     {
         return $this->belongsToMany(Club::class)
+            ->withPivot(['admin'])
             ->withTimestamps();
+    }
+
+    public function isClubAdmin(?int $clubId = null)
+    {
+        $clubId = $clubId ?? $this->club_id;
+
+        if ($clubId) {
+            $club = $this->Clubs()->where('club_id', $clubId)->first();
+            return $club !== null && $club->pivot->admin;
+        }
+
+        return false;
     }
 
     public function profileURL(): string
@@ -86,4 +99,20 @@ class User extends Authenticatable
 
         return $count;
     }
+
+    public function switchClub($clubId): bool
+    {
+        $club = $this->clubs()
+            ->where('club_id', $clubId)
+            ->first();
+
+        if ($club) {
+            $this->update(['club_id' => $club->id]);
+
+            return true;
+        }
+
+        return false;
+    }
+
 }

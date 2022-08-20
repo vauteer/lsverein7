@@ -14,10 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('events', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+            $table->id()->from(50);
             $table->foreignId('club_id')->nullable()->constrained()->onDelete('cascade');
+            $table->string('name');
             $table->timestamps();
+
+            $table->unique(['club_id', 'name']);
         });
     }
 

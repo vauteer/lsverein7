@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('club_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->boolean('admin')->default(false);
             $table->timestamps();
         });
     }

@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted, computed } from "vue";
 import { useForm, Head } from "@inertiajs/inertia-vue3";
-import EditTitle from "@/Shared/EditTitle.vue";
 import ImageUpload from "@/Shared/ImageUpload.vue";
 import TextInput from "@/Shared/TextInput.vue";
 import AbortButton from "@/Shared/AbortButton.vue";
@@ -53,7 +52,7 @@ function back() {
             <button tabindex="-1" class="hidden md:block fixed z-20 inset-0 h-full w-full bg-black opacity-50 cursor-default"></button>
             <div class="relative z-30 w-full max-w-xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-2">
                 <div class="sm:px-2 lg:px-4 sm:py-2 lg:py-4">
-                    <EditTitle class="ml-3 mb-4">Konto</EditTitle>
+                    <div class="font-medium text-lg text-gray-900 ml-3 mb-4">Konto</div>
 
                     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg sm:px-2 lg:px-4 bg-white">
                         <form @submit.prevent="submit" class="space-y-8 divide-y divide-gray-200">
