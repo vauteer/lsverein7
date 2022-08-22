@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('member_id')->constrained()->onDelete('cascade');
             $table->foreignId('section_id')->constrained()->onDelete('cascade');
-            $table->timestamp('from');
-            $table->timestamp('to')->nullable();
+            $table->date('from');
+            $table->date('to')->nullable();
             $table->string('memo')->nullable();
             $table->timestamps();
         });

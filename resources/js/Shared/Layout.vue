@@ -13,12 +13,13 @@ const flashError = computed(() => usePage().props.value.flash.error);
 
 const getNavigation = computed(() => {
     return [
-        { name: 'Vereine', route: 'clubs', visible: user.value.admin },
+        { name: 'Mitglieder', route: 'members', visible: true },
         { name: 'Abteilungen', route: 'sections', visible: user.value.clubAdmin },
         { name: 'Beiträge', route: 'subscriptions', visible: user.value.clubAdmin },
         { name: 'Funktionen', route: 'roles', visible: user.value.clubAdmin },
         { name: 'Ereignise', route: 'events', visible: user.value.clubAdmin },
         { name: 'Benutzer', route: 'users', visible: user.value.clubAdmin },
+        { name: 'Vereine', route: 'clubs', visible: user.value.admin },
         { name: 'Backups', route: 'backups', visible: user.value.admin },
     ];
 })

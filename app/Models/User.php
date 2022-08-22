@@ -41,12 +41,12 @@ class User extends Authenticatable
         'admin' => 'boolean',
     ];
 
-    public function Club(): BelongsTo
+    public function club(): BelongsTo
     {
         return $this->belongsTo(Club::class);
     }
 
-    public function Clubs(): BelongsToMany
+    public function clubs(): BelongsToMany
     {
         return $this->belongsToMany(Club::class)
             ->withPivot(['admin'])

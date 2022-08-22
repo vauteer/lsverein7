@@ -46,7 +46,9 @@ class UserCommand extends Command
 
         if ($password) {
             $user->password = Hash::make($password);
-        } else if (!$user->password) {
+        }
+        else if (!$user->password)
+        {
             $password = Str::random(8);
             $user->password = Hash::make($password);
         }
@@ -57,7 +59,8 @@ class UserCommand extends Command
         $isNew = !$user->exists;
         try {
             $user->save();
-        } catch (\Exception $ex) {
+        }
+        catch (\Exception $ex) {
             $this->info("User creation failed.");
             $this->info($ex->getMessage());
             return;
@@ -69,7 +72,9 @@ class UserCommand extends Command
                 $user->clubs()->attach($clubId);
                 $this->info("Created User {$name} for club {$clubId}. Password {$password}");
             }
-        } else {
+        }
+        else
+        {
             $info = "Updated user {$name}";
             if ($password)
                 $info .= ". The password is {$password}";

@@ -17,9 +17,6 @@ return new class extends Migration
         Role::create(['id' => 1, 'name' => '1. Vorstand']);
         Role::create(['id' => 2, 'name' => '2. Vorstand']);
         Role::create(['id' => 3, 'name' => 'Kassier']);
-        Role::create(['id' => 4, 'name' => 'Spartenleiter Fußball']);
-        Role::create(['id' => 5, 'name' => 'Spartenleiter TT']);
-        Role::create(['id' => 6, 'name' => 'Spartenleiter Tennis']);
         Role::create(['id' => 7, 'name' => 'Schriftführer']);
         Role::create(['id' => 8, 'name' => 'Ehrenamtsbeauftragter']);
         Role::create(['id' => 9, 'name' => 'Beisitzer']);

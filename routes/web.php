@@ -4,12 +4,14 @@ use App\Backup;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
 use App\Models\Club;
 use App\Models\Event;
+use App\Models\Member;
 use App\Models\Role;
 use App\Models\Section;
 use App\Models\Subscription;
@@ -104,6 +106,13 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/subscriptions/{subscription}/edit', [SubscriptionController::class, 'edit'])->can('update', 'subscription');
     Route::put('/subscriptions/{subscription}', [SubscriptionController::class, 'update'])->can('update', 'subscription');
     Route::delete('/subscriptions/{subscription}', [SubscriptionController::class, 'destroy'])->can('delete', 'subscription');
+
+    Route::get('/members', [MemberController::class, 'index'])->name('members')->can('viewAny', Member::class);
+    Route::get('/members/create', [MemberController::class, 'create'])->can('create', Member::class);
+    Route::post('/members', [MemberController::class, 'store'])->can('create', Member::class);
+    Route::get('/members/{member}/edit', [MemberController::class, 'edit'])->can('update', 'member');
+    Route::put('/members/{member}', [MemberController::class, 'update'])->can('update', 'member');
+    Route::delete('/members/{member}', [MemberController::class, 'destroy'])->can('delete', 'member');
 
 });
 

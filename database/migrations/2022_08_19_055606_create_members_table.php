@@ -16,22 +16,25 @@ return new class extends Migration
         Schema::create('members', function (Blueprint $table) {
             $table->id();
             $table->foreignId('club_id')->constrained()->onDelete('cascade');
-            $table->string('surname')->unique();
-            $table->string('first_name')->unique();
-            $table->tinyInteger('gender');
-            $table->timestamp('birthday');
-            $table->timestamp('death_day')->nullable();
+            $table->string('surname');
+            $table->string('first_name');
+            $table->char('gender', 1);
+            $table->date('birthday');
+            $table->date('death_day')->nullable();
             $table->string('street');
             $table->string('zipcode', 10);
             $table->string('city');
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
-            $table->tinyInteger('payment_method');
-            $table->string('bank_name')->nullable();
+            $table->char('payment_method', 1);
+            $table->string('bank')->nullable();
             $table->string('account_owner')->nullable();
             $table->string('iban')->nullable();
             $table->string('bic')->nullable();
+            $table->string('memo')->nullable();
             $table->timestamps();
+
+            $table->index(['surname', 'first_name']);
         });
     }
 

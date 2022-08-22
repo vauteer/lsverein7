@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('member_id')->constrained()->onDelete('cascade');
             $table->foreignId('event_id')->constrained()->onDelete('restrict');
-            $table->timestamp('at');
+            $table->date('date');
             $table->string('memo')->nullable();
             $table->timestamps();
         });

@@ -18,31 +18,31 @@ class Club extends Model
         'sepa_date' => 'datetime',
     ];
 
-    public function Members(): BelongsToMany
+    public function members(): BelongsToMany
     {
         return $this->belongsToMany(Member::class)
             ->withPivot(['from', 'to', 'memo'])
             ->withTimestamps();
     }
 
-    public function Users(): BelongsToMany
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)
             ->withPivot(['admin'])
             ->withTimestamps();
     }
 
-    public function Events(): HasMany
+    public function events(): HasMany
     {
         return $this->hasMany(Event::class);
     }
 
-    public function Roles(): HasMany
+    public function roles(): HasMany
     {
         return $this->hasMany(Role::class);
     }
 
-    public function Subscriptions(): HasMany
+    public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
     }

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('iban');
             $table->string('bic');
             $table->string('sepa')->nullable();
-            $table->timestamp('sepa_date')->nullable();
+            $table->date('sepa_date')->nullable();
             $table->string('logo')->nullable();
             $table->tinyInteger('display')->default(1);
             $table->string('locale', 5)->default('de');

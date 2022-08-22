@@ -79,8 +79,9 @@ const getSubmitButtonText = computed(() => {
                                             <AbortButton href="/sections">
                                                 Abbrechen
                                             </AbortButton>
-                                            <SubmitButton class="ml-2" :title="getSubmitButtonText"
-                                                          :disabled="form.processing"/>
+                                            <SubmitButton class="ml-2" :disabled="form.processing">
+                                                {{ getSubmitButtonText }}
+                                            </SubmitButton>
                                         </div>
                                     </div>
                                 </div>
