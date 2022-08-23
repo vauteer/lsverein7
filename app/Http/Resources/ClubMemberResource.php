@@ -16,15 +16,12 @@ class ClubMemberResource extends JsonResource
      */
     public function toArray($request)
     {
-        $pivot = $this->pivot;
-        $member = Member::find($pivot->member_id);
-
         return [
-            'id' => $pivot->id,
-            'range' => Member::getRange($pivot->from, $pivot->to),
-            'memo' => $pivot->memo,
+            'id' => $this->id,
+            'range' => $this->range(),
+            'memo' => $this->memo,
 
-            'modifiable' => auth()->user()->can('update', $member),
+            'modifiable' => auth()->user()->can('update', $this->member),
         ];
     }
 }

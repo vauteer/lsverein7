@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use App\Models\Member;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MemberSectionResource extends JsonResource
+class MemberSubscriptionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,8 +17,7 @@ class MemberSectionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->section->name,
-            'range' => $this->range(),
+            'name' => $this->subscription->__toString(),
             'memo' => $this->memo,
 
             'modifiable' => auth()->user()->can('update', $this->member),

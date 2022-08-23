@@ -3,9 +3,10 @@
 namespace App\Http\Resources;
 
 use App\Models\Member;
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MemberSectionResource extends JsonResource
+class EventMemberResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,8 +18,8 @@ class MemberSectionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->section->name,
-            'range' => $this->range(),
+            'name' => $this->event->name,
+            'date' => $this->date->format('d.m.Y'),
             'memo' => $this->memo,
 
             'modifiable' => auth()->user()->can('update', $this->member),

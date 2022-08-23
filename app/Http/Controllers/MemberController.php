@@ -2,10 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\EventMemberResource;
 use App\Http\Resources\MemberResource;
 use App\Http\Resources\ClubMemberResource;
+use App\Http\Resources\MemberRoleResource;
 use App\Http\Resources\MemberSectionResource;
+use App\Http\Resources\MemberSubscriptionResource;
+use App\Models\ClubMember;
+use App\Models\EventMember;
 use App\Models\Member;
+use App\Models\MemberRole;
+use App\Models\MemberSection;
+use App\Models\MemberSubscription;
 use App\Models\Section;
 use App\Models\Subscription;
 use Carbon\Carbon;
@@ -106,11 +114,11 @@ class MemberController extends Controller
         return inertia('Members/Edit', [ 'member' => $member->getAttributes() ])
             ->with('genders', Member::genders())
             ->with('paymentMethods', Member::paymentMethods())
-            ->with('memberSubscriptions', $member->subscriptions)
-            ->with('memberEvents', $member->events)
-            ->with('memberRoles', $member->roles)
-            ->with('memberships', ClubMemberResource::collection($member->memberships()->get([])))
-            ->with('memberSections', MemberSectionResource::collection($member->sections()->get(['name'])));
+            ->with('memberClubs', ClubMemberResource::collection(ClubMember::where('member_id', $member->id)->get()))
+            ->with('memberSections', MemberSectionResource::collection(MemberSection::where('member_id', $member->id)->get()))
+            ->with('memberSubscriptions', MemberSubscriptionResource::collection(MemberSubscription::where('member_id', $member->id)->get()))
+            ->with('memberEvents', EventMemberResource::collection(EventMember::where('member_id', $member->id)->get()))
+            ->with('memberRoles', MemberRoleResource::collection(MemberRole::where('member_id', $member->id)->get()));
     }
 
     public function update(Request $request, Member $member): RedirectResponse

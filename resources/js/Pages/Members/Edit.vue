@@ -17,7 +17,7 @@ let props = defineProps({
     paymentMethods: Object,
     sections: Object,
     subscriptions: Object,
-    memberships: Object,
+    memberClubs: Object,
     memberSections: Object,
     memberSubscriptions: Object,
     memberEvents: Object,
@@ -184,21 +184,21 @@ const getSubmitButtonText = computed(() => {
                                                                     class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
                                                                     <Link
                                                                         class="rounded-md border border-transparent bg-indigo-600 px-4 py-1 my-1 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                                                                        :href="`/memberships/${props.member.id}/create`" as="button" type="button">
+                                                                        :href="`/members/${props.member.id}/club/create`" as="button" type="button">
                                                                         Neu
                                                                     </Link>
                                                                 </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody class="divide-y divide-gray-200 bg-white">
-                                                            <tr v-for="membership in memberships.data">
+                                                            <tr v-for="membership in memberClubs.data">
                                                                 <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
                                                                     {{ membership.range }}
                                                                 </td>
                                                                 <td class="px-3">
                                                                     <div class="flex justify-end">
                                                                         <Link v-if="membership.modifiable"
-                                                                              :href="`/memberships/${membership.id}/edit`">
+                                                                              :href="`/members/${props.member.id}/club/${membership.id}/edit`">
                                                                             <PencilIcon class="h-5 w-5 text-blue-500"/>
                                                                         </Link>
                                                                     </div>
@@ -249,6 +249,156 @@ const getSubmitButtonText = computed(() => {
                                                                     <div class="flex justify-end">
                                                                         <Link v-if="membership.modifiable"
                                                                               :href="`/members/section/${membership.id}/edit`">
+                                                                            <PencilIcon class="h-5 w-5 text-blue-500"/>
+                                                                        </Link>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="px-4 sm:px-6 lg:px-8 mt-3">
+                                        <div class="flex flex-col">
+                                            <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                                <div class="inline-block min-w-full py-2 align-middle md:px-2">
+                                                    <div
+                                                        class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                                                        <table class="min-w-full divide-y divide-gray-300">
+                                                            <thead class="bg-gray-50">
+                                                            <tr>
+                                                                <th scope="col"
+                                                                    class="py-2 pl-4 pr-3 text-left text-base font-semibold text-gray-900">
+                                                                    Beiträge
+                                                                </th>
+                                                                <th scope="col">
+
+                                                                </th>
+                                                                <th scope="col"
+                                                                    class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
+                                                                    <Link
+                                                                        class="rounded-md border border-transparent bg-indigo-600 px-4 py-1 my-1 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                                                                        :href="`/members/${props.member.id}/subscription/create`" as="button" type="button">
+                                                                        Neu
+                                                                    </Link>
+                                                                </th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody class="divide-y divide-gray-200 bg-white">
+                                                            <tr v-for="subscription in memberSubscriptions.data">
+                                                                <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
+                                                                    {{ subscription.name }}
+                                                                </td>
+                                                                <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                                                                    {{ subscription.memo }}
+                                                                </td>
+                                                                <td class="px-3">
+                                                                    <div class="flex justify-end">
+                                                                        <Link v-if="subscription.modifiable"
+                                                                              :href="`/members/subscription/${subscription.id}/edit`">
+                                                                            <PencilIcon class="h-5 w-5 text-blue-500"/>
+                                                                        </Link>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="px-4 sm:px-6 lg:px-8 mt-3">
+                                        <div class="flex flex-col">
+                                            <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                                <div class="inline-block min-w-full py-2 align-middle md:px-2">
+                                                    <div
+                                                        class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                                                        <table class="min-w-full divide-y divide-gray-300">
+                                                            <thead class="bg-gray-50">
+                                                            <tr>
+                                                                <th scope="col"
+                                                                    class="py-2 pl-4 pr-3 text-left text-base font-semibold text-gray-900">
+                                                                    Ereignisse
+                                                                </th>
+                                                                <th scope="col">
+
+                                                                </th>
+                                                                <th scope="col"
+                                                                    class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
+                                                                    <Link
+                                                                        class="rounded-md border border-transparent bg-indigo-600 px-4 py-1 my-1 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                                                                        :href="`/members/${props.member.id}/events/create`" as="button" type="button">
+                                                                        Neu
+                                                                    </Link>
+                                                                </th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody class="divide-y divide-gray-200 bg-white">
+                                                            <tr v-for="event in memberEvents.data">
+                                                                <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
+                                                                    {{ event.name }}
+                                                                </td>
+                                                                <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                                                                    {{ event.date }}
+                                                                </td>
+                                                                <td class="px-3">
+                                                                    <div class="flex justify-end">
+                                                                        <Link v-if="event.modifiable"
+                                                                              :href="`/members/event/${event.id}/edit`">
+                                                                            <PencilIcon class="h-5 w-5 text-blue-500"/>
+                                                                        </Link>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="px-4 sm:px-6 lg:px-8 mt-3">
+                                        <div class="flex flex-col">
+                                            <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                                <div class="inline-block min-w-full py-2 align-middle md:px-2">
+                                                    <div
+                                                        class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                                                        <table class="min-w-full divide-y divide-gray-300">
+                                                            <thead class="bg-gray-50">
+                                                            <tr>
+                                                                <th scope="col"
+                                                                    class="py-2 pl-4 pr-3 text-left text-base font-semibold text-gray-900">
+                                                                    Funktionen
+                                                                </th>
+                                                                <th scope="col">
+
+                                                                </th>
+                                                                <th scope="col"
+                                                                    class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
+                                                                    <Link
+                                                                        class="rounded-md border border-transparent bg-indigo-600 px-4 py-1 my-1 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                                                                        :href="`/members/${props.member.id}/role/create`" as="button" type="button">
+                                                                        Neu
+                                                                    </Link>
+                                                                </th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody class="divide-y divide-gray-200 bg-white">
+                                                            <tr v-for="role in memberRoles.data">
+                                                                <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
+                                                                    {{ role.name }}
+                                                                </td>
+                                                                <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                                                                    {{ role.range }}
+                                                                </td>
+                                                                <td class="px-3">
+                                                                    <div class="flex justify-end">
+                                                                        <Link v-if="role.modifiable"
+                                                                              :href="`/members/roles/${role.id}/edit`">
                                                                             <PencilIcon class="h-5 w-5 text-blue-500"/>
                                                                         </Link>
                                                                     </div>

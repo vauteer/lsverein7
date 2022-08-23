@@ -3,6 +3,7 @@
 use App\Backup;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClubController;
+use App\Http\Controllers\ClubMemberController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\RoleController;
@@ -32,6 +33,8 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
+    return redirect('/members');
+
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -40,10 +43,10 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+//Route::get('/dashboard', function () {
+//    return Inertia::render('Dashboard');
+//})->middleware(['auth', 'verified'])->name('dashboard');
+//
 Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/users', [UserController::class, 'index'])
         ->can('viewAny', User::class)
@@ -110,10 +113,15 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/members', [MemberController::class, 'index'])->name('members')->can('viewAny', Member::class);
     Route::get('/members/create', [MemberController::class, 'create'])->can('create', Member::class);
     Route::post('/members', [MemberController::class, 'store'])->can('create', Member::class);
-    Route::get('/members/{member}/edit', [MemberController::class, 'edit'])->can('update', 'member');
+    Route::get('/members/{member}/edit', [MemberController::class, 'edit'])->name('members.edit')->can('update', 'member');
     Route::put('/members/{member}', [MemberController::class, 'update'])->can('update', 'member');
     Route::delete('/members/{member}', [MemberController::class, 'destroy'])->can('delete', 'member');
 
+    Route::get('/members/{member}/club/create', [ClubMemberController::class, 'create'])->can('create', Member::class);
+    Route::post('/members/{member}/club', [ClubMemberController::class, 'store'])->can('create', Member::class);
+    Route::get('/members/{member}/club/{clubMember}/edit', [ClubMemberController::class, 'edit'])->can('update', 'member');
+    Route::put('/members/{member}/club/{clubMember}', [ClubMemberController::class, 'update'])->can('update', 'member');
+    Route::delete('/members/{member}/club/{clubMember}', [ClubMemberController::class, 'destroy'])->can('update', 'member');
 });
 
 require __DIR__.'/auth.php';

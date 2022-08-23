@@ -32,4 +32,10 @@ class Subscription extends Model
             ->withPivot(['memo'])
             ->withTimestamps();
     }
+
+    public function __toString()
+    {
+        $amount = number_format($this->amount, 2, ',');
+        return "{$this->name} ($amount €)";
+    }
 }
