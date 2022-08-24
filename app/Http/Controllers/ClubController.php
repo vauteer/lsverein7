@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ClubResource;
 use App\Models\Club;
+use App\Rules\Iban;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +26,7 @@ class ClubController extends Controller
             'city' => 'required|string',
             'bank' => 'required|string',
             'account_owner' => 'required|string',
-            'iban' => 'required|string',
+            'iban' => ['required', new Iban()],
             'bic' => 'required|string',
             'sepa' => 'nullable|string',
             'sepa_date' => 'nullable|date',
@@ -62,6 +63,7 @@ class ClubController extends Controller
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $attributes = $request->validate($this->validationRules(-1));
+        $attributes['iban'] = normalizeIban($attributes['iban']);
 
         $club = Club::create($attributes);
         $creator = auth()->user();
@@ -103,7 +105,7 @@ class ClubController extends Controller
     public function update(Request $request, Club $club): RedirectResponse
     {
         $attributes = $request->validate($this->validationRules($club->id));
-
+        $attributes['iban'] = normalizeIban($attributes['iban']);
         $club->update($attributes);
 
         Club::removeOrphanLogos();

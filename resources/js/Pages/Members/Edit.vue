@@ -238,17 +238,17 @@ const getSubmitButtonText = computed(() => {
                                                             </tr>
                                                             </thead>
                                                             <tbody class="divide-y divide-gray-200 bg-white">
-                                                            <tr v-for="membership in memberSections.data">
+                                                            <tr v-for="memberSection in memberSections.data">
                                                                 <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
-                                                                    {{ membership.name }}
+                                                                    {{ memberSection.name }}
                                                                 </td>
                                                                 <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                                                                    {{ membership.range }}
+                                                                    {{ memberSection.range }}
                                                                 </td>
                                                                 <td class="px-3">
                                                                     <div class="flex justify-end">
-                                                                        <Link v-if="membership.modifiable"
-                                                                              :href="`/members/section/${membership.id}/edit`">
+                                                                        <Link v-if="memberSection.modifiable"
+                                                                              :href="`/members/${props.member.id}/section/${memberSection.id}/edit`">
                                                                             <PencilIcon class="h-5 w-5 text-blue-500"/>
                                                                         </Link>
                                                                     </div>
@@ -298,7 +298,7 @@ const getSubmitButtonText = computed(() => {
                                                                 <td class="px-3">
                                                                     <div class="flex justify-end">
                                                                         <Link v-if="subscription.modifiable"
-                                                                              :href="`/members/subscription/${subscription.id}/edit`">
+                                                                              :href="`/members/${props.member.id}/subscription/${subscription.id}/edit`">
                                                                             <PencilIcon class="h-5 w-5 text-blue-500"/>
                                                                         </Link>
                                                                     </div>
@@ -331,7 +331,7 @@ const getSubmitButtonText = computed(() => {
                                                                     class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
                                                                     <Link
                                                                         class="rounded-md border border-transparent bg-indigo-600 px-4 py-1 my-1 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                                                                        :href="`/members/${props.member.id}/events/create`" as="button" type="button">
+                                                                        :href="`/members/${props.member.id}/event/create`" as="button" type="button">
                                                                         Neu
                                                                     </Link>
                                                                 </th>
@@ -348,7 +348,7 @@ const getSubmitButtonText = computed(() => {
                                                                 <td class="px-3">
                                                                     <div class="flex justify-end">
                                                                         <Link v-if="event.modifiable"
-                                                                              :href="`/members/event/${event.id}/edit`">
+                                                                              :href="`/members/${props.member.id}/event/${event.id}/edit`">
                                                                             <PencilIcon class="h-5 w-5 text-blue-500"/>
                                                                         </Link>
                                                                     </div>
@@ -398,7 +398,7 @@ const getSubmitButtonText = computed(() => {
                                                                 <td class="px-3">
                                                                     <div class="flex justify-end">
                                                                         <Link v-if="role.modifiable"
-                                                                              :href="`/members/roles/${role.id}/edit`">
+                                                                              :href="`/members/${props.member.id}/role/${role.id}/edit`">
                                                                             <PencilIcon class="h-5 w-5 text-blue-500"/>
                                                                         </Link>
                                                                     </div>

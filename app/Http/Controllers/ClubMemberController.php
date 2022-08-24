@@ -19,6 +19,7 @@ class ClubMemberController extends Controller
         $rules = [
             'from' => 'required|date',
             'to' => 'nullable|date|after:from',
+            'memo' => 'nullable|string',
         ];
 
         return $rules;

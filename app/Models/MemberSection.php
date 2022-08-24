@@ -31,7 +31,7 @@ class MemberSection extends Model
 
     public function range(): string
     {
-        return Member::getRange($this->from, $this->to);
+        return getRange($this->from, $this->to);
     }
 
 

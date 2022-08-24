@@ -41,7 +41,8 @@ class Member extends Model
     protected static function booted()
     {
         static::addGlobalScope('club', function (Builder $builder) {
-            $builder->where('club_id', auth()->user()->club_id);
+            $clubId = isCli() ? 1 : auth()->user()->club_id;
+            $builder->where('club_id', $clubId);
         });
     }
 
@@ -85,6 +86,21 @@ class Member extends Model
             ->withTimestamps();
     }
 
+    public function born()
+    {
+        return inRange($this->birthday, null, self::$key_date);
+    }
+
+    public function gone()
+    {
+        return inRange($this->death_day, null, self::$key_date);
+    }
+
+    public function alive()
+    {
+        return $this->born() && !$this->gone();
+    }
+
     public static function genders()
     {
         return [
@@ -100,17 +116,5 @@ class Member extends Model
             'r' => 'Rechnung',
             'n' => 'Nichtzahler',
         ];
-    }
-
-    public static function getRange(string $from, ?string $to): string
-    {
-        $from = new Carbon($from);
-        $range = $from->format('d.m.Y') . '-';
-        if ($to !== null) {
-            $to = new Carbon($to);
-            $range .= $to->format('d.m.Y');
-        }
-
-        return $range;
     }
 }

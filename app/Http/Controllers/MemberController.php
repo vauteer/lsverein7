@@ -16,6 +16,7 @@ use App\Models\MemberSection;
 use App\Models\MemberSubscription;
 use App\Models\Section;
 use App\Models\Subscription;
+use App\Rules\Iban;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -40,7 +41,7 @@ class MemberController extends Controller
             'payment_method' => 'required',
             'bank_name' => 'nullable|string',
             'account_owner' => 'nullable|string',
-            'iban' => 'nullable|string',
+            'iban' => ['nullable', new Iban()],
             'bic' => 'nullable|string',
         ];
 
@@ -88,6 +89,7 @@ class MemberController extends Controller
     {
         $attributes = $request->validate($this->validationRules(-1));
         $entryData = $request->validate($this->entryValidationRules());
+        $attributes['iban'] = normalizeIban($attributes['iban']);
 
         $member = Member::create(array_merge($attributes, ['club_id' => auth()->user()->club_id]));
 
@@ -124,6 +126,7 @@ class MemberController extends Controller
     public function update(Request $request, Member $member): RedirectResponse
     {
         $attributes = $request->validate($this->validationRules($member->id));
+        $attributes['iban'] = normalizeIban($attributes['iban']);
 
         $member->update($attributes);
 

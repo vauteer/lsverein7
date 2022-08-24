@@ -5,7 +5,11 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\ClubMemberController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\EventMemberController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\MemberRoleController;
+use App\Http\Controllers\MemberSectionController;
+use App\Http\Controllers\MemberSubscriptionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SubscriptionController;
@@ -122,6 +126,31 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/members/{member}/club/{clubMember}/edit', [ClubMemberController::class, 'edit'])->can('update', 'member');
     Route::put('/members/{member}/club/{clubMember}', [ClubMemberController::class, 'update'])->can('update', 'member');
     Route::delete('/members/{member}/club/{clubMember}', [ClubMemberController::class, 'destroy'])->can('update', 'member');
+
+    Route::get('/members/{member}/section/create', [MemberSectionController::class, 'create'])->can('create', Member::class);
+    Route::post('/members/{member}/section', [MemberSectionController::class, 'store'])->can('create', Member::class);
+    Route::get('/members/{member}/section/{memberSection}/edit', [MemberSectionController::class, 'edit'])->can('update', 'member');
+    Route::put('/members/{member}/section/{memberSection}', [MemberSectionController::class, 'update'])->can('update', 'member');
+    Route::delete('/members/{member}/section/{memberSection}', [MemberSectionController::class, 'destroy'])->can('update', 'member');
+
+    Route::get('/members/{member}/subscription/create', [MemberSubscriptionController::class, 'create'])->can('create', Member::class);
+    Route::post('/members/{member}/subscription', [MemberSubscriptionController::class, 'store'])->can('create', Member::class);
+    Route::get('/members/{member}/subscription/{memberSubscription}/edit', [MemberSubscriptionController::class, 'edit'])->can('update', 'member');
+    Route::put('/members/{member}/subscription/{memberSubscription}', [MemberSubscriptionController::class, 'update'])->can('update', 'member');
+    Route::delete('/members/{member}/subscription/{memberSubscription}', [MemberSubscriptionController::class, 'destroy'])->can('update', 'member');
+
+    Route::get('/members/{member}/event/create', [EventMemberController::class, 'create'])->can('create', Member::class);
+    Route::post('/members/{member}/event', [EventMemberController::class, 'store'])->can('create', Member::class);
+    Route::get('/members/{member}/event/{eventMember}/edit', [EventMemberController::class, 'edit'])->can('update', 'member');
+    Route::put('/members/{member}/event/{eventMember}', [EventMemberController::class, 'update'])->can('update', 'member');
+    Route::delete('/members/{member}/event/{eventMember}', [EventMemberController::class, 'destroy'])->can('update', 'member');
+
+    Route::get('/members/{member}/role/create', [MemberRoleController::class, 'create'])->can('create', Member::class);
+    Route::post('/members/{member}/role', [MemberRoleController::class, 'store'])->can('create', Member::class);
+    Route::get('/members/{member}/role/{memberRole}/edit', [MemberRoleController::class, 'edit'])->can('update', 'member');
+    Route::put('/members/{member}/role/{memberRole}', [MemberRoleController::class, 'update'])->can('update', 'member');
+    Route::delete('/members/{member}/role/{memberRole}', [MemberRoleController::class, 'destroy'])->can('update', 'member');
+
 });
 
 require __DIR__.'/auth.php';
