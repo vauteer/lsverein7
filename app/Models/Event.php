@@ -18,7 +18,7 @@ class Event extends Model
     {
         static::addGlobalScope('club', function (Builder $builder) {
             $builder->whereNull('club_id')
-                ->orWhere('club_id', auth()->user()->club_id);
+                ->orWhere('club_id', currentClubId());
         });
     }
 

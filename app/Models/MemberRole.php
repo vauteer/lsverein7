@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class MemberRole extends Model
+class MemberRole extends Pivot
 {
     use HasFactory;
 
@@ -31,7 +32,7 @@ class MemberRole extends Model
 
     public function range(): string
     {
-        return Member::getRange($this->from, $this->to);
+        return getRange($this->from, $this->to);
     }
 
 }

@@ -41,6 +41,8 @@ class User extends Authenticatable
         'admin' => 'boolean',
     ];
 
+    protected array $admins = [];
+
     public function club(): BelongsTo
     {
         return $this->belongsTo(Club::class);
@@ -58,8 +60,12 @@ class User extends Authenticatable
         $clubId = $clubId ?? $this->club_id;
 
         if ($clubId) {
-            $club = $this->Clubs()->where('club_id', $clubId)->first();
-            return $club !== null && $club->pivot->admin;
+            if (!isset($this->admins[$clubId]))
+            {
+                $club = $this->Clubs()->where('club_id', $clubId)->first();
+                $this->admins[$clubId] = $club !== null && $club->pivot->admin;
+            }
+            return $this->admins[$clubId];
         }
 
         return false;

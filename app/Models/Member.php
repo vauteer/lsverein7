@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 
 class Member extends Model
 {
@@ -24,7 +25,15 @@ class Member extends Model
     ];
 
     protected $appends = ['age'];
-    public static $key_date = null;
+    public static ?Carbon $_keyDate = null;
+
+    public static function getKeyDate(): Carbon
+    {
+        if (static::$_keyDate === null)
+            static::$_keyDate = Carbon::now();
+
+        return static::$_keyDate->copy();
+    }
 
 //    public function getAgeAttribute()
 //    {
@@ -34,15 +43,17 @@ class Member extends Model
     protected function age(): Attribute
     {
         return new Attribute(
-            get: function() { return $this->birthday->diffInYears(self::$key_date ?? Carbon::now()); },
+            get: function() {
+                $keyDate = $this->gone() ? $this->death_day : self::getKeyDate() ?? Carbon::now();
+                return $this->birthday->diffInYears($keyDate);
+                },
         );
     }
 
     protected static function booted()
     {
         static::addGlobalScope('club', function (Builder $builder) {
-            $clubId = isCli() ? 1 : auth()->user()->club_id;
-            $builder->where('club_id', $clubId);
+            $builder->where('club_id', currentClubId());
         });
     }
 
@@ -55,45 +66,51 @@ class Member extends Model
     {
         return $this->belongsToMany(Club::class)
             ->withPivot(['id', 'from', 'to', 'memo'])
-            ->withTimestamps();
+            ->withTimestamps()
+            ->using(ClubMember::class);
     }
 
     public function events(): BelongsToMany
     {
         return $this->belongsToMany(Event::class)
             ->withPivot(['id', 'date', 'memo'])
-            ->withTimestamps();
+            ->withTimestamps()
+            ->orderBy('pivot_date', 'desc')
+            ->using(EventMember::class);
     }
 
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class)
             ->withPivot(['id', 'from', 'to', 'memo'])
-            ->withTimestamps();
+            ->withTimestamps()
+            ->using(MemberRole::class);
     }
 
     public function sections(): BelongsToMany
     {
         return $this->belongsToMany(Section::class)
             ->withPivot(['id', 'from', 'to', 'memo'])
-            ->withTimestamps();
+            ->withTimestamps()
+            ->using(MemberSection::class);
     }
 
     public function subscriptions(): BelongsToMany
     {
         return $this->belongsToMany(Subscription::class)
             ->withPivot(['id', 'memo'])
-            ->withTimestamps();
+            ->withTimestamps()
+            ->using(MemberSubscription::class);
     }
 
     public function born()
     {
-        return inRange($this->birthday, null, self::$key_date);
+        return inRange($this->birthday, null, self::getKeyDate());
     }
 
     public function gone()
     {
-        return inRange($this->death_day, null, self::$key_date);
+        return inRange($this->death_day, null, self::getKeyDate());
     }
 
     public function alive()
@@ -101,7 +118,245 @@ class Member extends Model
         return $this->born() && !$this->gone();
     }
 
-    public static function genders()
+    public function isMember()
+    {
+        if (!$this->alive())
+            return false;
+
+        $keyDate = self::getKeyDate();
+
+        foreach ($this->memberships as $membership) {
+            if (inRange($keyDate, $membership->pivot->from, $membership->pivot->to))
+                return true;
+        }
+
+        return false;
+    }
+
+    public function membershipYears()
+    {
+        $keyDate = self::getKeyDate()->min($this->death_day);
+        $years = 0;
+
+        foreach ($this->memberships as $membership) {
+            $pivot = $membership->pivot;
+            if ($pivot->from >= $keyDate)
+                return 0;
+
+            $to = $keyDate->min($pivot->to);
+
+            // grobe Berechnung
+            $years += $to->year - $pivot->from->year;
+        }
+
+        return $years;
+    }
+
+    public function lastEvent()
+    {
+        $eventName = $this->events->first()?->name;
+
+        return $eventName;
+    }
+
+    public function currentSections()
+    {
+        $keyDate = self::getKeyDate();
+        $sections = [];
+
+        foreach ($this->sections as $section) {
+            if (inRange($keyDate, $section->pivot->from, $section->pivot->to)) {
+                $sections[] = $section->name;
+            }
+        }
+
+        return join('|', $sections);
+    }
+
+    public function currentRoles()
+    {
+        $keyDate = self::getKeyDate();
+        $roles = [];
+
+        foreach ($this->roles as $role) {
+            if (inRange($keyDate, $role->pivot->from, $role->pivot->to)) {
+                $roles[] = $role->name;
+            }
+        }
+
+        return join('|', $roles);
+    }
+
+    public function currentSubscriptions()
+    {
+        $subscriptions = [];
+
+        foreach ($this->subscriptions as $subscription) {
+            $subscriptions[] = $subscription->name;
+        }
+
+        return join('|', $subscriptions);
+    }
+
+    public function scopeMembers($query, ?Carbon $keyDate = null, bool $isMember = true)
+    {
+        if ($keyDate === null)
+            $keyDate = self::getKeyDate();
+
+        $where = $isMember ? 'id in' : 'id not in';
+        $where .= ' (select p.id from members p join club_member m on p.id = m.member_id ' .
+            'where (p.death_day is null or p.death_day > ?) and (m.from <= ? and (m.to is null or m.to >= ?)))';
+
+        $query->whereRaw($where, [$keyDate, $keyDate, $keyDate]);
+    }
+
+    public function scopeNoMembers($query, ?Carbon $keyDate = null)
+    {
+        return $this->scopeMembers($query, $keyDate, false);
+    }
+
+    public function scopeSectionMembers($query, array|int $sections, ?Carbon $keyDate = null)
+    {
+        if ($keyDate === null)
+            $keyDate = self::getKeyDate();
+
+        $sections = Arr::wrap($sections);
+
+        $where = 'id in (select distinct(p.id) from members p join member_section m on p.id = m.member_id ' .
+            'where (m.section_id in (' . join(', ',$sections) .')) and (p.death_day is null or p.death_day > ?) and ' .
+            '(m.from <= ? and (m.to is null or m.to >= ?)))';
+
+        $query->whereRaw($where, [$keyDate, $keyDate, $keyDate]);
+    }
+
+    public function scopeAgeRange($query, ?int $from, ?int $to)
+    {
+        if ($from === null) {
+            $query->where('birthday', '>', self::getKeyDate()->subYears($to));
+        } else if ($to === null) {
+            $query->where('birthday', '<', self::getKeyDate()->subYears($from));
+        } else {
+            $query->whereBetween('birthday', [self::getKeyDate()->subYears($to),
+                self::getKeyDate()->subYears($from)]);
+        }
+    }
+
+    public function scopeMilestoneBirthdays($query, ?int $year = null)
+    {
+        if ($year === null)
+            $year = self::getKeyDate()->year;
+
+        $query->whereRaw('? - YEAR(birthday) in (50,60,70,80,90,100)', [$year]);
+    }
+
+    public function scopeJoined($query, ?int $year = null)
+    {
+        if ($year === null)
+            $year = self::getKeyDate()->year;
+
+        $query->whereRaw('id in (select member_id from club_member where (YEAR(`from`) = ?))', [$year]);
+    }
+
+    public function scopeRetired($query, ?int $year = null)
+    {
+        if ($year === null)
+            $year = self::getKeyDate()->year;
+
+        $query->whereRaw('id in (select member_id from club_member where (YEAR(`to`) = ?))', [$year]);
+    }
+
+    public function scopeDeaths($query, ?int $year = null)
+    {
+        if ($year === null)
+            $year = self::getKeyDate()->year;
+
+        $query->whereRaw('(YEAR(`death_day`) = ?)', [$year]);
+    }
+
+    public function scopePaymentMethods($query, array|string $methods)
+    {
+        $methods = Arr::wrap($methods);
+
+        $query->whereIn('payment_method', $methods);
+    }
+
+    public function scopeHadEvent($query, ?int $year = null)
+    {
+        if ($year === null)
+            $year = self::getKeyDate()->year;
+
+        $query->whereRaw('`id` in (select distinct(`member_id`) from `event_member` where (YEAR(`date`) = ?))', [$year]);
+    }
+
+    public function scopeHasRole($query, ?Carbon $keyDate = null)
+    {
+        if ($keyDate === null)
+            $keyDate = self::getKeyDate();
+
+        $where = 'id in (select distinct(p.member_id) from member_role p ' .
+            'where (`from` < ?) and (`to` is null or `to` > ?)' .
+        ')';
+
+        $query->whereRaw($where, [$keyDate, $keyDate]);
+    }
+
+    public function scopeHadRole($query, ?Carbon $keyDate = null)
+    {
+        if ($keyDate === null)
+            $keyDate = self::getKeyDate();
+
+        $where = 'id in (select distinct(p.member_id) from member_role p ' .
+            'where (`from` < ?)' .
+        ')';
+
+        $query->whereRaw($where, [$keyDate]);
+    }
+
+    public function scopeHasSubscription($query, null|string|array $subscriptionTypes = null, bool $reverse = false)
+    {
+        $where = $reverse ? 'id not in ' : 'id in ';
+        $where .= '(select distinct(p.member_id) from member_subscription p ';
+
+        if ($subscriptionTypes) {
+            $subscriptionTypes = Arr::wrap($subscriptionTypes);
+            $where .= 'where p.subscription_id in (' . join(', ', $subscriptionTypes) . ')';
+        }
+        $where .= ')';
+
+        $query->whereRaw($where);
+    }
+
+    public function scopeNoSubscription($query, null|string|array $subscriptionTypes = null)
+    {
+        return $this->scopeHasSubscription($query, $subscriptionTypes, true);
+    }
+
+    public function scopeHonorDue($query, ?Carbon $keyDate = null)
+    {
+        if ($keyDate === null)
+            $keyDate = self::getKeyDate();
+
+        $where = 'id in (SELECT p.member_id FROM club_member p ' .
+            'GROUP BY member_id HAVING SUM(YEAR(LEAST(IFNULL(`to`, ?), ?)) - YEAR(`from`)) IN (' .
+            currentClub()->honorYears() . '))';
+
+        $query->whereRaw($where, [$keyDate, $keyDate]);
+    }
+
+    public function scopeLike($query, string $like)
+    {
+        $like = '%' . $like . '%';
+        $query->where(function($query) use ($like) {
+            $query->where('first_name', 'like', $like)
+                ->orWhere('surname', 'like', $like)
+                ->orWhere('street', 'like', $like)
+                ->orWhere('zipcode', 'like', $like)
+                ->orWhere('city', 'like', $like)
+                ->orWhere('memo', 'like', $like);
+        });
+    }
+
+    public static function availableGenders(): array
     {
         return [
             'f' => 'Frau',
@@ -109,7 +364,7 @@ class Member extends Model
         ];
     }
 
-    public static function paymentMethods()
+    public static function availablePaymentMethods(): array
     {
         return [
             'k' => 'Konto',

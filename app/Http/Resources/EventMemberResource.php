@@ -19,7 +19,7 @@ class EventMemberResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->event->name,
-            'date' => $this->date->format('d.m.Y'),
+            'date' => formatDate($this->date),
             'memo' => $this->memo,
 
             'modifiable' => auth()->user()->can('update', $this->member),

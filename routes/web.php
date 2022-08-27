@@ -47,6 +47,10 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/test', function (\Illuminate\Http\Request $request) {
+    dd($request->input());
+});
+
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard');
 //})->middleware(['auth', 'verified'])->name('dashboard');
@@ -114,12 +118,14 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::put('/subscriptions/{subscription}', [SubscriptionController::class, 'update'])->can('update', 'subscription');
     Route::delete('/subscriptions/{subscription}', [SubscriptionController::class, 'destroy'])->can('delete', 'subscription');
 
-    Route::get('/members', [MemberController::class, 'index'])->name('members')->can('viewAny', Member::class);
+    Route::get('/members', [MemberController::class, 'quickFilter'])->name('members')->can('viewAny', Member::class);
     Route::get('/members/create', [MemberController::class, 'create'])->can('create', Member::class);
     Route::post('/members', [MemberController::class, 'store'])->can('create', Member::class);
     Route::get('/members/{member}/edit', [MemberController::class, 'edit'])->name('members.edit')->can('update', 'member');
     Route::put('/members/{member}', [MemberController::class, 'update'])->can('update', 'member');
     Route::delete('/members/{member}', [MemberController::class, 'destroy'])->can('delete', 'member');
+//    Route::get('/members/filter/{id?}', [MemberController::class, 'quickFilter'])->name('members.quickfilter')
+//        ->can('viewAny', Member::class);
 
     Route::get('/members/{member}/club/create', [ClubMemberController::class, 'create'])->can('create', Member::class);
     Route::post('/members/{member}/club', [ClubMemberController::class, 'store'])->can('create', Member::class);

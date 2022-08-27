@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Club;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -10,14 +11,28 @@ if (!function_exists('isCli')) {
     }
 }
 
+if (!function_exists('currentClubId')) {
+    function currentClubId()
+    {
+        return isCli() ? 1 : auth()->user()->club_id;
+    }
+}
+
+if (!function_exists('currentClub')) {
+    function currentClub()
+    {
+        return Club::find(currentClubId());
+    }
+}
+
 if (!function_exists('getRange')) {
     function getRange(string $from, ?string $to): string
     {
         $from = new Carbon($from);
-        $range = $from->format('d.m.Y') . '-';
+        $range = formatDate($from) . '-';
         if ($to !== null) {
             $to = new Carbon($to);
-            $range .= $to->format('d.m.Y');
+            $range .= formatDate($to);
         }
 
         return $range;
@@ -34,6 +49,13 @@ if (!function_exists('inRange')) {
             return false;
 
         return ($to === null || $date->lte($to));
+    }
+}
+
+if (!function_exists('formatDate')) {
+    function formatDate(Carbon $date)
+    {
+        return $date->format('d.m.Y');
     }
 }
 
@@ -71,7 +93,6 @@ if (!function_exists('mod97')) {
         {
             $fragment = $checksum . substr($string, $offset, 7);
             $checksum = intval($fragment) % 97;
-            Log::info($checksum);
         }
 
         return $checksum;
