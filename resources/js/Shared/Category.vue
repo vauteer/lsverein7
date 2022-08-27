@@ -22,7 +22,6 @@ defineEmits(['update:modelValue']);
 
 <template>
     <div class="sm:flex items-center justify-between">
-        <div class="w-full text-2xl font-medium text-gray-900"><slot /></div>
         <div class="flex justify-between">
             <input v-if="search" type="text" placeholder="Suchen..." class="text-gray-700 px-2 mr-4 my-2 text-base border rounded-lg"
                    @input="$emit('update:modelValue', $event.target.value)" :value="modelValue"

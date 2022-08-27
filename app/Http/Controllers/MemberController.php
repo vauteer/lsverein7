@@ -202,8 +202,6 @@ class MemberController extends Controller
                 break;
         }
 
-        $count = $query->count();
-
         return inertia('Members/Index', [
             'members' => MemberResource::collection($query
                 ->paginate(15)
@@ -217,7 +215,6 @@ class MemberController extends Controller
             'currentYear' => $keyDate->year,
             'currentFilter' => strval($filter),
             'currentSort' => $sort,
-            'memberCount' => $count,
             'canCreate' => auth()->user()->can('create', Member::class),
         ]);
 
@@ -305,12 +302,13 @@ class MemberController extends Controller
             11 => 'Hatte Funktion',
         ];
 
-        $sections = currentClub()->usedSections();
+//        $sections = currentClub()->usedSections();
+        $sections = Section::used();
         foreach ($sections as $section) {
             $filters["section_" . $section->id] = "Abteilung: " . $section->name;
         }
 
-        $subscriptions = currentClub()->usedSubscriptions();
+        $subscriptions = Subscription::used();
         foreach ($subscriptions as $subscription) {
             $filters["subscription_" . $subscription->id] = "Beitrag: " . $subscription->name;
         }

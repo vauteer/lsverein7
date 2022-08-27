@@ -8,11 +8,11 @@ import {throttle} from "lodash";
 import Layout from "@/Shared/Layout.vue";
 import Category from "@/Shared/Category.vue";
 import Pagination from "@/Shared/Pagination.vue";
+import TextInput from "@/Shared/TextInput.vue";
 import MySelect from "@/Shared/MySelect.vue";
 
 let props = defineProps({
     members: Object,
-    memberCount: Number,
     filters: Object,
     searchString: String,
     canCreate: Boolean,
@@ -75,18 +75,16 @@ watch(sort, () => {
         <Head title="Mitglieder"/>
 
         <div
-            class="w-full max-w-3xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-2 px-4 sm:px-6 lg:px-8">
-            <Category :createUrl="createUrl" v-model="search">{{ memberCount }} Personen</Category>
+            class="w-full max-w-4xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-2 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-8 py-2 mt-2">
+                <MySelect class="sm:col-span-2" v-model="filter" :options="props.filters" id="quick-filters" :label="`Auswahl (${members.meta.total} Personen)`"/>
+                <TextInput class="sm:col-span-2" v-model="search" id="search" label="Suchen"
+                       placeholder="Suchen..."/>
+                <MySelect class="sm:col-span-2" v-if="yearEnabled" v-model="year" :options="props.years" id="years" label="Stichtag"/>
+                <MySelect class="sm:col-span-2" v-model="sort" :options="props.sorts" id="sorts" label="Sortierung"/>
+            </div>
+
             <div class="flex">
-                <MySelect v-model="filter" :options="props.filters" id="quick-filters" label=""
-                          class="w-60"
-                />
-                <MySelect v-if="yearEnabled" v-model="year" :options="props.years" id="years" label=""
-                          class="w-40 ml-2"
-                />
-                <MySelect v-model="sort" :options="props.sorts" id="sorts" label=""
-                          class="w-40 ml-2"
-                />
             </div>
             <div class="mt-4 mb-4 flex flex-col">
                 <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -107,8 +105,12 @@ watch(sort, () => {
                                         Details
                                     </th>
                                     <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Status</span></th>
-                                    <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
-                                        <span class="sr-only">Edit</span>
+                                    <th scope="col" class="relative pl-3 pr-2 sm:pr-2 w-6">
+                                        <Link v-if="canCreate"
+                                            class="rounded-md border border-transparent bg-indigo-600 px-4 py-2 my-1 mr-2 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto disabled:opacity-25"
+                                            :href="createUrl" as="button" type="button">
+                                            Neu
+                                        </Link>
                                     </th>
                                 </tr>
                                 </thead>
@@ -133,7 +135,7 @@ watch(sort, () => {
                                         </div>
                                     </td>
                                     <td class="px-3">
-                                        <div class="h-5">
+                                        <div class="h-5 flex justify-center">
                                             <Link v-if="member.modifiable" :href="`/members/${member.id}/edit`">
                                                 <PencilIcon class="h-5 w-5 text-blue-500"/>
                                             </Link>

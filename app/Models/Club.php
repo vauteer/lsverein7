@@ -50,31 +50,6 @@ class Club extends Model
         return $this->hasMany(Subscription::class);
     }
 
-    public function usedSections()
-    {
-
-        $sql = <<<EOD
-SELECT DISTINCT(b.section_id) as `id`, c.name FROM club_member a
-JOIN member_section b ON a.member_id = b.member_id
-JOIN sections c ON c.id = b.section_id
-WHERE a.club_id = $this->id ORDER BY(1)
-EOD;
-
-        return DB::select($sql);
-    }
-
-    public function usedSubscriptions()
-    {
-
-        $sql = <<<EOD
-SELECT DISTINCT(a.id), a.name FROM subscriptions a
-JOIN member_subscription b ON a.id = b.subscription_id
-WHERE a.club_id = $this->id ORDER BY(1)
-EOD;
-
-        return DB::select($sql);
-    }
-
     public static function logoPath($stub = ''):string
     {
         return storage_path('app/public/logo') .

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\DB;
 
 class Section extends Model
 {
@@ -34,4 +35,15 @@ class Section extends Model
             ->withTimeStamps();
     }
 
+    public static function used()
+    {
+        return DB::table('club_member')
+            ->join('member_section', 'club_member.member_id', 'member_section.member_id')
+            ->join('sections', 'sections.id', 'member_section.section_id')
+            ->distinct()
+            ->select('section_id as id', 'name')
+            ->where('club_member.club_id', currentClubId())
+            ->orderBy('name')
+            ->get();
+    }
 }
