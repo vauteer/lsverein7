@@ -3,7 +3,7 @@ import Layout from '@/Shared/Layout.vue';
 import {Inertia} from "@inertiajs/inertia";
 import {computed, ref, watch} from "vue";
 import { Head, Link } from '@inertiajs/inertia-vue3';
-import Category from '@/Shared/Category.vue';
+import ActionLink from '@/Shared/ActionLink.vue';
 import Pagination from '@/Shared/Pagination.vue';
 import { PencilIcon, StarIcon, CheckIcon, ChevronDoubleRightIcon, LoginIcon } from '@heroicons/vue/outline';
 import {throttle} from "lodash";
@@ -12,6 +12,7 @@ let props = defineProps({
     auth: Object,
     users: Object,
     filters: Object,
+    canCreate: Boolean,
 });
 
 let search = ref(props.filters.search);
@@ -29,7 +30,9 @@ watch(search, throttle(function (value) {
 
     <Layout>
         <div class="w-full max-w-2xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-2 px-4 sm:px-6 lg:px-8">
-            <Category createUrl="/users/create" v-model="search">Benutzer</Category>
+            <input type="text" placeholder="Suchen..." v-model="search"
+                   class="text-gray-700 px-2 mr-4 my-2 text-base border rounded-lg"
+            />
 
             <div class="mt-4 mb-4 flex flex-col">
                 <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -44,6 +47,7 @@ watch(search, throttle(function (value) {
                                     <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Status</span></th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                         <span class="sr-only">Edit</span>
+                                        <ActionLink v-if="props.canCreate" href="/users/create">Neu</ActionLink>
                                     </th>
                                 </tr>
                                 </thead>

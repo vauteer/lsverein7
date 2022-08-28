@@ -1,12 +1,10 @@
 <script setup>
-import {computed, ref, watch} from "vue";
+import {computed, ref, reactive, watch} from "vue";
 import {Head, Link} from '@inertiajs/inertia-vue3';
 import {Inertia} from "@inertiajs/inertia";
 import {PencilIcon, LockClosedIcon, CloudIcon } from '@heroicons/vue/outline';
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import {throttle} from "lodash";
 import Layout from "@/Shared/Layout.vue";
-import Category from "@/Shared/Category.vue";
 import Pagination from "@/Shared/Pagination.vue";
 import TextInput from "@/Shared/TextInput.vue";
 import MySelect from "@/Shared/MySelect.vue";
@@ -27,18 +25,15 @@ const createUrl = computed(() => {
     return props.canCreate ? "/members/create" : "";
 });
 
-let search = ref(props.searchString);
-let filter = ref(String(props.currentFilter));
-let year = ref(String(props.currentYear));
-let sort = ref(String(props.currentSort));
+const state = reactive({
+    search: props.searchString,
+    filter: String(props.currentFilter),
+    year: String(props.currentYear),
+    sort: String(props.currentSort),
+});
 
 let refresh = () => {
-    Inertia.get('/members', {
-        filter: filter.value ,
-        search: search.value,
-        year: year.value,
-        sort: sort.value,
-    },
+    Inertia.get('/members', state,
         {
         preserveState: true,
         replace: true,
@@ -46,27 +41,12 @@ let refresh = () => {
 };
 
 let yearEnabled = computed(() => {
-    return !props.currentFilter.startsWith('subscription_')
+    return !state.filter.startsWith('subscription_')
 });
 
-watch(search, throttle(function (value) {
+watch(state, throttle(function (newValue) {
     refresh();
 }, 300));
-
-watch(filter, (newValue) => {
-    search.value = '';
-    refresh();
-});
-
-watch(year, () => {
-    search.value = '';
-    refresh();
-});
-
-watch(sort, () => {
-    search.value = '';
-    refresh();
-});
 
 </script>
 
@@ -77,11 +57,11 @@ watch(sort, () => {
         <div
             class="w-full max-w-4xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-2 px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-8 py-2 mt-2">
-                <MySelect class="sm:col-span-2" v-model="filter" :options="props.filters" id="quick-filters" :label="`Auswahl (${members.meta.total} Personen)`"/>
-                <TextInput class="sm:col-span-2" v-model="search" id="search" label="Suchen"
+                <MySelect class="sm:col-span-2" v-model="state.filter" :options="props.filters" id="quick-filters" :label="`Auswahl (${members.meta.total} Personen)`" null-value="(Andere)"/>
+                <TextInput class="sm:col-span-2" v-model="state.search" id="search" label="Suchen"
                        placeholder="Suchen..."/>
-                <MySelect class="sm:col-span-2" v-if="yearEnabled" v-model="year" :options="props.years" id="years" label="Stichtag"/>
-                <MySelect class="sm:col-span-2" v-model="sort" :options="props.sorts" id="sorts" label="Sortierung"/>
+                <MySelect class="sm:col-span-2" :disabled="!yearEnabled" v-model="state.year" :options="props.years" id="years" label="Stichtag" :hideDisabled="true"/>
+                <MySelect class="sm:col-span-2" v-model="state.sort" :options="props.sorts" id="sorts" label="Sortierung"/>
             </div>
 
             <div class="flex">
@@ -101,7 +81,7 @@ watch(sort, () => {
                                         Name
                                     </th>
                                     <th scope="col"
-                                        class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 hidden sm:table-cell">
+                                        class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 hidden md:table-cell">
                                         Details
                                     </th>
                                     <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Status</span></th>
@@ -125,7 +105,7 @@ watch(sort, () => {
                                         </div>
                                         <div>{{ member.birthday }} {{ member.age }} {{ member.gender }} {{ member.membershipYears }}</div>
                                     </td>
-                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm sm:pl-6 hidden sm:table-cell">
+                                    <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm sm:pl-6 hidden md:table-cell">
                                         <div>{{ member.address }}</div>
                                         <div>{{ member.subscriptions }} {{ member.sections }} {{ member.lastEvent }}</div>
                                     </td>

@@ -37,6 +37,7 @@ class SubscriptionController extends Controller
                 ->when($request->input('search'), function($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
                 })
+                ->orderBy('amount')
                 ->paginate(15)
                 ->withQueryString()
             ),

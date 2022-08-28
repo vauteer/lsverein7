@@ -18,6 +18,7 @@ use App\Models\Section;
 use App\Models\Subscription;
 use App\Rules\Iban;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -25,6 +26,15 @@ use Inertia\Response;
 
 class MemberController extends Controller
 {
+    protected const SORT_METHODS = [
+        1 => "Name",
+        2 => "Adresse",
+        3 => "Geburtstag",
+        4 => "Alter",
+        5 => "Bank",
+        6 => "Id"
+    ];
+
     protected function validationRules(): array
     {
         $rules = [
@@ -57,67 +67,7 @@ class MemberController extends Controller
         ];
     }
 
-    public function index(Request $request):Response
-    {
-        return inertia('Members/Index', [
-            'members' => MemberResource::collection(Member::query()
-                ->when($request->input('search'), function($query, $search) {
-                    $query->like($search);
-//                    $query->where('surname', 'like', "%{$search}%");
-//                    $query->orWhere('first_name', 'like', "%{$search}%");
-                })
-                ->when($request->input('filter'), function($query, $filter) {
-                    dd($filter);
-                    $query->hasRole();
-                })
-                ->orderBy('surname')
-                ->orderBy('first_name')
-                ->paginate(15)
-                ->withQueryString()
-            ),
-
-            'quickFilters' => $this->getQuickFilters(),
-            'search' => $request->only(['search']),
-            'canCreate' => auth()->user()->can('create', Member::class),
-        ]);
-    }
-
-    public function filtered(Request $request)
-    {
-        $members = Member::query();
-        $filter = $request->input('filter');
-        $selected = $request->input('selected');
-
-        if (isset($filter['members'])) {
-            if ($filter['members'])
-                $members->members();
-            else
-                $members->noMembers();
-        }
-
-        if (isset($filter['joined'])) {
-            $members->joined();
-        }
-
-        if (isset($filter['retired'])) {
-            $members->retired();
-        }
-
-        return inertia('Members/Index', [
-            'members' => MemberResource::collection($members
-                ->orderBy('surname')
-                ->orderBy('first_name')
-                ->paginate(15)
-                ->withQueryString()
-            ),
-
-            'filters' => $request->only(['search']),
-            'canCreate' => auth()->user()->can('create', Member::class),
-        ]);
-
-    }
-
-    public function quickFilter(Request $request)
+    public function index(Request $request): Response|\Inertia\ResponseFactory
     {
 //        dd($request->input());
         $filter = $request->has('filter') ? $request->input('filter') : '1';
@@ -128,79 +78,13 @@ class MemberController extends Controller
         Member::$_keyDate = $keyDate;
 
         $query = Member::query()->with(['memberships', 'events', 'sections', 'subscriptions', 'roles']);
-        if ($search)
+        if ($search) {
             $query->like($search);
-
-        if (preg_match('/^section_(\d+)$/', $filter, $match)) {
-            $query->members()->sectionMembers($match[1]);
-        }
-        else if (preg_match('/^subscription_(\d+)$/', $filter, $match)) {
-            // subscriptions don't have a range
-            $keyDate = Carbon::now();
-            Member::$_keyDate = $keyDate;
-            $query->members()->hasSubscription($match[1]);
-        }
-        else if (preg_match('/^payment_([a-z])$/', $filter, $match)) {
-            $query->members()->paymentMethods($match[1]);
-        }
-        else
-        {
-            switch (intval($filter)) {
-                case 1:
-                    $query->members();
-                    break;
-                case 2:
-                    $query->noMembers();
-                    break;
-                case 3:
-                    $query->members()->milestoneBirthdays();
-                    break;
-                case 4:
-                    $query->deaths();
-                    break;
-                case 5:
-                    $query->joined();
-                    break;
-                case 6:
-                    $query->retired();
-                case 7:
-                    $query->members()->ageRange(18, null);
-                    break;
-                case 8:
-                    $query->members()->ageRange(null, 18);
-                    break;
-                case 9:
-                    $query->members()->honorDue();
-                    break;
-                case 10:
-                    $query->members()->hasRole();
-                    break;
-                case 11:
-                    $query->hadRole();
-                    break;
-            }
         }
 
-        switch ($sort) {
-            case 1 :
-                $query->orderBy('surname')->orderBy('first_name');
-                break;
-            case 2 :
-                $query->orderBy('city')->orderBy('street')->orderBy('surname')->orderBy('first_name');
-                break;
-            case 3 :
-                $query->orderByRaw('MONTH(birthday)')->orderByRaw('DAY(birthday)');
-                break;
-            case 4 :
-                $query->orderBy('birthday', 'desc');
-                break;
-            case 5:
-                $query->orderBy('bank')->orderBy('surname')->orderBy('first_name');
-                break;
-            case 6 :
-                $query->orderBy('id');
-                break;
-        }
+        is_numeric($filter) ? $this->applyQuickFilter($filter, $query) : $this->applySpecialFilters($filter, $query);
+
+        $this->applySort($sort, $query);
 
         return inertia('Members/Index', [
             'members' => MemberResource::collection($query
@@ -211,14 +95,14 @@ class MemberController extends Controller
             'searchString' => $search,
             'filters' => $this->getQuickFilters(),
             'years' => $this->getAvailableYears(),
-            'sorts' => $this->getAvailableSortMethods(),
+            'sorts' => self::SORT_METHODS,
             'currentYear' => $keyDate->year,
             'currentFilter' => strval($filter),
             'currentSort' => $sort,
             'canCreate' => auth()->user()->can('create', Member::class),
         ]);
-
     }
+
     public function create(Request $request): Response
     {
         return inertia('Members/Edit')
@@ -300,22 +184,22 @@ class MemberController extends Controller
             9 => 'Fällige Ehrungen',
             10 => 'Hat Funktion',
             11 => 'Hatte Funktion',
+            12 => 'Ohne Beitrag',
         ];
 
-//        $sections = currentClub()->usedSections();
         $sections = Section::used();
         foreach ($sections as $section) {
-            $filters["section_" . $section->id] = "Abteilung: " . $section->name;
+            $filters["hasSection_" . $section->id] = "Abteilung: " . $section->name;
         }
 
         $subscriptions = Subscription::used();
         foreach ($subscriptions as $subscription) {
-            $filters["subscription_" . $subscription->id] = "Beitrag: " . $subscription->name;
+            $filters["hasSubscription_" . $subscription->id] = "Beitrag: " . $subscription->name;
         }
 
         $paymentMethods = Member::availablePaymentMethods();
         foreach ($paymentMethods as $key => $value) {
-            $filters["payment_" . $key] = "Zahlung: " . $value;
+            $filters["hasPayment_" . $key] = "Zahlung: " . $value;
         }
 
         return $filters;
@@ -336,15 +220,78 @@ class MemberController extends Controller
         return $result;
     }
 
-    private function getAvailableSortMethods()
+    public function applyQuickFilter(string $filter, Builder $query)
     {
-        return [
-            1 => "Name",
-            2 => "Adresse",
-            3 => "Geburtstag",
-            4 => "Alter",
-            5 => "Bank",
-            6 => "Id"
-        ];
+        return match(intval($filter)) {
+            1 => $query->members(),
+            2 => $query->noMembers(),
+            3 => $query->members()->milestoneBirthdays(),
+            4 => $query->deaths(),
+            5 => $query->joined(),
+            6 => $query->retired(),
+            7 => $query->members()->ageRange(18, null),
+            8 => $query->members()->ageRange(null, 18),
+            9 => $query->members()->dueHonor(),
+            10 => $query->members()->hasRole(),
+            11 => $query->everRole(),
+            12 => $query->members()->noSubscription(),
+        };
+    }
+
+    public function applySpecialFilters(string &$filter, Builder $query)
+    {
+        if (preg_match('/^hasSection_(\d+)$/', $filter, $match)) {
+            $query->members()->sectionMembers($match[1]);
+        }
+        else if (preg_match('/^hasSubscription_(\d+)$/', $filter, $match)) {
+            // subscriptions don't have a range
+            $keyDate = Carbon::now();
+            Member::$_keyDate = $keyDate;
+            $query->members()->hasSubscription($match[1]);
+        }
+        else if (preg_match('/^hasPayment_([a-z])$/', $filter, $match)) {
+            $query->members()->paymentMethods($match[1]);
+        }
+        else if (preg_match('/^hasRole_(\d+)$/', $filter, $match)) {
+            $query->hasRole($match[1]);
+            $filter = '';
+        }
+        else if (preg_match('/^everRole_(\d+)$/', $filter, $match)) {
+            $query->everRole($match[1]);
+            $filter = '';
+        }
+        else if (preg_match('/^hadEvent_(\d+)$/', $filter, $match)) {
+            $query->hadEvent($match[1]);
+            $filter = '';
+        }
+    }
+
+    /**
+     * @param int $sort
+     * @param Builder $query
+     * @return void
+     */
+    public function applySort(int $sort, Builder $query): void
+    {
+        switch ($sort) {
+            case 1 :
+                $query->orderBy('surname')->orderBy('first_name');
+                break;
+            case 2 :
+                $query->orderBy('city')->orderBy('street')->orderBy('surname')->orderBy('first_name');
+                break;
+            case 3 :
+                $query->orderByRaw('MONTH(birthday)')->orderByRaw('DAY(birthday)');
+                break;
+            case 4 :
+                $query->orderBy('birthday', 'desc');
+                break;
+            case 5:
+                $query->orderBy('bank')->orderBy('surname')->orderBy('first_name');
+                break;
+            case 6 :
+                $query->orderBy('id');
+                break;
+        }
     }
 }

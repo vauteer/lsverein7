@@ -64,7 +64,7 @@ class UserController extends Controller
 
             'filters' => $request->only(['search']),
 
-            'canCreate' => Auth::user()->admin,
+            'canCreate' => auth()->user()->isClubAdmin(),
         ]);
     }
 

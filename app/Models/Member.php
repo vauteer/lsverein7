@@ -280,34 +280,52 @@ class Member extends Model
         $query->whereIn('payment_method', $methods);
     }
 
-    public function scopeHadEvent($query, ?int $year = null)
+    public function scopeHadEvent($query, int|null $id = null, ?Carbon $keyDate = null)
     {
-        if ($year === null)
-            $year = self::getKeyDate()->year;
+        if ($keyDate === null)
+            $keyDate = self::getKeyDate();
 
-        $query->whereRaw('`id` in (select distinct(`member_id`) from `event_member` where (YEAR(`date`) = ?))', [$year]);
+        $where = '`id` in (select distinct(`member_id`) from `event_member` where (`date` < ?)';
+
+        if ($id) {
+            $where .= " and (event_id = {$id})";
+        }
+
+        $where .= ')';
+
+        $query->whereRaw($where, [$keyDate]);
     }
 
-    public function scopeHasRole($query, ?Carbon $keyDate = null)
+    public function scopeHasRole($query, int|null $id = null, ?Carbon $keyDate = null)
     {
         if ($keyDate === null)
             $keyDate = self::getKeyDate();
 
         $where = 'id in (select distinct(p.member_id) from member_role p ' .
-            'where (`from` < ?) and (`to` is null or `to` > ?)' .
-        ')';
+            'where (`from` < ?) and (`to` is null or `to` > ?)';
+
+        if ($id) {
+            $where .= " and (p.role_id = {$id})";
+        }
+
+        $where .= ')';
 
         $query->whereRaw($where, [$keyDate, $keyDate]);
     }
 
-    public function scopeHadRole($query, ?Carbon $keyDate = null)
+    public function scopeEverRole($query, int|null $id = null, ?Carbon $keyDate = null)
     {
         if ($keyDate === null)
             $keyDate = self::getKeyDate();
 
         $where = 'id in (select distinct(p.member_id) from member_role p ' .
-            'where (`from` < ?)' .
-        ')';
+            'where (`from` < ?)';
+
+        if ($id) {
+            $where .= " and (p.role_id = {$id})";
+        }
+
+        $where .= ')';
 
         $query->whereRaw($where, [$keyDate]);
     }
@@ -331,7 +349,7 @@ class Member extends Model
         return $this->scopeHasSubscription($query, $subscriptionTypes, true);
     }
 
-    public function scopeHonorDue($query, ?Carbon $keyDate = null)
+    public function scopeDueHonor($query, ?Carbon $keyDate = null)
     {
         if ($keyDate === null)
             $keyDate = self::getKeyDate();
