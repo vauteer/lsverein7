@@ -124,6 +124,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/members/{member}/edit', [MemberController::class, 'edit'])->name('members.edit')->can('update', 'member');
     Route::put('/members/{member}', [MemberController::class, 'update'])->can('update', 'member');
     Route::delete('/members/{member}', [MemberController::class, 'destroy'])->can('delete', 'member');
+    Route::get('/members/pdf', [MemberController::class, 'pdf'])->name('members.pdf')->can('viewAny', Member::class);
 
     Route::get('/members/{member}/club/create', [ClubMemberController::class, 'create'])->can('create', Member::class);
     Route::post('/members/{member}/club', [ClubMemberController::class, 'store'])->can('create', Member::class);

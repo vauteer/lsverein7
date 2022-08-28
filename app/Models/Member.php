@@ -40,7 +40,7 @@ class Member extends Model
 //        return Carbon::now()->diffInYears($this->birthday);
 //    }
 //
-    protected function age(): Attribute
+    public function age(): Attribute
     {
         return new Attribute(
             get: function() {
@@ -48,6 +48,17 @@ class Member extends Model
                 return $this->birthday->diffInYears($keyDate);
                 },
         );
+    }
+
+    public function entry(): Carbon
+    {
+        $entry = null;
+
+        foreach ($this->memberships as $membership) {
+            $entry = $membership->pivot->from->min($entry);
+        }
+
+        return $entry;
     }
 
     protected static function booted()

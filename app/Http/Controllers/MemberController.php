@@ -16,13 +16,16 @@ use App\Models\MemberSection;
 use App\Models\MemberSubscription;
 use App\Models\Section;
 use App\Models\Subscription;
+use App\Pdf\MemberPdf;
 use App\Rules\Iban;
 use Carbon\Carbon;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Response;
+use Inertia\ResponseFactory;
 
 class MemberController extends Controller
 {
@@ -67,40 +70,39 @@ class MemberController extends Controller
         ];
     }
 
-    public function index(Request $request): Response|\Inertia\ResponseFactory
+    public function index(Request $request): Response|ResponseFactory
     {
-//        dd($request->input());
-        $filter = $request->has('filter') ? $request->input('filter') : '1';
-        $search = $request->has('search') ? $request->input('search') : '';
-        $sort = $request->has('sort') ? intval($request->input('sort')) : 1;
-        $year = $request->has('year') ? intval($request->input('year')) : Carbon::now()->year;
-        $keyDate = Carbon::create($year, 12, 31, 23, 59, 59)->min(Carbon::now());
-        Member::$_keyDate = $keyDate;
-
-        $query = Member::query()->with(['memberships', 'events', 'sections', 'subscriptions', 'roles']);
-        if ($search) {
-            $query->like($search);
-        }
-
-        is_numeric($filter) ? $this->applyQuickFilter($filter, $query) : $this->applySpecialFilters($filter, $query);
-
-        $this->applySort($sort, $query);
+        $currentSelection = $this->currentSelection($request);
 
         return inertia('Members/Index', [
-            'members' => MemberResource::collection($query
+            'members' => MemberResource::collection($currentSelection['query']
                 ->paginate(15)
                 ->withQueryString()
             ),
 
-            'searchString' => $search,
+            'searchString' => $currentSelection['search'],
             'filters' => $this->getQuickFilters(),
             'years' => $this->getAvailableYears(),
             'sorts' => self::SORT_METHODS,
-            'currentYear' => $keyDate->year,
-            'currentFilter' => strval($filter),
-            'currentSort' => $sort,
+            'currentYear' => $currentSelection['keyDate']->year,
+            'currentFilter' => strval($currentSelection['filter']),
+            'currentSort' => $currentSelection['sort'],
             'canCreate' => auth()->user()->can('create', Member::class),
         ]);
+    }
+
+    public function pdf(Request $request)
+    {
+        $currentSelection = $this->currentSelection($request);
+        $query = $currentSelection['query'];
+        $desc = 'Mitglieder';
+        $desc .= ' (' . $query->count() . ')';
+        $pdf = new MemberPdf('P', 'mm', 'A4');
+
+        $content = $pdf->getOutput($query->get(), $desc, currentClub()->name);
+
+        return response($content)
+            ->header('Content-Type', 'application/pdf; name="MyFile.pdf"');
     }
 
     public function create(Request $request): Response
@@ -220,9 +222,33 @@ class MemberController extends Controller
         return $result;
     }
 
+    private function currentSelection(Request $request): array
+    {
+        $result['filter'] = $request->has('filter') ? $request->input('filter') : '1';
+        $result['search'] = $request->has('search') ? $request->input('search') : '';
+        $result['sort'] = $request->has('sort') ? intval($request->input('sort')) : 1;
+        $result['year'] = $request->has('year') ? intval($request->input('year')) : Carbon::now()->year;
+        $result['keyDate'] = Carbon::create($result['year'], 12, 31, 23, 59, 59)->min(Carbon::now());
+        Member::$_keyDate = $result['keyDate'];
+
+        $query = Member::query()->with(['memberships', 'events', 'sections', 'subscriptions', 'roles']);
+        if ($result['search']) {
+            $query->like($result['search']);
+        }
+
+        is_numeric($result['filter']) ? $this->applyQuickFilter($result['filter'], $query) :
+            $this->applySpecialFilters($result['filter'], $query);
+
+        $this->applySort($result['sort'], $query);
+        $result['query'] = $query;
+
+        return $result;
+    }
+
     public function applyQuickFilter(string $filter, Builder $query)
     {
         return match(intval($filter)) {
+            0 => $query,
             1 => $query->members(),
             2 => $query->noMembers(),
             3 => $query->members()->milestoneBirthdays(),

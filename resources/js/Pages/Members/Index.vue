@@ -6,6 +6,7 @@ import {PencilIcon, LockClosedIcon, CloudIcon } from '@heroicons/vue/outline';
 import {throttle} from "lodash";
 import Layout from "@/Shared/Layout.vue";
 import Pagination from "@/Shared/Pagination.vue";
+import ActionLink from "@/Shared/ActionLink.vue";
 import TextInput from "@/Shared/TextInput.vue";
 import MySelect from "@/Shared/MySelect.vue";
 
@@ -23,6 +24,11 @@ let props = defineProps({
 
 const createUrl = computed(() => {
     return props.canCreate ? "/members/create" : "";
+});
+
+const pdfUrl = computed(() => {
+    let params = new URLSearchParams(state).toString().replace('null', '');
+    return `/members/pdf?${params}`;
 });
 
 const state = reactive({
@@ -84,13 +90,11 @@ watch(state, throttle(function (newValue) {
                                         class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 hidden md:table-cell">
                                         Details
                                     </th>
-                                    <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Status</span></th>
+                                    <th scope="col" class="px-3 py-3.5 w-6">
+                                        <a :href="pdfUrl" target="_blank">PDF</a>
+                                    </th>
                                     <th scope="col" class="relative pl-3 pr-2 sm:pr-2 w-6">
-                                        <Link v-if="canCreate"
-                                            class="rounded-md border border-transparent bg-indigo-600 px-4 py-2 my-1 mr-2 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto disabled:opacity-25"
-                                            :href="createUrl" as="button" type="button">
-                                            Neu
-                                        </Link>
+                                        <ActionLink v-if="canCreate" href="/members/create">Neu</ActionLink>
                                     </th>
                                 </tr>
                                 </thead>
