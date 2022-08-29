@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Pdf;
-use Fpdf\FPDF;
+use Fpdf\Fpdf;
 
-class BasePdf extends FPDF
+class BasePdf extends Fpdf
 {
     function ClippingText($x, $y, $txt, $outline=false)
     {
