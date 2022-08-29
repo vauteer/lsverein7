@@ -26,9 +26,9 @@ const createUrl = computed(() => {
     return props.canCreate ? "/members/create" : "";
 });
 
-const pdfUrl = computed(() => {
+const outputUrl = computed(() => (format) => {
     let params = new URLSearchParams(state).toString().replace('null', '');
-    return `/members/pdf?${params}`;
+    return `/members/${format}?${params}`;
 });
 
 const state = reactive({
@@ -91,7 +91,12 @@ watch(state, throttle(function (newValue) {
                                         Details
                                     </th>
                                     <th scope="col" class="px-3 py-3.5 w-6">
-                                        <a :href="pdfUrl" target="_blank">PDF</a>
+                                        <div>
+                                            <a :href="outputUrl('pdf')" target="_blank">PDF</a>
+                                        </div>
+                                        <div>
+                                            <a :href="outputUrl('csv')" target="_blank">CSV</a>
+                                        </div>
                                     </th>
                                     <th scope="col" class="relative pl-3 pr-2 sm:pr-2 w-6">
                                         <ActionLink v-if="canCreate" href="/members/create">Neu</ActionLink>

@@ -61,6 +61,11 @@ class Member extends Model
         return $entry;
     }
 
+    public function dueHonor(): bool
+    {
+        return in_array($this->membershipYears(), explode(',',currentClub()->honorYears()));
+    }
+
     protected static function booted()
     {
         static::addGlobalScope('club', function (Builder $builder) {

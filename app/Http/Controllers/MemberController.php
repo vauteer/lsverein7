@@ -24,7 +24,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Inertia\Response;
 use Inertia\ResponseFactory;
 
 class MemberController extends Controller
@@ -70,7 +69,7 @@ class MemberController extends Controller
         ];
     }
 
-    public function index(Request $request): Response|ResponseFactory
+    public function index(Request $request): \Inertia\Response
     {
         $currentSelection = $this->currentSelection($request);
 
@@ -91,21 +90,58 @@ class MemberController extends Controller
         ]);
     }
 
-    public function pdf(Request $request)
+    public function outputPdf(Request $request): \Illuminate\Http\Response
     {
         $currentSelection = $this->currentSelection($request);
         $query = $currentSelection['query'];
-        $desc = 'Mitglieder';
-        $desc .= ' (' . $query->count() . ')';
+        $leftHeadline = $this->getFilterName($currentSelection['filter']);
+        $leftHeadline .= ' (' . $query->count() . ' Personen)';
+        $rightHeadline = 'Stand: ' . formatDate($currentSelection['keyDate']);
         $pdf = new MemberPdf('P', 'mm', 'A4');
 
-        $content = $pdf->getOutput($query->get(), $desc, currentClub()->name);
+        $content = $pdf->getOutput($query->get(), currentClub()->name, $leftHeadline, $rightHeadline);
 
         return response($content)
             ->header('Content-Type', 'application/pdf; name="MyFile.pdf"');
     }
 
-    public function create(Request $request): Response
+    public function outputCsv(Request $request): \Illuminate\Http\Response
+    {
+        $currentSelection = $this->currentSelection($request);
+        $fileName = str_replace(': ', '_', $this->getFilterName($currentSelection['filter']));
+        $path = public_path("downloads/{$fileName}.csv");
+
+        $handle = fopen($path, 'w');
+
+        $header = ['ID', 'Vorname', 'Nachname', 'Strasse', 'Plz', 'Ort', 'Alter', 'Geschlecht', 'MGJahre', 'Ehrung'];
+
+        fputcsv($handle, $header);
+        $members = $currentSelection['query']->get();
+
+        foreach ($members as $member)
+        {
+            $fields = array(
+                $member->id,
+                utf8_decode($member->first_name), utf8_decode($member->surname), utf8_decode($member->street),
+                $member->zipcode, utf8_decode($member->city), $member->age, $member->gender->value,
+                $member->membershipYears(), intval($member->dueHonor()),
+            );
+
+            fputcsv($handle, $fields);
+        }
+
+        fclose($handle);
+
+        $content = file_get_contents($path);
+
+        return response($content)
+            ->header('content-type', 'text/comma-separated-values')
+            ->header('content-length', strlen($content))
+            ->header('content-disposition', 'attachment; filename="' . $fileName . '.csv"');
+
+    }
+
+    public function create(Request $request): \Inertia\Response
     {
         return inertia('Members/Edit')
             ->with('genders', Member::availableGenders())
@@ -140,7 +176,7 @@ class MemberController extends Controller
             ->with('success', 'Mitglied hinzugefügt');
     }
 
-    public function edit(Request $request, Member $member):Response
+    public function edit(Request $request, Member $member):\Inertia\Response
     {
         return inertia('Members/Edit', [ 'member' => $member->getAttributes() ])
             ->with('genders', Member::availableGenders())
@@ -205,6 +241,14 @@ class MemberController extends Controller
         }
 
         return $filters;
+    }
+
+    private function getFilterName(int|string $key, array|null $filters = null)
+    {
+        if ($filters === null)
+            $filters = $this->getQuickFilters();
+
+        return  array_key_exists($key, $filters) ?  $filters[$key] : "Filter: {$key}";
     }
 
     private function getAvailableYears()

@@ -5,7 +5,8 @@ namespace App\Pdf;
 class MemberPdf extends BasePdf
 {
     private $entities;
-    private $description;
+    private $leftHeadline;
+    private $rightHeadline;
     private $clubName;
     private $even;
 
@@ -16,7 +17,8 @@ class MemberPdf extends BasePdf
         $this->SetFont('Arial', 'I', 14);
         $this->Cell(0, 7, $this->clubName, 0, 1, 'C');
         $this->SetFont('Arial', 'B', 9);
-        $this->Cell(0, $cellHeight, $this->description, 0, 1);
+        $this->Cell(140, $cellHeight, $this->leftHeadline);
+        $this->Cell(50, $cellHeight, $this->rightHeadline, 0, 1, "R");
         $this->SetFont('Arial', 'I', 9);
         $this->Cell(8, $cellHeight, '#');
         $this->Cell(40, $cellHeight, 'Name');
@@ -73,10 +75,11 @@ class MemberPdf extends BasePdf
         }
     }
 
-    public function getOutput($entities, $description, $clubName)
+    public function getOutput($entities, $clubName, $leftHeadline, $rightHeadline)
     {
         $this->entities = $entities;
-        $this->description = $description;
+        $this->leftHeadline = $leftHeadline;
+        $this->rightHeadline = $rightHeadline;
         $this->clubName = $clubName;
 
         $this->AliasNbPages();
