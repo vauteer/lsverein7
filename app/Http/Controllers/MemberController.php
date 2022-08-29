@@ -9,11 +9,13 @@ use App\Http\Resources\MemberRoleResource;
 use App\Http\Resources\MemberSectionResource;
 use App\Http\Resources\MemberSubscriptionResource;
 use App\Models\ClubMember;
+use App\Models\Event;
 use App\Models\EventMember;
 use App\Models\Member;
 use App\Models\MemberRole;
 use App\Models\MemberSection;
 use App\Models\MemberSubscription;
+use App\Models\Role;
 use App\Models\Section;
 use App\Models\Subscription;
 use App\Pdf\MemberPdf;
@@ -80,7 +82,7 @@ class MemberController extends Controller
             ),
 
             'searchString' => $currentSelection['search'],
-            'filters' => $this->getQuickFilters(),
+            'filters' => $currentSelection['quickFilters'],
             'years' => $this->getAvailableYears(),
             'sorts' => self::SORT_METHODS,
             'currentYear' => $currentSelection['keyDate']->year,
@@ -94,7 +96,7 @@ class MemberController extends Controller
     {
         $currentSelection = $this->currentSelection($request);
         $query = $currentSelection['query'];
-        $leftHeadline = $this->getFilterName($currentSelection['filter']);
+        $leftHeadline = $currentSelection['quickFilters'][$currentSelection['filter']];
         $leftHeadline .= ' (' . $query->count() . ' Personen)';
         $rightHeadline = 'Stand: ' . formatDate($currentSelection['keyDate']);
         $pdf = new MemberPdf('P', 'mm', 'A4');
@@ -108,13 +110,14 @@ class MemberController extends Controller
     public function outputCsv(Request $request): \Illuminate\Http\Response
     {
         $currentSelection = $this->currentSelection($request);
-        $fileName = str_replace(': ', '_', $this->getFilterName($currentSelection['filter']));
+        $fileName = str_replace(': ', '_', $currentSelection['quickFilters'][$currentSelection['filter']]);
         $path = public_path("downloads/{$fileName}.csv");
 
         $handle = fopen($path, 'w');
 
         $header = ['ID', 'Vorname', 'Nachname', 'Strasse', 'Plz', 'Ort', 'Alter', 'Geschlecht', 'MGJahre', 'Ehrung'];
 
+        // commas in data will be handled from fputcsv !
         fputcsv($handle, $header);
         $members = $currentSelection['query']->get();
 
@@ -124,7 +127,7 @@ class MemberController extends Controller
                 $member->id,
                 utf8_decode($member->first_name), utf8_decode($member->surname), utf8_decode($member->street),
                 $member->zipcode, utf8_decode($member->city), $member->age, $member->gender->value,
-                $member->membershipYears(), intval($member->dueHonor()),
+                $member->membershipYears(), $member->dueHonor(),
             );
 
             fputcsv($handle, $fields);
@@ -243,14 +246,6 @@ class MemberController extends Controller
         return $filters;
     }
 
-    private function getFilterName(int|string $key, array|null $filters = null)
-    {
-        if ($filters === null)
-            $filters = $this->getQuickFilters();
-
-        return  array_key_exists($key, $filters) ?  $filters[$key] : "Filter: {$key}";
-    }
-
     private function getAvailableYears()
     {
         $now = Carbon::now();
@@ -280,8 +275,16 @@ class MemberController extends Controller
             $query->like($result['search']);
         }
 
-        is_numeric($result['filter']) ? $this->applyQuickFilter($result['filter'], $query) :
-            $this->applySpecialFilters($result['filter'], $query);
+        $quickFilters = $this->getQuickFilters();
+
+        if (is_numeric($result['filter'])) {
+            $this->applyQuickFilter($result['filter'], $query);
+        }
+        else {
+            $this->applySpecialFilters($result['filter'], $query, $quickFilters);
+        }
+
+        $result['quickFilters'] = $quickFilters;
 
         $this->applySort($result['sort'], $query);
         $result['query'] = $query;
@@ -308,7 +311,7 @@ class MemberController extends Controller
         };
     }
 
-    public function applySpecialFilters(string &$filter, Builder $query)
+    public function applySpecialFilters(string $filter, Builder $query, array &$filters)
     {
         if (preg_match('/^hasSection_(\d+)$/', $filter, $match)) {
             $query->members()->sectionMembers($match[1]);
@@ -318,21 +321,22 @@ class MemberController extends Controller
             $keyDate = Carbon::now();
             Member::$_keyDate = $keyDate;
             $query->members()->hasSubscription($match[1]);
+            $filters[$filter] = "Beitrag: " . Subscription::find($match[1])->name;
         }
         else if (preg_match('/^hasPayment_([a-z])$/', $filter, $match)) {
             $query->members()->paymentMethods($match[1]);
         }
         else if (preg_match('/^hasRole_(\d+)$/', $filter, $match)) {
             $query->hasRole($match[1]);
-            $filter = '';
+            $filters[$filter] = Role::find($match[1])->name . '(Aktuell)';
         }
         else if (preg_match('/^everRole_(\d+)$/', $filter, $match)) {
             $query->everRole($match[1]);
-            $filter = '';
+            $filters[$filter] = Role::find($match[1])->name . '(Jemals)';
         }
         else if (preg_match('/^hadEvent_(\d+)$/', $filter, $match)) {
             $query->hadEvent($match[1]);
-            $filter = '';
+            $filters[$filter] = Event::find($match[1])->name;
         }
     }
 

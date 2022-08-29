@@ -17,10 +17,7 @@ const getNavigation = computed(() => {
         { name: 'Abteilungen', route: 'sections', visible: user.value.clubAdmin },
         { name: 'Beiträge', route: 'subscriptions', visible: user.value.clubAdmin },
         { name: 'Funktionen', route: 'roles', visible: user.value.clubAdmin },
-        { name: 'Ereignise', route: 'events', visible: user.value.clubAdmin },
-        { name: 'Benutzer', route: 'users', visible: user.value.clubAdmin },
-        { name: 'Vereine', route: 'clubs', visible: user.value.admin },
-        { name: 'Backups', route: 'backups', visible: user.value.admin },
+        { name: 'Ereignisse', route: 'events', visible: user.value.clubAdmin },
     ];
 })
 
@@ -67,6 +64,24 @@ let logout = () => {
                                 </div>
                                 <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
                                     <MenuItems class="z-50 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                        <MenuItem v-if="user.clubAdmin" v-slot="{ active }">
+                                            <Link :href="route('users')"
+                                                  :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
+                                                Benutzer
+                                            </Link>
+                                        </MenuItem>
+                                        <MenuItem v-if="user.admin" v-slot="{ active }">
+                                            <Link :href="route('clubs')"
+                                                  :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
+                                                Vereine
+                                            </Link>
+                                        </MenuItem>
+                                        <MenuItem v-if="user.admin" v-slot="{ active }">
+                                            <Link :href="route('backups')"
+                                                  :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
+                                                Backups
+                                            </Link>
+                                        </MenuItem>
                                         <MenuItem v-slot="{ active }">
                                             <Link href="/users/account"
                                                   :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
@@ -112,6 +127,18 @@ let logout = () => {
                         </div>
                     </div>
                     <div class="mt-3 px-2 space-y-1">
+                        <DisclosureButton v-if="user.clubAdmin" as="a" :href="route('users')"
+                                          class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
+                            Benutzer
+                        </DisclosureButton>
+                        <DisclosureButton v-if="user.admin" as="a" :href="route('clubs')"
+                                          class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
+                            Vereine
+                        </DisclosureButton>
+                        <DisclosureButton v-if="user.admin" as="a" :href="route('backups')"
+                                          class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
+                            Backups
+                        </DisclosureButton>
                         <DisclosureButton as="a" href="/users/account"
                                           class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
                             Konto

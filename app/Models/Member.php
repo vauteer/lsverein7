@@ -61,9 +61,10 @@ class Member extends Model
         return $entry;
     }
 
-    public function dueHonor(): bool
+    public function dueHonor(): int
     {
-        return in_array($this->membershipYears(), explode(',',currentClub()->honorYears()));
+        $years = $this->membershipYears();
+        return in_array($years, explode(',',currentClub()->honorYears())) ? $years : 0;
     }
 
     protected static function booted()
