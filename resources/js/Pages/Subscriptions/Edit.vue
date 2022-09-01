@@ -10,6 +10,7 @@ import DeleteButton from '@/Shared/DeleteButton.vue';
 
 
 let props = defineProps({
+    origin: String,
     subscription: Object,
 });
 
@@ -88,9 +89,7 @@ const getSubmitButtonText = computed(() => {
                                     <div class="flex justify-between">
                                         <DeleteButton v-if="editMode" :onDelete="deleteSubscription"/>
                                         <div class="w-full flex justify-end">
-                                            <AbortButton href="/subscriptions">
-                                                Abbrechen
-                                            </AbortButton>
+                                            <AbortButton :href="origin" />
                                             <SubmitButton class="ml-2" :disabled="form.processing">
                                                 {{ getSubmitButtonText }}
                                             </SubmitButton>

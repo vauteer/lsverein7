@@ -2,7 +2,7 @@
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm, Link, Head} from "@inertiajs/inertia-vue3";
-import {PencilIcon, LockClosedIcon} from '@heroicons/vue/outline';
+import {PencilIcon, LockClosedIcon} from '@heroicons/vue/24/outline';
 import Layout from "@/Shared/Layout.vue";
 import TextInput from "@/Shared/TextInput.vue";
 import MyTextArea from "@/Shared/MyTextArea.vue"
@@ -12,6 +12,7 @@ import SubmitButton from "@/Shared/SubmitButton.vue";
 import DeleteButton from "@/Shared/DeleteButton.vue";
 
 let props = defineProps({
+    origin: String,
     member: Object,
     genders: Object,
     paymentMethods: Object,
@@ -417,7 +418,7 @@ const getSubmitButtonText = computed(() => {
                                 <div class="flex justify-between">
                                     <DeleteButton v-if="editMode" :onDelete="deleteEntity"/>
                                     <div class="w-full flex justify-end">
-                                        <AbortButton href="/members"/>
+                                        <AbortButton :href="origin" />
                                         <SubmitButton class="ml-2" :disabled="form.processing">
                                             {{ getSubmitButtonText }}
                                         </SubmitButton>

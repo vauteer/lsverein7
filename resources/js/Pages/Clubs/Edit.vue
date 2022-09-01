@@ -12,6 +12,7 @@ import DeleteButton from "@/Shared/DeleteButton.vue";
 import ImageUpload from "@/Shared/ImageUpload.vue";
 
 let props = defineProps({
+    origin: String,
     club: Object,
     displayStyles: Object,
 });
@@ -30,6 +31,7 @@ let form = useForm({
     sepa_date: null,
     logo: '',
     display: '1',
+    honor_years: '',
 });
 
 onMounted(() => {
@@ -38,14 +40,16 @@ onMounted(() => {
         form.street = props.club.street;
         form.zipcode = props.club.zipcode;
         form.city = props.club.city;
-        form.blsv_member = props.club.blsv_member;
+        form.blsv_member = Boolean(props.club.blsv_member);
         form.bank = props.club.bank;
         form.account_owner = props.club.account_owner;
         form.iban = props.club.iban;
         form.bic = props.club.bic;
         form.sepa = props.club.sepa;
+        form.sepa_date = props.club.sepa_date;
         form.display = String(props.club.display);
         form.logo = props.club.logo;
+        form.honor_years = props.club.honor_years;
 
         editMode.value = true;
     }
@@ -83,6 +87,11 @@ const getLogoUrl = computed(() => {
 function onLogoChanged(filename) {
     form.logo = filename;
 }
+
+function back() {
+    window.history.back();
+}
+
 </script>
 
 <template>
@@ -128,10 +137,13 @@ function onLogoChanged(filename) {
                                         id="bic" label="BIC" />
                                     <TextInput class="sm:col-span-4" v-model="form.sepa" :error="form.errors.sepa"
                                         id="sepa" label="Sepa-Mandat" />
-                                    <TextInput class="sm:col-span-2 sm:ml-3" v-model="form.sepa_date" :error="form.errors.sepa_date" id="sepa_date"
+                                    <TextInput class="sm:col-span-2 sm:ml-3" v-model="form.sepa_date" :error="form.errors.sepa_date"
+                                               id="sepa_date"
                                                type='date' label="Sepa-Mandatsdatum" />
                                     <CheckBox class="sm:col-span-6" v-model="form.blsv_member" :error="form.errors.blsv_member"
                                               id="blsv_member" label="BLSV-Mitglied"/>
+                                    <TextInput class="sm:col-span-6" v-model="form.honor_years" :error="form.errors.honor_years"
+                                               id="honor-years" label="Ehrungen Mitgliedsjahre" placeholder="10,20,..." />
                                     <MySelect class="sm:col-span-6" v-model="form.display" :error="form.errors.display"
                                               :options="props.displayStyles" id="display" label="Anzeige"/>
                                 </div>
@@ -140,9 +152,7 @@ function onLogoChanged(filename) {
                                 <div class="flex justify-between">
                                     <DeleteButton v-if="editMode" :onDelete="deleteEntity"/>
                                     <div class="w-full flex justify-end">
-                                        <AbortButton href="/clubs">
-                                            Abbrechen
-                                        </AbortButton>
+                                        <AbortButton :href="origin" />
                                         <SubmitButton class="ml-2" :disabled="form.processing">
                                             {{ getSubmitButtonText }}
                                         </SubmitButton>

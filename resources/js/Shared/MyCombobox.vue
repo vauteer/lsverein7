@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from "vue";
-import { CheckIcon, SelectorIcon } from '@heroicons/vue/outline';
+import { CheckIcon, SelectorIcon } from '@heroicons/vue/24/outline';
 import {
     Combobox,
     ComboboxButton,

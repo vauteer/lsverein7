@@ -5,7 +5,7 @@ import {computed, ref, watch} from "vue";
 import { Head, Link } from '@inertiajs/inertia-vue3';
 import ActionLink from '@/Shared/ActionLink.vue';
 import Pagination from '@/Shared/Pagination.vue';
-import { PencilIcon, StarIcon, CheckIcon, ChevronDoubleRightIcon, LoginIcon } from '@heroicons/vue/outline';
+import { PencilIcon, StarIcon, CheckIcon, LoginIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 
 let props = defineProps({
@@ -44,7 +44,6 @@ watch(search, throttle(function (value) {
                                     <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Switch User</span></th>
                                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
                                     <th scope="col" class="py-3.5 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Email</th>
-                                    <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Status</span></th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                         <span class="sr-only">Edit</span>
                                         <ActionLink v-if="props.canCreate" href="/users/create">Neu</ActionLink>
@@ -64,16 +63,11 @@ watch(search, throttle(function (value) {
                                     </td>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                                         <div class="font-bold">{{ user.name }}</div>
+                                        <div>{{ user.role }}</div>
                                     </td>
                                     <td class="pl-2 text-sm text-gray-500 sm:pl-4">
                                         <div>{{ user.email }}</div>
                                     </td>
-                                    <td class="px-3">
-                                        <div class="h5">
-                                            <StarIcon v-if="user.admin" class="h-5 w-5" />
-                                        </div>
-                                    </td>
-
                                     <td class="px-3">
                                         <div class="h-5">
                                             <Link v-if="user.modifiable" :href="`/users/${user.id}/edit`">

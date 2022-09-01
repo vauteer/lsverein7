@@ -28,7 +28,9 @@ class ClubMemberController extends Controller
 
     public function create(Request $request, Member $member): Response
     {
+
         return inertia('Members/ClubMember')
+            ->with('origin', route('members.edit', $member->id))
             ->with('memberId', $member->id);
     }
 
@@ -47,6 +49,7 @@ class ClubMemberController extends Controller
         return inertia('Members/ClubMember', [
                 'clubMember' => $clubMember->getAttributes(),
             ])
+            ->with('origin', route('members.edit', $member->id))
             ->with('memberId', $member->id);
     }
 

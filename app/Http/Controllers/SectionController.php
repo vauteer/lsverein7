@@ -11,6 +11,8 @@ use Inertia\Response;
 
 class SectionController extends Controller
 {
+    protected const URL_KEY = 'lastSectionsUrl';
+
     protected function validationRules($id): array
     {
         $rules = [
@@ -29,6 +31,7 @@ class SectionController extends Controller
 
     public function index(Request $request):Response
     {
+        $request->session()->put(self::URL_KEY, url()->full());
         return inertia('Sections/Index', [
             'sections' => SectionResource::collection(Section::query()
                 ->when($request->input('search'), function($query, $search) {
@@ -45,7 +48,8 @@ class SectionController extends Controller
 
     public function create(Request $request): Response
     {
-        return inertia('Sections/Edit');
+        return inertia('Sections/Edit')
+            ->with('origin', session(self::URL_KEY));
     }
 
     public function store(Request $request): RedirectResponse
@@ -54,18 +58,16 @@ class SectionController extends Controller
 
         Section::create(array_merge($attributes, ['club_id' => auth()->user()->club_id]));
 
-        return redirect()->route('sections')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Abteilung hinzugefügt');
     }
 
     public function edit(Request $request, Section $section):Response
     {
         return inertia('Sections/Edit', [
-            'section' => [
-                'id' => $section->id,
-                'name' => $section->name,
-            ],
-        ]);
+            'section' => $section->getAttributes(),
+        ])
+            ->with('origin', session(self::URL_KEY));
     }
 
     public function update(Request $request, Section $section): RedirectResponse
@@ -74,7 +76,7 @@ class SectionController extends Controller
 
         $section->update($attributes);
 
-        return redirect()->route('sections')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Abteilung geändert');
     }
 
@@ -82,7 +84,7 @@ class SectionController extends Controller
     {
         $section->delete();
 
-        return redirect()->route('sections')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Abteilung gelöscht');
     }
 

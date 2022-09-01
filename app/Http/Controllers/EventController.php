@@ -11,6 +11,8 @@ use Inertia\Response;
 
 class EventController extends Controller
 {
+    protected const URL_KEY = 'lastEventsUrl';
+
     protected function validationRules($id): array
     {
         $rules = [
@@ -29,6 +31,7 @@ class EventController extends Controller
 
     public function index(Request $request):Response
     {
+        $request->session()->put(self::URL_KEY, url()->full());
         return inertia('Events/Index', [
             'events' => EventResource::collection(Event::query()
                 ->when($request->input('search'), function($query, $search) {
@@ -45,7 +48,8 @@ class EventController extends Controller
 
     public function create(Request $request): Response
     {
-        return inertia('Events/Edit');
+        return inertia('Events/Edit')
+            ->with('origin', session(self::URL_KEY));
     }
 
     public function store(Request $request): RedirectResponse
@@ -54,18 +58,16 @@ class EventController extends Controller
 
         Event::create(array_merge($attributes, ['club_id' => auth()->user()->club_id]));
 
-        return redirect()->route('events')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Ereignis hinzugefügt');
     }
 
     public function edit(Request $request, Event $event):Response
     {
         return inertia('Events/Edit', [
-            'event' => [
-                'id' => $event->id,
-                'name' => $event->name,
-            ],
-        ]);
+            'event' => $event->getAttributes(),
+        ])
+            ->with('origin', session(self::URL_KEY));
     }
 
     public function update(Request $request, Event $event): RedirectResponse
@@ -74,7 +76,7 @@ class EventController extends Controller
 
         $event->update($attributes);
 
-        return redirect()->route('events')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Ereignis geändert');
     }
 
@@ -82,7 +84,7 @@ class EventController extends Controller
     {
         $event->delete();
 
-        return redirect()->route('events')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Ereignis gelöscht');
     }
 

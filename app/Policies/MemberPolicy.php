@@ -15,19 +15,24 @@ class MemberPolicy
         return true;
     }
 
+    public function view(User $user, Member $model)
+    {
+        return true;
+    }
+
     public function create(User $user)
     {
-        return $user->isClubAdmin();
+        return $user->hasAdminRights();
     }
 
     public function update(User $user, Member $member)
     {
-        return $user->isClubAdmin() && $user->club_id === $member->club_id;
+        return $user->hasAdminRights() && $user->club_id === $member->club_id;
     }
 
     public function delete(User $user, Member $member)
     {
-        return $user->isClubAdmin() && $user->club_id === $member->club_id;
+        return $user->hasAdminRights() && $user->club_id === $member->club_id;
     }
 
 }

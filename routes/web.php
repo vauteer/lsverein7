@@ -117,8 +117,13 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/subscriptions/{subscription}/edit', [SubscriptionController::class, 'edit'])->can('update', 'subscription');
     Route::put('/subscriptions/{subscription}', [SubscriptionController::class, 'update'])->can('update', 'subscription');
     Route::delete('/subscriptions/{subscription}', [SubscriptionController::class, 'destroy'])->can('delete', 'subscription');
+    Route::post('/subscriptions/debit', [SubscriptionController::class, 'sepa'])->name('subscriptions.debit')
+        ->can('update', Subscription::class);
+    Route::post('/subscriptions/debit', [SubscriptionController::class, 'debit'])->name('subscriptions.debit')
+        ->can('debit', Subscription::class);
 
     Route::get('/members', [MemberController::class, 'index'])->name('members')->can('viewAny', Member::class);
+    Route::get('/members/{member}/show', [MemberController::class, 'show'])->name('members.show')->can('view', 'member');
     Route::get('/members/create', [MemberController::class, 'create'])->can('create', Member::class);
     Route::post('/members', [MemberController::class, 'store'])->can('create', Member::class);
     Route::get('/members/{member}/edit', [MemberController::class, 'edit'])->name('members.edit')->can('update', 'member');

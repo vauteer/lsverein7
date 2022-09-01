@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\ClubRole;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,7 +20,7 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'admin' => $this->admin,
+            'role' => ClubRole::from($this->clubRole(currentClubId()))->name,
 
             'modifiable' => Auth::user()->admin,
         ];

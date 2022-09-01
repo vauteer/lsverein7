@@ -91,7 +91,4 @@ class Club extends Model
         ];
     }
 
-    public static function honorYears(): string {
-        return '25,30,40,50,60,70,80,90';
-    }
 }

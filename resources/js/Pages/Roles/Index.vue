@@ -2,7 +2,7 @@
 import {computed, ref, watch} from "vue";
 import {Head, Link} from '@inertiajs/inertia-vue3';
 import {Inertia} from "@inertiajs/inertia";
-import {PencilIcon, UsersIcon } from '@heroicons/vue/outline';
+import {PencilIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 import Layout from "@/Shared/Layout.vue";
 import ActionLink from "@/Shared/ActionLink.vue";

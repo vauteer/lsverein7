@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('logo')->nullable();
             $table->tinyInteger('display')->default(1);
             $table->string('locale', 5)->default('de');
+            $table->string('honor_years')->nullable();
             $table->timestamps();
         });
     }

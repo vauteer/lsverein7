@@ -24,6 +24,7 @@ class MemberSubscriptionController extends Controller
     public function create(Request $request, Member $member): Response
     {
         return inertia('Members/MemberSubscription')
+            ->with('origin', route('members.edit', $member->id))
             ->with('subscriptions', Subscription::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]))
             ->with('memberId', $member->id);
     }
@@ -43,6 +44,7 @@ class MemberSubscriptionController extends Controller
         return inertia('Members/MemberSubscription', [
             'memberSubscription' => $memberSubscription->getAttributes(),
         ])
+            ->with('origin', route('members.edit', $member->id))
             ->with('subscriptions', Subscription::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]))
             ->with('memberId', $member->id);
     }

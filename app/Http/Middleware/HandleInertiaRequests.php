@@ -47,7 +47,7 @@ class HandleInertiaRequests extends Middleware
                     'email' => $user->email,
                     'profileUrl' => $user->profileUrl(),
                     'admin' => $user->admin,
-                    'clubAdmin' => $user->isClubAdmin(),
+                    'clubAdmin' => $user->hasAdminRights(),
                 ] : null,
                 'club' => $club ? [
                     'id' => $club->id,

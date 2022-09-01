@@ -22,7 +22,7 @@ class ClubPolicy
 
     public function update(User $user, Club $club)
     {
-        return $user->admin || $user->isClubAdmin($club->id);
+        return $user->admin || $user->hasAdminRights($club->id);
     }
 
     public function delete(User $user, Club $club)

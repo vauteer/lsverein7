@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\SubscriptionResource;
+use App\Models\Member;
 use App\Models\Subscription;
+use App\Pdf\SepaPdf;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -11,6 +14,8 @@ use Inertia\Response;
 
 class SubscriptionController extends Controller
 {
+    protected const URL_KEY = 'lastSubscriptionsUrl';
+
     protected function validationRules($id): array
     {
         $rules = [
@@ -32,6 +37,7 @@ class SubscriptionController extends Controller
 
     public function index(Request $request):Response
     {
+        $request->session()->put(self::URL_KEY, url()->full());
         return inertia('Subscriptions/Index', [
             'subscriptions' => SubscriptionResource::collection(Subscription::query()
                 ->when($request->input('search'), function($query, $search) {
@@ -44,12 +50,14 @@ class SubscriptionController extends Controller
 
             'filters' => $request->only(['search']),
             'canCreate' => auth()->user()->can('create', Subscription::class),
+            'sepaDate' => Carbon::now()->addDays(8)->format('Y-m-d'),
         ]);
     }
 
     public function create(Request $request): Response
     {
-        return inertia('Subscriptions/Edit');
+        return inertia('Subscriptions/Edit')
+            ->with('origin', session(self::URL_KEY));
     }
 
     public function store(Request $request): RedirectResponse
@@ -58,21 +66,16 @@ class SubscriptionController extends Controller
 
         Subscription::create(array_merge($attributes, ['club_id' => auth()->user()->club_id]));
 
-        return redirect()->route('subscriptions')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Funktion hinzugefügt');
     }
 
     public function edit(Request $request, Subscription $subscription):Response
     {
         return inertia('Subscriptions/Edit', [
-            'subscription' => [
-                'id' => $subscription->id,
-                'name' => $subscription->name,
-                'amount' => $subscription->amount,
-                'transfer_text' => $subscription->transfer_text,
-                'memo' => $subscription->memo,
-            ],
-        ]);
+            'subscription' => $subscription->getAttributes(),
+        ])
+            ->with('origin', session(self::URL_KEY));
     }
 
     public function update(Request $request, Subscription $subscription): RedirectResponse
@@ -81,7 +84,7 @@ class SubscriptionController extends Controller
 
         $subscription->update($attributes);
 
-        return redirect()->route('subscriptions')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Beitrag geändert');
     }
 
@@ -89,8 +92,79 @@ class SubscriptionController extends Controller
     {
         $subscription->delete();
 
-        return redirect()->route('subscriptions')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Beitrag gelöscht');
     }
 
+    public function debit(Request $request): Response
+    {
+        $subscriptions = $request->input('subscriptions');
+        $executionDate = new Carbon($request->input('date'));
+        $creationDate = Carbon::now();
+        $year = $executionDate->year;
+        $club = currentClub();
+        $defaultDate = $club->sepa_date;
+        $debits = [];
+        $totalAmount = 0.0;
+        $data['msgId'] = 'M' . $creationDate->format('YmdHis');
+        $data['pmtInfId'] = 'P' . $creationDate->format('YmdHis');
+        $data['creDtTm'] = substr($creationDate->toISO8601String(), 0, 19);
+        $data['reqdColltnDt'] = $executionDate->format('Y-m-d');
+        $data['nm'] = $club->name;
+        $data['iban'] = str_replace(" ", "", $club->iban);
+        $data['bic'] = $club->bic;
+        $data['sepaId'] = str_replace(" ", "", $club->sepa);
+
+        // todo: other paymentMethods
+        $members = Member::members()
+            ->paymentMethods('k')->hasSubscription($subscriptions)
+            ->orderBy('surname')->orderBy('first_name')
+            ->get();
+
+        foreach ($members as $member) {
+            foreach ($member->subscriptions as $subscription) {
+                if (!in_array($subscription->id, $subscriptions))
+                    continue;
+
+                $totalAmount += $subscription->amount;
+                $transferText = str_replace(['<AJ>', '<VN>', '<NN>'], [$year, $member->first_name, $member->surname],
+                    $subscription->transfer_text);
+                $dateOfSignature = $defaultDate->max($member->entry());
+
+                $debits[] = [
+                    'nm' =>$member->account_owner,
+                    'iban' => str_replace(" ", "", $member->iban),
+                    'bic' => $member->bic,
+                    'amount' => $subscription->amount,
+                    'instdAmt' => sprintf('%01.2f', $subscription->amount),
+                    'ustrd' => $transferText,
+                    'mndtId' => $member->id,
+                    'dtOfSgntr' => $dateOfSignature->format('Y-m-d'),
+                ];
+            }
+        }
+
+        $data['nbOfTxs'] = count($debits);
+        $data['ctrlSum'] = sprintf('%01.2f', $totalAmount);
+        $data['payments'] = $debits;
+        $sepaSubPath = 'storage/downloads/beitraege_sepa.xml';
+        $filename = public_path($sepaSubPath);
+        $data['header'] = '<?xml version="1.0" encoding="utf-8"?>'; // <? Würde in view als PHP gewertet !
+        $sepaData = view('sepaxml', $data)->render();
+
+        file_put_contents($filename, $sepaData);
+
+        $pdf = new SepaPdf();
+
+        $pdfSubPath = 'storage/downloads/beitraege.pdf';
+        file_put_contents(public_path($pdfSubPath), $pdf->getOutput($debits, 'Sepa-Bankeinzug', $club->name));
+
+        return inertia('Misc/Download', [
+            'title' => 'Downloads für SEPA-Bankeinzug',
+            'downloads' => [
+                0 => ['name' => 'Sepa-Datei', 'href' => asset($sepaSubPath)],
+                1 => ['name' => 'Begleitzettel', 'href' => asset($pdfSubPath)],
+            ]
+        ]);
+    }
 }

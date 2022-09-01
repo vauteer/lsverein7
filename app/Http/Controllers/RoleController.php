@@ -11,6 +11,8 @@ use Inertia\Response;
 
 class RoleController extends Controller
 {
+    protected const URL_KEY = 'lastRolesUrl';
+
     protected function validationRules($id): array
     {
         $rules = [
@@ -29,6 +31,7 @@ class RoleController extends Controller
 
     public function index(Request $request):Response
     {
+        $request->session()->put(self::URL_KEY, url()->full());
         return inertia('Roles/Index', [
             'roles' => RoleResource::collection(Role::query()
                 ->when($request->input('search'), function($query, $search) {
@@ -45,7 +48,8 @@ class RoleController extends Controller
 
     public function create(Request $request): Response
     {
-        return inertia('Roles/Edit');
+        return inertia('Roles/Edit')
+            ->with('origin', session(self::URL_KEY));
     }
 
     public function store(Request $request): RedirectResponse
@@ -54,18 +58,16 @@ class RoleController extends Controller
 
         Role::create(array_merge($attributes, ['club_id' => auth()->user()->club_id]));
 
-        return redirect()->route('roles')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Funktion hinzugefügt');
     }
 
     public function edit(Request $request, Role $role):Response
     {
         return inertia('Roles/Edit', [
-            'role' => [
-                'id' => $role->id,
-                'name' => $role->name,
-            ],
-        ]);
+            'role' => $role->getAttributes(),
+        ])
+            ->with('origin', session(self::URL_KEY));
     }
 
     public function update(Request $request, Role $role): RedirectResponse
@@ -74,7 +76,7 @@ class RoleController extends Controller
 
         $role->update($attributes);
 
-        return redirect()->route('roles')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Funktion geändert');
     }
 
@@ -82,7 +84,7 @@ class RoleController extends Controller
     {
         $role->delete();
 
-        return redirect()->route('roles')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Funktion gelöscht');
     }
 

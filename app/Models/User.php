@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\ClubRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -41,7 +42,7 @@ class User extends Authenticatable
         'admin' => 'boolean',
     ];
 
-    protected array $admins = [];
+    protected array $clubRoles = [];
 
     public function club(): BelongsTo
     {
@@ -51,24 +52,36 @@ class User extends Authenticatable
     public function clubs(): BelongsToMany
     {
         return $this->belongsToMany(Club::class)
-            ->withPivot(['admin'])
+            ->withPivot(['role'])
             ->withTimestamps();
     }
 
-    public function isClubAdmin(?int $clubId = null)
+    public function hasAdminRights(?int $clubId = null)
+    {
+        return $this->clubRole($clubId) >= ClubRole::Admin->value;
+    }
+
+    public function hasAdvancedRights(?int $clubId = null)
+    {
+        return $this->clubRole($clubId) >= ClubRole::Advanced->value;
+    }
+
+    public function hasClubRole(ClubRole $clubRole, ?int $clubId = null)
+    {
+        return $this->clubRole($clubId) === $clubRole->value;
+    }
+
+    public function clubRole(?int $clubId = null)
     {
         $clubId = $clubId ?? $this->club_id;
 
-        if ($clubId) {
-            if (!isset($this->admins[$clubId]))
-            {
-                $club = $this->Clubs()->where('club_id', $clubId)->first();
-                $this->admins[$clubId] = $club !== null && $club->pivot->admin;
-            }
-            return $this->admins[$clubId];
+        if (!isset($this->clubRoles[$clubId]))
+        {
+            $club = $this->Clubs()->where('club_id', $clubId)->first();
+            $this->clubRoles[$clubId] = $club ? $club->pivot->role : -1;
         }
 
-        return false;
+        return $this->clubRoles[$clubId];
     }
 
     public function profileURL(): string
@@ -120,5 +133,15 @@ class User extends Authenticatable
 
         return false;
     }
+
+    public static function availableRoles(): array
+    {
+        return [
+            1 => 'Basic',
+            128 => 'Advanced',
+            256 => 'Admin',
+        ];
+    }
+
 
 }

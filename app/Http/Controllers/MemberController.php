@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ClubRole;
 use App\Http\Resources\EventMemberResource;
 use App\Http\Resources\MemberResource;
 use App\Http\Resources\ClubMemberResource;
@@ -30,6 +31,8 @@ use Inertia\ResponseFactory;
 
 class MemberController extends Controller
 {
+    protected const URL_KEY = 'lastMembersUrl';
+
     protected const SORT_METHODS = [
         1 => "Name",
         2 => "Adresse",
@@ -73,6 +76,7 @@ class MemberController extends Controller
 
     public function index(Request $request): \Inertia\Response
     {
+        $request->session()->put(self::URL_KEY, url()->full());
         $currentSelection = $this->currentSelection($request);
 
         return inertia('Members/Index', [
@@ -88,7 +92,7 @@ class MemberController extends Controller
             'currentYear' => $currentSelection['keyDate']->year,
             'currentFilter' => strval($currentSelection['filter']),
             'currentSort' => $currentSelection['sort'],
-            'canCreate' => auth()->user()->can('create', Member::class),
+            'clubAdmin' => auth()->user()->hasClubRole(ClubRole::Admin),
         ]);
     }
 
@@ -111,7 +115,7 @@ class MemberController extends Controller
     {
         $currentSelection = $this->currentSelection($request);
         $fileName = str_replace(': ', '_', $currentSelection['quickFilters'][$currentSelection['filter']]);
-        $path = public_path("downloads/{$fileName}.csv");
+        $path = storage_path("{$fileName}.csv");
 
         $handle = fopen($path, 'w');
 
@@ -153,6 +157,23 @@ class MemberController extends Controller
             ->with('subscriptions', Subscription::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]));
     }
 
+    public function show(Request $request, Member $member):\Inertia\Response
+    {
+        return inertia('Members/Show', [ 'member' => $member->getAttributes() ])
+            ->with('origin', session(self::URL_KEY))
+            ->with('advanced', auth()->user()->hasAdvancedRights())
+            ->with('birthday', formatDate($member->birthday))
+            ->with('death_day', formatDate($member->death_day))
+            ->with('age', $member->age)
+            ->with('entry', formatDate($member->entry()))
+            ->with('membershipYears', $member->membershipYears())
+            ->with('memberClubs', ClubMemberResource::collection(ClubMember::where('member_id', $member->id)->get()))
+            ->with('memberSections', MemberSectionResource::collection(MemberSection::where('member_id', $member->id)->get()))
+            ->with('memberSubscriptions', MemberSubscriptionResource::collection(MemberSubscription::where('member_id', $member->id)->get()))
+            ->with('memberEvents', EventMemberResource::collection(EventMember::where('member_id', $member->id)->get()))
+            ->with('memberRoles', MemberRoleResource::collection(MemberRole::where('member_id', $member->id)->get()));
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $attributes = $request->validate($this->validationRules(-1));
@@ -175,13 +196,14 @@ class MemberController extends Controller
             ]]);
         }
 
-        return redirect()->route('members')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Mitglied hinzugefügt');
     }
 
     public function edit(Request $request, Member $member):\Inertia\Response
     {
         return inertia('Members/Edit', [ 'member' => $member->getAttributes() ])
+            ->with('origin', session(self::URL_KEY))
             ->with('genders', Member::availableGenders())
             ->with('paymentMethods', Member::availablePaymentMethods())
             ->with('memberClubs', ClubMemberResource::collection(ClubMember::where('member_id', $member->id)->get()))
@@ -198,7 +220,7 @@ class MemberController extends Controller
 
         $member->update($attributes);
 
-        return redirect()->route('members')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Mitglied geändert');
     }
 
@@ -206,7 +228,7 @@ class MemberController extends Controller
     {
         $member->delete();
 
-        return redirect()->route('members')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Mitglied gelöscht');
     }
 

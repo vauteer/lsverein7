@@ -17,17 +17,17 @@ class RolePolicy
 
     public function create(User $user)
     {
-        return $user->isClubAdmin();
+        return $user->hasAdminRights();
     }
 
     public function update(User $user, Role $role)
     {
-        return $user->isClubAdmin() && $user->club_id === $role->club_id;
+        return $user->hasAdminRights() && $user->club_id === $role->club_id;
     }
 
     public function delete(User $user, Role $role)
     {
-        return $user->isClubAdmin() && $user->club_id === $role->club_id;
+        return $user->hasAdminRights() && $user->club_id === $role->club_id;
     }
 
 }

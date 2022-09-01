@@ -26,6 +26,7 @@ class MemberRoleController extends Controller
     public function create(Request $request, Member $member): Response
     {
         return inertia('Members/MemberRole')
+            ->with('origin', route('members.edit', $member->id))
             ->with('roles', Role::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]))
             ->with('memberId', $member->id);
     }
@@ -45,6 +46,7 @@ class MemberRoleController extends Controller
         return inertia('Members/MemberRole', [
             'memberRole' => $memberRole->getAttributes(),
         ])
+            ->with('origin', route('members.edit', $member->id))
             ->with('roles', Role::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]))
             ->with('memberId', $member->id);
     }

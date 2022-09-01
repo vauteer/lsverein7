@@ -64,7 +64,7 @@ class Member extends Model
     public function dueHonor(): int
     {
         $years = $this->membershipYears();
-        return in_array($years, explode(',',currentClub()->honorYears())) ? $years : 0;
+        return in_array($years, explode(',',currentClub()->honor_years)) ? $years : 0;
     }
 
     protected static function booted()
@@ -371,9 +371,13 @@ class Member extends Model
         if ($keyDate === null)
             $keyDate = self::getKeyDate();
 
+        $honorYears = currentClub()->honor_years;
+        if ($honorYears === null)
+            return;
+
         $where = 'id in (SELECT p.member_id FROM club_member p ' .
             'GROUP BY member_id HAVING SUM(YEAR(LEAST(IFNULL(`to`, ?), ?)) - YEAR(`from`)) IN (' .
-            currentClub()->honorYears() . '))';
+            $honorYears . '))';
 
         $query->whereRaw($where, [$keyDate, $keyDate]);
     }

@@ -17,6 +17,8 @@ use Inertia\Response;
 
 class UserController extends Controller
 {
+    protected const URL_KEY = 'lastUsersUrl';
+
     public function validationRules($id): array
     {
         return [
@@ -26,7 +28,6 @@ class UserController extends Controller
                 'email',
                 Rule::unique('users')->ignore($id)
             ],
-            'admin' => 'required|boolean',
         ];
     }
 
@@ -53,6 +54,7 @@ class UserController extends Controller
 
     public function index(Request $request): Response
     {
+        $request->session()->put(self::URL_KEY, url()->full());
         return inertia('Users/Index', [
             'users' => UserResource::collection(User::query()
                 ->when($request->input('search'), function($query, $search) {
@@ -64,13 +66,15 @@ class UserController extends Controller
 
             'filters' => $request->only(['search']),
 
-            'canCreate' => auth()->user()->isClubAdmin(),
+            'canCreate' => auth()->user()->hasAdminRights(),
         ]);
     }
 
     public function create(Request $request): Response
     {
-        return inertia('Users/Edit');
+        return inertia('Users/Edit')
+            ->with('origin', session(self::URL_KEY))
+            ->with('roles', User::availableRoles());
     }
 
     public function store(Request $request): RedirectResponse
@@ -82,11 +86,16 @@ class UserController extends Controller
 
         $user = User::create(array_merge($attributes, [
             'password' => Hash::make($password),
+            'club_id' => currentClubId(),
         ]));
 
-        $user->notify(new NewUser($password));
+        $user->clubs()->attach(currentClubId(), [
+            'role' => $request->get('role')
+        ]);
 
-        return redirect()->route('users')
+        //$user->notify(new NewUser($password));
+
+        return redirect(session(self::URL_KEY))
             ->with('success', "{$user->name} wurde hinzugefügt.");
     }
 
@@ -97,18 +106,20 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'admin' => $user->admin,
+                'role' => $user->clubRole(),
             ],
-        ]);
+        ])
+            ->with('origin', session(self::URL_KEY))
+            ->with('roles', User::availableRoles());
     }
 
     public function update(Request $request, User $user): RedirectResponse
     {
         $attributes = $request->validate($this->validationRules($user->id));
         $user->update($attributes);
+        $user->clubs()->sync([currentClubId() => ['role' => $request->input('role')]]);
 
-
-        return redirect()->route('users')
+        return redirect(session(self::URL_KEY))
             ->with('success', "{$user->name} wurde geändert.");
     }
 
@@ -116,7 +127,7 @@ class UserController extends Controller
     {
         $user->delete();
 
-        return redirect()->route('users')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Benutzer wurde gelöscht.');;
     }
 
@@ -151,7 +162,7 @@ class UserController extends Controller
 
         User::removeOrphanProfileImages();
 
-        return redirect()->route('tournaments')
+        return redirect()->route('members')
             ->with('success', "Das Konto wurde geändert.");
     }
 
@@ -160,6 +171,6 @@ class UserController extends Controller
     {
         auth()->login($user);
 
-        return redirect()->route('tournaments');
+        return redirect()->route('members');
     }
 }

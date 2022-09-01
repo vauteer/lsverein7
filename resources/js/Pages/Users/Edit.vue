@@ -7,16 +7,18 @@ import TextInput from '@/Shared/TextInput.vue';
 import AbortButton from '@/Shared/AbortButton.vue';
 import SubmitButton from '@/Shared/SubmitButton.vue';
 import DeleteButton from '@/Shared/DeleteButton.vue';
-import CheckBox from '@/Shared/CheckBox.vue';
+import MySelect from '@/Shared/MySelect.vue';
 
 let props = defineProps({
+    origin: String,
     user: Object,
+    roles: Object,
 });
 
 let form = useForm({
     name: '',
     email: '',
-    admin: false,
+    role: '1',
 });
 
 let editMode = ref(false);
@@ -25,7 +27,7 @@ onMounted(() => {
     if (props.user !== undefined) {
         form.name = props.user.name;
         form.email = props.user.email;
-        form.admin = props.user.admin;
+        form.role = String(props.user.role);
 
         editMode.value = true;
     }
@@ -77,18 +79,14 @@ const getSubmitButtonText = computed(() => {
                                                label="Name"/>
                                     <TextInput class="sm:col-span-6" v-model="form.email" :error="form.errors.email" id="email"
                                                label="Email"/>
-                                    <div class="sm:col-span-6">
-                                        <CheckBox v-model="form.admin" :error="form.errors.admin"
-                                                  id="admin" label="Admin"/>
-                                    </div>
+                                    <MySelect class="sm:col-span-6" v-model="form.role" :error="form.errors.role"
+                                              :options="props.roles" id="role" label="Rolle"/>
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
                                         <DeleteButton v-if="editMode" :onDelete="deleteUser"/>
                                         <div class="w-full flex justify-end">
-                                            <AbortButton :href="route('users')">
-                                                Abbrechen
-                                            </AbortButton>
+                                            <AbortButton :href="origin" />
                                             <SubmitButton class="ml-2" :disabled="form.processing">
                                                 {{ getSubmitButtonText }}
                                             </SubmitButton>

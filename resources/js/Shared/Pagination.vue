@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { Link } from '@inertiajs/inertia-vue3';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/outline';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline';
 
 let props = defineProps({
     meta: Object,

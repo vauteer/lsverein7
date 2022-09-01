@@ -2,7 +2,7 @@
 import {computed, ref, watch} from "vue";
 import {Head, Link} from '@inertiajs/inertia-vue3';
 import {Inertia} from "@inertiajs/inertia";
-import {PencilIcon, UsersIcon } from '@heroicons/vue/outline';
+import {PencilIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 import Layout from "@/Shared/Layout.vue";
 import ActionLink from "@/Shared/ActionLink.vue";
@@ -78,8 +78,8 @@ watch(search, throttle(function (value) {
                                     <td class="px-3">
                                     </td>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
-                                        <a @click="showMembers(event.id)" as="button">
-                                            <UsersIcon class="h-5 w-5 text-blue-500" />
+                                        <a @click="showMembers(event.id)" as="button" class="cursor-pointer text-blue-500">
+                                            Jemals
                                         </a>
                                     </td>
                                     <td class="px-3">

@@ -17,17 +17,17 @@ class EventPolicy
 
     public function create(User $user)
     {
-        return $user->isClubAdmin();
+        return $user->hasAdminRights();
     }
 
     public function update(User $user, Event $event)
     {
-        return $user->isClubAdmin() && $user->club_id === $event->club_id;
+        return $user->hasAdminRights() && $user->club_id === $event->club_id;
     }
 
     public function delete(User $user, Event $event)
     {
-        return $user->isClubAdmin() && $user->club_id === $event->club_id;
+        return $user->hasAdminRights() && $user->club_id === $event->club_id;
     }
 
 }

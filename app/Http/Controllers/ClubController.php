@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ClubRole;
 use App\Http\Resources\ClubResource;
 use App\Models\Club;
 use App\Rules\Iban;
@@ -13,6 +14,8 @@ use Inertia\Response;
 
 class ClubController extends Controller
 {
+    protected const URL_KEY = 'lastClubsUrl';
+
     protected function validationRules($id): array
     {
         $rules = [
@@ -33,6 +36,7 @@ class ClubController extends Controller
             'logo' => 'nullable|string',
             'display' => 'required|int',
             'blsv_member' => 'boolean',
+            'honor_years' => 'nullable|regex:/^\d{1,2}(,\d{1,2})*$/'
         ];
 
         return $rules;
@@ -40,8 +44,9 @@ class ClubController extends Controller
 
     public function index(Request $request): Response
     {
+        $request->session()->put(self::URL_KEY, url()->full());
         return inertia('Clubs/Index', [
-            'clubs' => ClubResource::collection(Auth::user()->clubs()->wherePivot('admin', true)
+            'clubs' => ClubResource::collection(auth()->user()->clubs()->wherePivot('role', ClubRole::Admin)
                 ->when($request->input('search'), function($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
                 })
@@ -50,13 +55,14 @@ class ClubController extends Controller
             ),
 
             'filters' => $request->only(['search']),
-            'canCreate' => Auth::user()->can('create', Club::class),
+            'canCreate' => auth()->user()->admin,
         ]);
     }
 
     public function create(Request $request): Response
     {
         return inertia('Clubs/Edit')
+            ->with('origin', session(self::URL_KEY))
             ->with('displayStyles', Club::displayStyles());
     }
 
@@ -77,29 +83,17 @@ class ClubController extends Controller
             $creator->update(['club_id' => $club->id]);
         }
 
-        return redirect()->route('clubs')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Verein hinzugefügt');
     }
 
     public function edit(Request $request, Club $club):Response
     {
         return inertia('Clubs/Edit', [
-            'club' => [
-                'id' => $club->id,
-                'name' => $club->name,
-                'street' => $club->street,
-                'zipcode' => $club->zipcode,
-                'city' => $club->city,
-                'bank' => $club->bank,
-                'account_owner' => $club->account_owner,
-                'iban' => $club->iban,
-                'bic' => $club->bic,
-                'sepa' => $club->sepa,
-                'sepa_date' => $club->sepa_date,
-                'logo' => $club->logo,
-                'display' => $club->display,
-            ],
-        ])->with('displayStyles', Club::displayStyles());
+            'club' => $club->getAttributes(),
+        ])
+            ->with('origin', session(self::URL_KEY))
+            ->with('displayStyles', Club::displayStyles());
     }
 
     public function update(Request $request, Club $club): RedirectResponse
@@ -110,7 +104,7 @@ class ClubController extends Controller
 
         Club::removeOrphanLogos();
 
-        return redirect()->route('clubs')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Verein geändert');
     }
 
@@ -118,7 +112,7 @@ class ClubController extends Controller
     {
         $club->delete();
 
-        return redirect()->route('clubs')
+        return redirect(session(self::URL_KEY))
             ->with('success', 'Verein gelöscht');
     }
 
@@ -127,7 +121,7 @@ class ClubController extends Controller
         $user = Auth::user();
 
         if ($user->switchClub($club->id)) {
-            return redirect()->route('clubs')
+            return redirect(session(self::URL_KEY))
                 ->with('success', 'Aktuellen Verein gewechselt');
         }
 

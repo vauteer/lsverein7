@@ -2,7 +2,7 @@
 import {computed, ref, reactive, watch} from "vue";
 import {Head, Link} from '@inertiajs/inertia-vue3';
 import {Inertia} from "@inertiajs/inertia";
-import {PencilIcon, LockClosedIcon, CloudIcon } from '@heroicons/vue/outline';
+import {PencilIcon, IdentificationIcon, CloudIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 import Layout from "@/Shared/Layout.vue";
 import Pagination from "@/Shared/Pagination.vue";
@@ -14,16 +14,12 @@ let props = defineProps({
     members: Object,
     filters: Object,
     searchString: String,
-    canCreate: Boolean,
+    clubAdmin: Boolean,
     currentFilter: String,
     years: Object,
     currentYear: Number,
     sorts: Object,
     currentSort: Number,
-});
-
-const createUrl = computed(() => {
-    return props.canCreate ? "/members/create" : "";
 });
 
 const outputUrl = computed(() => (format) => {
@@ -63,7 +59,7 @@ watch(state, throttle(function (newValue) {
         <div
             class="w-full max-w-4xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-2 px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-8 py-2 mt-2">
-                <MySelect class="sm:col-span-2" v-model="state.filter" :options="props.filters" id="quick-filters" :label="`Auswahl (${members.meta.total} Personen)`" null-value="(Andere)"/>
+                <MySelect class="sm:col-span-2" v-model="state.filter" :options="props.filters" id="quick-filters" :label="`Auswahl (${members.meta.total} Personen)`" />
                 <TextInput class="sm:col-span-2" v-model="state.search" id="search" label="Suchen"
                        placeholder="Suchen..."/>
                 <MySelect class="sm:col-span-2" :disabled="!yearEnabled" v-model="state.year" :options="props.years" id="years" label="Stichtag" :hideDisabled="true"/>
@@ -99,7 +95,7 @@ watch(state, throttle(function (newValue) {
                                         </div>
                                     </th>
                                     <th scope="col" class="relative pl-3 pr-2 sm:pr-2 w-6">
-                                        <ActionLink v-if="canCreate" href="/members/create">Neu</ActionLink>
+                                        <ActionLink v-if="clubAdmin" href="/members/create">Neu</ActionLink>
                                     </th>
                                 </tr>
                                 </thead>
@@ -110,25 +106,26 @@ watch(state, throttle(function (newValue) {
                                     </td>
                                     <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm sm:pl-6">
                                         <div class="font-bold" :class="member.isMember ? '' : 'line-through' ">
-                                            {{ member.surname }} {{ member.first_name}} {{ member.roles }}
+                                            {{ member.surname }} {{ member.first_name}}
                                         </div>
-                                        <div>{{ member.birthday }} {{ member.age }} {{ member.gender }} {{ member.membershipYears }}</div>
+                                        <div>{{ member.birthday }} {{ member.age }} / {{ member.membershipYears }} Jahre</div>
                                     </td>
                                     <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm sm:pl-6 hidden md:table-cell">
-                                        <div>{{ member.address }}</div>
-                                        <div>{{ member.subscriptions }} {{ member.sections }} {{ member.lastEvent }}</div>
+                                        <div>{{ member.sections }} {{ member.roles }}</div>
+                                        <div v-if="clubAdmin">{{ member.subscriptions }} {{ member.lastEvent }}</div>
                                     </td>
                                     <td class="px-3">
+                                        <Link :href="`/members/${member.id}/show`">
+                                            <IdentificationIcon class="h-5 w-5 text-blue-500" />
+                                        </Link>
                                         <div class="h-5">
-                                                <CloudIcon v-if="member.gone" class="h-5 w-5 text-blue-500"/>
+                                            <CloudIcon v-if="member.gone" class="h-5 w-5 text-blue-500"/>
                                         </div>
                                     </td>
                                     <td class="px-3">
-                                        <div class="h-5 flex justify-center">
                                             <Link v-if="member.modifiable" :href="`/members/${member.id}/edit`">
                                                 <PencilIcon class="h-5 w-5 text-blue-500"/>
                                             </Link>
-                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>

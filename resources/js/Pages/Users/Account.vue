@@ -39,10 +39,6 @@ function onProfileImageChanged(filename) {
     form.profile_image = filename;
 }
 
-function back() {
-    window.history.back();
-}
-
 </script>
 <template>
     <Head title="Konto" />
@@ -86,7 +82,7 @@ function back() {
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-end">
-                                        <AbortButton @click="back" />
+                                        <AbortButton />
                                         <SubmitButton class="mx-2" :disabled="form.processing" />
                                     </div>
 

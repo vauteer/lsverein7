@@ -10,6 +10,7 @@ import DeleteButton from '@/Shared/DeleteButton.vue';
 
 
 let props = defineProps({
+    origin: String,
     section: Object,
 });
 
@@ -76,9 +77,7 @@ const getSubmitButtonText = computed(() => {
                                     <div class="flex justify-between">
                                         <DeleteButton v-if="editMode" :onDelete="deleteSection"/>
                                         <div class="w-full flex justify-end">
-                                            <AbortButton href="/sections">
-                                                Abbrechen
-                                            </AbortButton>
+                                            <AbortButton :href="origin" />
                                             <SubmitButton class="ml-2" :disabled="form.processing">
                                                 {{ getSubmitButtonText }}
                                             </SubmitButton>
