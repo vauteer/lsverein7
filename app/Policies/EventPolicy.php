@@ -22,12 +22,12 @@ class EventPolicy
 
     public function update(User $user, Event $event)
     {
-        return $user->hasAdminRights() && $user->club_id === $event->club_id;
+        return $user->admin || ($event->club_id && $user->hasAdminRights($event->club_id));
     }
 
     public function delete(User $user, Event $event)
     {
-        return $user->hasAdminRights() && $user->club_id === $event->club_id;
+        return $this->update($user, $event);
     }
 
 }

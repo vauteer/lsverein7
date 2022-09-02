@@ -22,12 +22,12 @@ class RolePolicy
 
     public function update(User $user, Role $role)
     {
-        return $user->hasAdminRights() && $user->club_id === $role->club_id;
+        return $user->admin || ($role->club_id && $user->hasAdminRights($role->club_id));
     }
 
     public function delete(User $user, Role $role)
     {
-        return $user->hasAdminRights() && $user->club_id === $role->club_id;
+        return $this->update($user, $role);
     }
 
 }

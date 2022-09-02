@@ -78,7 +78,10 @@ class EventController extends Controller
     {
         $attributes = $request->validate($this->validationRules($event->id));
 
-        $event->update($attributes);
+        $event->update([
+            'club_id' => $attributes['global'] ? null : currentClubId(),
+            'name' => $attributes['name'],
+        ]);
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Ereignis geändert');

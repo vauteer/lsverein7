@@ -13,7 +13,6 @@ import DeleteButton from '@/Shared/DeleteButton.vue';
 let props = defineProps({
     origin: String,
     event: Object,
-    global: Boolean,
 });
 
 let form = useForm({
@@ -27,7 +26,8 @@ let editMode = ref(false);
 onMounted(() => {
     if (props.event !== undefined) {
         form.name = props.event.name;
-        form.global = props.global;
+        form.global = props.event.club_id === null;
+
         editMode.value = true;
     }
     document.getElementById('name').focus();

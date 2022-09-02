@@ -22,12 +22,12 @@ class SectionPolicy
 
     public function update(User $user, Section $section)
     {
-        return $user->hasAdminRights() && $user->club_id === $section->club_id;
+        return $user->admin || ($section->club_id && $user->hasAdminRights($section->club_id));
     }
 
     public function delete(User $user, Section $section)
     {
-        return $user->hasAdminRights() && $user->club_id === $section->club_id;
+        return $this->update($user, $section);
     }
 
 }

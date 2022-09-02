@@ -23,6 +23,7 @@ class SectionController extends Controller
                     ->where(fn ($query) => $query->where('club_id', auth()->user()->club_id))
                     ->ignore($id),
             ],
+            'global' => 'boolean',
         ];
 
         return $rules;
@@ -56,7 +57,10 @@ class SectionController extends Controller
     {
         $attributes = $request->validate($this->validationRules(-1));
 
-        Section::create(array_merge($attributes, ['club_id' => auth()->user()->club_id]));
+        Section::create([
+            'club_id' => $attributes['global'] ? null : currentClubId(),
+            'name' => $attributes['name'],
+        ]);
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Abteilung hinzugefügt');
@@ -74,7 +78,10 @@ class SectionController extends Controller
     {
         $attributes = $request->validate($this->validationRules($section->id));
 
-        $section->update($attributes);
+        $section->update([
+            'club_id' => $attributes['global'] ? null : currentClubId(),
+            'name' => $attributes['name'],
+        ]);
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Abteilung geändert');
