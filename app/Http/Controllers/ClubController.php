@@ -128,4 +128,10 @@ class ClubController extends Controller
         abort(403);
     }
 
+    public function blsvStatistic(Request $request, Club $club): Response
+    {
+        return inertia('Clubs/BLSVStat', [
+            'downloads' => $club->getBLSVStatistic(),
+        ]);
+    }
 }

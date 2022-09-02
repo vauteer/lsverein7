@@ -22,12 +22,9 @@ use App\Models\Subscription;
 use App\Pdf\MemberPdf;
 use App\Rules\Iban;
 use Carbon\Carbon;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Inertia\ResponseFactory;
 
 class MemberController extends Controller
 {
@@ -56,10 +53,10 @@ class MemberController extends Controller
             'email' => 'nullable|email',
             'phone' => 'nullable|string',
             'payment_method' => 'required',
-            'bank_name' => 'nullable|string',
-            'account_owner' => 'nullable|string',
-            'iban' => ['nullable', new Iban()],
-            'bic' => 'nullable|string',
+            'bank' => 'nullable|string|required_if:payment_method,k',
+            'account_owner' => 'nullable|string|required_if:payment_method,k',
+            'iban' => ['nullable', 'required_if:payment_method,k', new Iban()],
+            'bic' => 'nullable|string|required_if:payment_method,k',
         ];
 
         return $rules;
@@ -129,8 +126,12 @@ class MemberController extends Controller
         {
             $fields = array(
                 $member->id,
-                utf8_decode($member->first_name), utf8_decode($member->surname), utf8_decode($member->street),
-                $member->zipcode, utf8_decode($member->city), $member->age, $member->gender->value,
+                mb_convert_encoding($member->first_name, 'ISO-8859-1', 'UTF-8'),
+                mb_convert_encoding($member->surname, 'ISO-8859-1', 'UTF-8'),
+                mb_convert_encoding($member->street, 'ISO-8859-1', 'UTF-8'),
+                $member->zipcode,
+                mb_convert_encoding($member->city, 'ISO-8859-1', 'UTF-8'),
+                $member->age, $member->gender->value,
                 $member->membershipYears(), $member->dueHonor(),
             );
 
@@ -203,6 +204,8 @@ class MemberController extends Controller
     public function edit(Request $request, Member $member):\Inertia\Response
     {
         return inertia('Members/Edit', [ 'member' => $member->getAttributes() ])
+            ->with('isMember', $member->isMember())
+            ->with('date', Carbon::today()->format('Y-m-d'))
             ->with('origin', session(self::URL_KEY))
             ->with('genders', Member::availableGenders())
             ->with('paymentMethods', Member::availablePaymentMethods())
@@ -230,6 +233,16 @@ class MemberController extends Controller
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Mitglied gelöscht');
+    }
+
+    public function resign(Request $request, Member $member): RedirectResponse
+    {
+        $end = $request->input('date');
+        $member->memberships()->whereNull('to')->update(['to' => $end]);
+        $member->sections()->whereNull('to')->update(['to' => $end]);
+
+        return redirect(route('members.edit', $member))
+            ->with('success', 'Mitgliedschaft beendet');
     }
 
     private function getQuickFilters()

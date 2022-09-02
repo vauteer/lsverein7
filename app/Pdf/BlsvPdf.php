@@ -2,25 +2,26 @@
 
 namespace App\Pdf;
 
+use Carbon\Carbon;
+
 class BlsvPdf extends BasePdf
 {
-    private $stats;
-    private $year;
-    private $clubName;
-    private $even;
+    private array $stats;
+    private Carbon $keyDate;
+    private string $clubName;
 
     function Header()
     {
         $cellHeight = 7;
 
         $this->SetFont('Arial', 'B', 14);
-        $this->Cell(0, $cellHeight, utf8_decode('Jahresstatistik für den Landessportverband'), 0, 1, 'C');
+        $this->Cell(0, $cellHeight, mb_convert_encoding('Jahresstatistik für den Landessportverband', 'ISO-8859-1', 'UTF-8'), 0, 1, 'C');
 
         $this->SetFont('Arial', '', 12);
-        $this->Cell(0, $cellHeight, 'Statistik per ' . $this->year, 0, 1, 'C');
+        $this->Cell(0, $cellHeight, 'Statistik zum ' . formatDate($this->keyDate), 0, 1, 'C');
 
         $this->SetFont('Arial', 'B', 14);
-        $this->Cell(0, $cellHeight, utf8_decode($this->clubName), 0, 1, 'C');
+        $this->Cell(0, $cellHeight, mb_convert_encoding($this->clubName, 'ISO-8859-1', 'UTF-8'), 0, 1, 'C');
 
         $this->SetFont('Arial', '', 12);
         if ($this->PageNo() == 1)
@@ -61,7 +62,7 @@ class BlsvPdf extends BasePdf
 
         $this->setX($rightMargin);
         $this->Cell($widths[0], $cellHeight, 'Altersgruppe');
-        $this->Cell($widths[1], $cellHeight, utf8_decode('Männlich'), 0, 0, 'R');
+        $this->Cell($widths[1], $cellHeight, mb_convert_encoding('Männlich', 'ISO-8859-1', 'UTF-8'), 0, 0, 'R');
         $this->Cell($widths[2], $cellHeight, 'Weiblich', 0, 0, 'R');
         $this->Cell($widths[3], $cellHeight, 'Zusammen', 0, 1, 'R');
         $tmp = $this->GetY();
@@ -103,7 +104,7 @@ class BlsvPdf extends BasePdf
         $this->SetFillColor(240, 240, 240);
         $cellHeight = 7;
         $reducedHeight = 4;
-        $this->even = false;
+        $even = false;
         $this->SetY(70);
 
         $this->Cell(5, $reducedHeight, '');
@@ -132,8 +133,8 @@ class BlsvPdf extends BasePdf
         {
             $sumMale = 0;
             $sumFemale = 0;
-            $this->even = !$this->even;
-            if ($this->even)
+            $even = !$even;
+            if ($even)
             {
                 $tmp = $this->GetY() + 0.2;
                 $this->Rect(10, $tmp, 190, $cellHeight - 0.2, 'F');
@@ -163,7 +164,7 @@ class BlsvPdf extends BasePdf
     public function getOutput($stats, $year, $clubName)
     {
         $this->stats = $stats;
-        $this->year = $year;
+        $this->keyDate = $year;
         $this->clubName = $clubName;
 
         $this->AliasNbPages();

@@ -89,6 +89,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::put('/clubs/{club}', [ClubController::class, 'update'])->can('update', 'club');
     Route::delete('/clubs/{club}', [ClubController::class, 'destroy'])->can('delete', 'club');
     Route::post('/clubs/{club}/change', [ClubController::class, 'change'])->can('change', 'club');
+    Route::get('/clubs/{club}/blsv-statistic', [ClubController::class, 'blsvStatistic'])->can('update', 'club');
 
     Route::get('/sections', [SectionController::class, 'index'])->name('sections')->can('viewAny', Section::class);
     Route::get('/sections/create', [SectionController::class, 'create'])->can('create', Section::class);
@@ -129,6 +130,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/members/{member}/edit', [MemberController::class, 'edit'])->name('members.edit')->can('update', 'member');
     Route::put('/members/{member}', [MemberController::class, 'update'])->can('update', 'member');
     Route::delete('/members/{member}', [MemberController::class, 'destroy'])->can('delete', 'member');
+    Route::put('/members/{member}/resign', [MemberController::class, 'resign'])->can('delete', 'member');
     Route::get('/members/pdf', [MemberController::class, 'outputPdf'])->name('members.pdf')->can('viewAny', Member::class);
     Route::get('/members/csv', [MemberController::class, 'outputCsv'])->name('members.pdf')->can('viewAny', Member::class);
 

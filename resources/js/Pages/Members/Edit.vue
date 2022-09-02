@@ -10,8 +10,11 @@ import MySelect from "@/Shared/MySelect.vue";
 import AbortButton from "@/Shared/AbortButton.vue";
 import SubmitButton from "@/Shared/SubmitButton.vue";
 import DeleteButton from "@/Shared/DeleteButton.vue";
+import ActionLink from "@/Shared/ActionLink.vue";
 
 let props = defineProps({
+    isMember: { type: Boolean, default: false },
+    date: String,
     origin: String,
     member: Object,
     genders: Object,
@@ -86,6 +89,7 @@ let deleteEntity = () => {
 };
 
 let editMode = ref(false);
+let resignDate = ref(props.date);
 
 const getTitle = computed(() => {
     return editMode.value ? "Mitglied bearbeiten" : "Neues Mitglied";
@@ -179,7 +183,7 @@ const getSubmitButtonText = computed(() => {
                                                             <tr>
                                                                 <th scope="col"
                                                                     class="py-2 pl-4 pr-3 text-left text-base font-semibold text-gray-900">
-                                                                    Mitgliedschaften
+                                                                    Mitgliedschaft(en)
                                                                 </th>
                                                                 <th scope="col"
                                                                     class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
@@ -211,6 +215,14 @@ const getSubmitButtonText = computed(() => {
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="flex justify-end mt-2" v-if="isMember">
+                                        <TextInput class="" v-model="resignDate"
+                                                   id="resign-date" type="date"/>
+                                        <ActionLink :href="`/members/${member.id}/resign`" method="put"
+                                                    :data="{ date: resignDate }"
+                                                    class="bg-red-500 mx-2"
+                                        >Austritt</ActionLink>
                                     </div>
                                     <div class="px-4 sm:px-6 lg:px-8 mt-3">
                                         <div class="flex flex-col">
@@ -416,7 +428,6 @@ const getSubmitButtonText = computed(() => {
                             </div>
                             <div class="py-5">
                                 <div class="flex justify-between">
-                                    <DeleteButton v-if="editMode" :onDelete="deleteEntity"/>
                                     <div class="w-full flex justify-end">
                                         <AbortButton :href="origin" />
                                         <SubmitButton class="ml-2" :disabled="form.processing">

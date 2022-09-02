@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Pdf\BlsvPdf;
+use App\Models\Section;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -89,6 +92,122 @@ class Club extends Model
             'de' => 'Deutsch',
             'en' => 'English',
         ];
+    }
+
+    private static function getBlankStat()
+    {
+        $result = [];
+
+        for ($i = 0; $i < 7; $i++) {
+            $result[$i]['m'] = 0;
+            $result[$i]['w'] = 0;
+        }
+
+        return $result;
+    }
+
+    private static function getStatIndex($age)
+    {
+        return match(true) {
+            $age < 6 => 0,
+            $age < 14 => 1,
+            $age < 18 => 2,
+            $age < 27 => 3,
+            $age < 41 => 4,
+            $age < 61 => 5,
+            default => 6
+        };
+    }
+
+    public function getBLSVStatistic(): array
+    {
+        // Statistik ist zum 1. Januar, Austritte zum 31.12. und Eintritte zum 1.1. werden realisiert
+        $keyDate = Carbon::now()->startOfYear();
+        Member::$_keyDate = $keyDate;
+        $year = $keyDate->year;
+
+        $files = null;
+        $stats[-1] = self::getBlankStat();
+
+        $members = Member::members()
+            ->orderBy('surname')->orderBy('first_name')
+            ->get();
+
+        foreach ($members as $member)
+        {
+            $gender = ($member->gender->value === 'm') ? 'm' : 'w';
+            $index = self::getStatIndex($member->age);
+            $stats[-1][$index][$gender] += 1;
+        }
+
+        $totalCsv = null;
+
+        foreach (Section::orderBy('name')->get() as $section)
+        {
+            $csv = null;
+            $stat = self::getBlankStat();
+            $count = 0;
+
+            $members = Member::members()->sectionMembers($section->id)
+                ->orderBy('surname')->orderBy('first_name')
+                ->get();
+
+            foreach ($members as $member)
+            {
+                $gender = $member->gender->value === 'm' ? 'm' : 'w';
+                $line = ';' . mb_convert_encoding($member->surname, 'ISO-8859-1', 'UTF-8') . ';' .
+                    mb_convert_encoding($member->first_name, 'ISO-8859-1', 'UTF-8') . ';;' .
+                    $gender . ';' .
+                    $member->birthday->format('d.m.y') . ';' .
+                    $section->id . "\r\n";
+
+                $csv .= $line;
+                $totalCsv .= $line;
+
+                $index = self::getStatIndex($member->age);
+                $stat[$index][$gender] += 1;
+                $count++;
+            }
+
+            if ($count > 0)
+            {
+                $stats[$section->id] = $stat;
+                $stats[$section->id]['name'] = $section->name;
+                $filename = "storage/downloads/BE{$year}_{$section->name}.txt";
+                $fullFilename = public_path($filename);
+                $handle = fopen($fullFilename, 'w');
+                fputs($handle, $csv);
+                fclose($handle);
+
+                $files[] = ['name' => $section->name, 'href' => asset($filename)];
+            }
+        }
+
+        if ($totalCsv)
+        {
+            $filename = "storage/downloads/BE{$year}_Gesamt.txt";
+            $fullFilename = public_path($filename);
+            $handle = fopen($fullFilename, 'w');
+            fputs($handle, $totalCsv);
+            fclose($handle);
+
+            $files[] = ['name' => "Alle Sparten", 'href' => asset($filename)];
+        }
+
+        $clubName = $this->name;
+
+        $pdf = new BlsvPdf();
+
+        $pdfResult = $pdf->getOutput($stats, $keyDate, $clubName);
+
+        $filename = "storage/downloads/blsv-stat.pdf";
+        $fullFilename = public_path($filename);
+        $handle = fopen($fullFilename, 'w');
+        fputs($handle, $pdfResult);
+        fclose($handle);
+        $files[] = ['name' => 'Alters-Statistik', 'href' => asset($filename)];
+
+        return array_reverse($files);
     }
 
 }

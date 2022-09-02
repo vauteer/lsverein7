@@ -1,9 +1,10 @@
 <script setup>
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
-import {useForm} from "@inertiajs/inertia-vue3";
+import {useForm, usePage} from "@inertiajs/inertia-vue3";
 import Layout from '@/Shared/Layout.vue';
 import TextInput from '@/Shared/TextInput.vue';
+import CheckBox from "@/Shared/CheckBox.vue";
 import AbortButton from '@/Shared/AbortButton.vue';
 import SubmitButton from '@/Shared/SubmitButton.vue';
 import DeleteButton from '@/Shared/DeleteButton.vue';
@@ -12,17 +13,21 @@ import DeleteButton from '@/Shared/DeleteButton.vue';
 let props = defineProps({
     origin: String,
     event: Object,
+    global: Boolean,
 });
 
 let form = useForm({
     name: '',
+    global: false,
 });
 
+const user = computed(() => usePage().props.value.auth.user);
 let editMode = ref(false);
 
 onMounted(() => {
     if (props.event !== undefined) {
         form.name = props.event.name;
+        form.global = props.global;
         editMode.value = true;
     }
     document.getElementById('name').focus();
@@ -72,6 +77,8 @@ const getSubmitButtonText = computed(() => {
                                     <TextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name"
                                                id="name"
                                                label="Name"/>
+                                    <CheckBox v-if="user.admin" v-model="form.global" :error="form.errors.global"
+                                        id="global" label="Global" />
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">

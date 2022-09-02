@@ -56,11 +56,11 @@ class SepaPdf extends BasePdf
                 $tmp = $this->GetY() + 0.2;
                 $this->Rect(10, $tmp, 190, $cellHeight - 0.2, 'F');
             }
-            $this->ClippedCell(40, $cellHeight, utf8_decode($payment['nm']));
+            $this->ClippedCell(40, $cellHeight, mb_convert_encoding($payment['nm'], 'ISO-8859-1', 'UTF-8'));
             $this->ClippedCell(20, $cellHeight, $payment['mndtId']);
             $dateOfSignature = formatDate($payment['dtOfSgntr']);
             $this->Cell(20, $cellHeight, $dateOfSignature);
-            $this->ClippedCell(80, $cellHeight, utf8_decode($payment['ustrd']));
+            $this->ClippedCell(80, $cellHeight, mb_convert_encoding($payment['ustrd'], 'ISO-8859-1', 'UTF-8'));
             $this->ClippedCell(28, $cellHeight, $payment['instdAmt'] . $this->currency, 0, 1, 'R');
 
             $tmp = $this->GetY();

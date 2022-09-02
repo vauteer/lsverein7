@@ -76,6 +76,11 @@ watch(search, throttle(function (value) {
                                         <div class="font-bold">{{ club.zipcode }} {{ club.city }}</div>
                                     </td>
                                     <td class="px-3">
+                                        <Link :href="`/clubs/${club.id}/blsv-statistic`"
+                                              method="get" as="button" class="text-blue-500"
+                                        >
+                                            BLSV-Statistik
+                                        </Link>
                                     </td>
                                     <td class="px-3">
                                         <div class="h-5">

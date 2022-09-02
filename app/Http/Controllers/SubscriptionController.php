@@ -98,6 +98,7 @@ class SubscriptionController extends Controller
 
     public function debit(Request $request): Response
     {
+        $paymentMethods = Member::availablePaymentMethods();
         $subscriptions = $request->input('subscriptions');
         $executionDate = new Carbon($request->input('date'));
         $creationDate = Carbon::now();
@@ -105,6 +106,7 @@ class SubscriptionController extends Controller
         $club = currentClub();
         $defaultDate = $club->sepa_date;
         $debits = [];
+        $outStandings = [];
         $totalAmount = 0.0;
         $data['msgId'] = 'M' . $creationDate->format('YmdHis');
         $data['pmtInfId'] = 'P' . $creationDate->format('YmdHis');
@@ -115,9 +117,8 @@ class SubscriptionController extends Controller
         $data['bic'] = $club->bic;
         $data['sepaId'] = str_replace(" ", "", $club->sepa);
 
-        // todo: other paymentMethods
         $members = Member::members()
-            ->paymentMethods('k')->hasSubscription($subscriptions)
+            ->hasSubscription($subscriptions)
             ->orderBy('surname')->orderBy('first_name')
             ->get();
 
@@ -125,6 +126,15 @@ class SubscriptionController extends Controller
             foreach ($member->subscriptions as $subscription) {
                 if (!in_array($subscription->id, $subscriptions))
                     continue;
+
+                if ($member->payment_method !== 'k') {
+                    $outStandings[] = [
+                        'name' => $member->first_name . ' ' . $member->surname,
+                        'subscription' => $subscription->__toString(),
+                        'paymentMethod' => $paymentMethods[$member->payment_method],
+                    ];
+                    continue;
+                }
 
                 $totalAmount += $subscription->amount;
                 $transferText = str_replace(['<AJ>', '<VN>', '<NN>'], [$year, $member->first_name, $member->surname],
@@ -159,12 +169,13 @@ class SubscriptionController extends Controller
         $pdfSubPath = 'storage/downloads/beitraege.pdf';
         file_put_contents(public_path($pdfSubPath), $pdf->getOutput($debits, 'Sepa-Bankeinzug', $club->name));
 
-        return inertia('Misc/Download', [
+        return inertia('Subscriptions/Debit', [
             'title' => 'Downloads für SEPA-Bankeinzug',
             'downloads' => [
                 0 => ['name' => 'Sepa-Datei', 'href' => asset($sepaSubPath)],
                 1 => ['name' => 'Begleitzettel', 'href' => asset($pdfSubPath)],
-            ]
+            ],
+            'outStandings' => $outStandings,
         ]);
     }
 }

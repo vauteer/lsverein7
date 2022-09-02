@@ -57,18 +57,20 @@ class MemberPdf extends BasePdf
                 $this->Rect(10, $tmp, 190, $cellHeight - 0.2, 'F');
             }
             $this->Cell(8, $cellHeight, $member->id, 0, 0, 'R');
-            $this->ClippedCell(40, $cellHeight, utf8_decode($member->surname . ' ' . $member->first_name));
+            $this->ClippedCell(40, $cellHeight,
+                mb_convert_encoding($member->surname . ' ' . $member->first_name, 'ISO-8859-1', 'UTF-8'));
             $birthDay = formatDate($member->birthday);
             $this->Cell(18, $cellHeight, $birthDay);
             $this->Cell(7, $cellHeight, $member->age, 0, 0, 'R');
             $entry = formatDate($member->entry());
             $this->Cell(18, $cellHeight, $entry);
             $this->Cell(7, $cellHeight, $member->membershipYears(), 0, 0, 'R');
-            $this->ClippedCell(60, $cellHeight, utf8_decode($member->zipcode . ' ' . $member->city . ' ' .
-                $member->street));
+            $this->ClippedCell(60, $cellHeight,
+                mb_convert_encoding($member->zipcode . ' ' . $member->city . ' ' .
+                $member->street, 'ISO-8859-1', 'UTF-8'));
             $sections = 'TODO';
             //$sections = join(', ', $person->sections);
-            $this->ClippedCell(32, $cellHeight, utf8_decode($member->currentSections()), 0, 1);
+            $this->ClippedCell(32, $cellHeight, mb_convert_encoding($member->currentSections(), 'ISO-8859-1', 'UTF-8'), 0, 1);
             $tmp = $this->GetY();
             $this->Line(10, $tmp, 200, $tmp);
             //$this->SetY($tmp + 0.5);
