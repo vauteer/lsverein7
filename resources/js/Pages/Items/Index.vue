@@ -9,14 +9,15 @@ import ActionLink from "@/Shared/ActionLink.vue";
 import Pagination from "@/Shared/Pagination.vue";
 
 let props = defineProps({
-    events: Object,
+    items: Object,
     filters: Object,
     canCreate: Boolean,
 });
 
-let showMembers = (id) => {
+let showMembers = (id, current) => {
+    let filter = current ? `hasItem_${id}` : `everItem_${id}`
     Inertia.get('/members', {
-            filter: `hadEvent_${id}`,
+            filter: filter,
         },
         {
             preserveState: true,
@@ -27,7 +28,7 @@ let showMembers = (id) => {
 let search = ref(props.filters.search);
 
 watch(search, throttle(function (value) {
-    Inertia.get('/events', {search: value}, {
+    Inertia.get('/items', {search: value}, {
         preserveState: true,
         replace: true,
     });
@@ -62,26 +63,29 @@ watch(search, throttle(function (value) {
                                     <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Show Members</span></th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                         <span class="sr-only">Edit</span>
-                                        <ActionLink v-if="props.canCreate" href="/events/create">Neu</ActionLink>
+                                        <ActionLink v-if="props.canCreate" href="/items/create">Neu</ActionLink>
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-200 bg-white">
-                                <tr v-for="event in events.data" :key="event.id" class="text-gray-500">
+                                <tr v-for="item in items.data" :key="item.id" class="text-gray-500">
                                     <td class="py-3 pl-2 pr-3 text-right sm:pl-6">
-                                        {{ event.id }}
+                                        {{ item.id }}
                                     </td>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
-                                        <div class="font-bold">{{ event.name }}</div>
+                                        <div class="font-bold">{{ item.name }}</div>
                                     </td>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
-                                        <a @click="showMembers(event.id)" as="button" class="cursor-pointer text-blue-500">
-                                            Jemals
-                                        </a>
+                                        <div>
+                                            <a class="cursor-pointer" @click="showMembers(item.id, true)" as="button">Aktuell</a>
+                                        </div>
+                                        <div>
+                                            <a class="cursor-pointer" @click="showMembers(item.id, false)" as="button">Jemals</a>
+                                        </div>
                                     </td>
                                     <td class="px-3">
                                         <div class="h-5">
-                                            <Link v-if="event.modifiable" :href="`/events/${event.id}/edit`">
+                                            <Link v-if="item.modifiable" :href="`/items/${item.id}/edit`">
                                                 <PencilIcon class="h-5 w-5 text-blue-500"/>
                                             </Link>
                                         </div>
@@ -89,13 +93,13 @@ watch(search, throttle(function (value) {
                                 </tr>
                                 </tbody>
                             </table>
-                            <div v-if="events.data.length === 0"
+                            <div v-if="items.data.length === 0"
                                  class="text-gray-600 text-sm font-semibold ml-2"
                             >
                                 Keine Daten
                             </div>
-                            <Pagination v-if="events.meta.last_page > 1" class="mt-6"
-                                        :meta="events.meta"></Pagination>
+                            <Pagination v-if="items.meta.last_page > 1" class="mt-6"
+                                        :meta="items.meta"></Pagination>
                         </div>
                     </div>
                 </div>

@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\EventResource;
-use App\Models\Event;
+use App\Http\Resources\ItemResource;
+use App\Models\Item;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Response;
 
-class EventController extends Controller
+class ItemController extends Controller
 {
-    protected const URL_KEY = 'lastEventsUrl';
+    protected const URL_KEY = 'lastItemsUrl';
 
     protected function validationRules($id): array
     {
@@ -19,11 +19,10 @@ class EventController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('events')
+                Rule::unique('items')
                     ->where(fn ($query) => $query->where('club_id', auth()->user()->club_id))
                     ->ignore($id),
             ],
-            'global' => 'boolean',
         ];
 
         return $rules;
@@ -33,8 +32,8 @@ class EventController extends Controller
     public function index(Request $request):Response
     {
         $request->session()->put(self::URL_KEY, url()->full());
-        return inertia('Events/Index', [
-            'events' => EventResource::collection(Event::query()
+        return inertia('Items/Index', [
+            'items' => ItemResource::collection(Item::query()
                 ->when($request->input('search'), function($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
                 })
@@ -43,13 +42,13 @@ class EventController extends Controller
             ),
 
             'filters' => $request->only(['search']),
-            'canCreate' => auth()->user()->can('create', Event::class),
+            'canCreate' => auth()->user()->can('create', Item::class),
         ]);
     }
 
     public function create(Request $request): Response
     {
-        return inertia('Events/Edit', [
+        return inertia('Items/Edit', [
             'origin' => session(self::URL_KEY),
         ]);
     }
@@ -58,40 +57,34 @@ class EventController extends Controller
     {
         $attributes = $request->validate($this->validationRules(-1));
 
-        Event::create([
-            'club_id' => $attributes['global'] ? null : currentClubId(),
-            'name' => $attributes['name'],
-        ]);
+        Item::create(array_merge($attributes, ['club_id' => currentClubId()]));
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Ereignis hinzugefügt');
     }
 
-    public function edit(Request $request, Event $event):Response
+    public function edit(Request $request, Item $item):Response
     {
-        return inertia('Events/Edit', [
-            'event' => $event->getAttributes(),
-            'deletable' => !$event->isInUse(),
+        return inertia('Items/Edit', [
+            'item' => $item->getAttributes(),
+            'deletable' => !$item->isInUse(),
             'origin' => session(self::URL_KEY),
         ]);
     }
 
-    public function update(Request $request, Event $event): RedirectResponse
+    public function update(Request $request, Item $item): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules($event->id));
+        $attributes = $request->validate($this->validationRules($item->id));
 
-        $event->update([
-            'club_id' => $attributes['global'] ? null : currentClubId(),
-            'name' => $attributes['name'],
-        ]);
+        $item->update($attributes);
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Ereignis geändert');
     }
 
-    public function destroy(Request $request, Event $event): RedirectResponse
+    public function destroy(Request $request, Item $item): RedirectResponse
     {
-        $event->delete();
+        $item->delete();
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Ereignis gelöscht');

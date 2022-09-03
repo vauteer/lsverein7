@@ -103,7 +103,7 @@ watch(search, throttle(function (value) {
 
                                     </td>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-blue-500 sm:pl-6">
-                                        <a @click="showMembers(subscription.id)" as="button">
+                                        <a @click="showMembers(subscription.id)" as="button" class="cursor-pointer">
                                             Wer ?
                                         </a>
                                     </td>

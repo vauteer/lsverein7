@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('street');
             $table->string('zipcode', 10);
             $table->string('city');
-            $table->boolean('blsv_member');
+            $table->boolean('blsv_member')->default(false);
             $table->string('bank');
             $table->string('account_owner');
             $table->string('iban');
@@ -30,6 +30,8 @@ return new class extends Migration
             $table->tinyInteger('display')->default(1);
             $table->string('locale', 5)->default('de');
             $table->string('honor_years')->nullable();
+            $table->boolean('use_items')->default(false);
+
             $table->timestamps();
         });
     }

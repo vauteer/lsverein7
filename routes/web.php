@@ -6,6 +6,8 @@ use App\Http\Controllers\ClubController;
 use App\Http\Controllers\ClubMemberController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventMemberController;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\ItemMemberController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MemberRoleController;
 use App\Http\Controllers\MemberSectionController;
@@ -16,6 +18,7 @@ use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
 use App\Models\Club;
 use App\Models\Event;
+use App\Models\Item;
 use App\Models\Member;
 use App\Models\Role;
 use App\Models\Section;
@@ -112,6 +115,13 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::put('/events/{event}', [EventController::class, 'update'])->can('update', 'event');
     Route::delete('/events/{event}', [EventController::class, 'destroy'])->can('delete', 'event');
 
+    Route::get('/items', [ItemController::class, 'index'])->name('items')->can('viewAny', Item::class);
+    Route::get('/items/create', [ItemController::class, 'create'])->can('create', Item::class);
+    Route::post('/items', [ItemController::class, 'store'])->can('create', Item::class);
+    Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->can('update', 'item');
+    Route::put('/items/{item}', [ItemController::class, 'update'])->can('update', 'item');
+    Route::delete('/items/{item}', [ItemController::class, 'destroy'])->can('delete', 'item');
+
     Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions')->can('viewAny', Subscription::class);
     Route::get('/subscriptions/create', [SubscriptionController::class, 'create'])->can('create', Subscription::class);
     Route::post('/subscriptions', [SubscriptionController::class, 'store'])->can('create', Subscription::class);
@@ -157,6 +167,12 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/members/{member}/event/{eventMember}/edit', [EventMemberController::class, 'edit'])->can('update', 'member');
     Route::put('/members/{member}/event/{eventMember}', [EventMemberController::class, 'update'])->can('update', 'member');
     Route::delete('/members/{member}/event/{eventMember}', [EventMemberController::class, 'destroy'])->can('update', 'member');
+
+    Route::get('/members/{member}/item/create', [ItemMemberController::class, 'create'])->can('create', Member::class);
+    Route::post('/members/{member}/item', [ItemMemberController::class, 'store'])->can('create', Member::class);
+    Route::get('/members/{member}/item/{itemMember}/edit', [ItemMemberController::class, 'edit'])->can('update', 'member');
+    Route::put('/members/{member}/item/{itemMember}', [ItemMemberController::class, 'update'])->can('update', 'member');
+    Route::delete('/members/{member}/item/{itemMember}', [ItemMemberController::class, 'destroy'])->can('update', 'member');
 
     Route::get('/members/{member}/role/create', [MemberRoleController::class, 'create'])->can('create', Member::class);
     Route::post('/members/{member}/role', [MemberRoleController::class, 'store'])->can('create', Member::class);

@@ -56,8 +56,9 @@ class SubscriptionController extends Controller
 
     public function create(Request $request): Response
     {
-        return inertia('Subscriptions/Edit')
-            ->with('origin', session(self::URL_KEY));
+        return inertia('Subscriptions/Edit', [
+            'origin' => session(self::URL_KEY),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -74,8 +75,9 @@ class SubscriptionController extends Controller
     {
         return inertia('Subscriptions/Edit', [
             'subscription' => $subscription->getAttributes(),
-        ])
-            ->with('origin', session(self::URL_KEY));
+            'deletable' => !$subscription->isInUse(),
+            'origin' => session(self::URL_KEY),
+        ]);
     }
 
     public function update(Request $request, Subscription $subscription): RedirectResponse

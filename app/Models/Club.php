@@ -43,6 +43,11 @@ class Club extends Model
         return $this->hasMany(Event::class);
     }
 
+    public function items(): HasMany
+    {
+        return $this->hasMan(Item::class);
+    }
+
     public function roles(): HasMany
     {
         return $this->hasMany(Role::class);
@@ -51,6 +56,18 @@ class Club extends Model
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
+    }
+
+    public function usedSections(): \Illuminate\Support\Collection
+    {
+        return DB::table('club_member')
+            ->join('member_section', 'club_member.member_id', 'member_section.member_id')
+            ->join('sections', 'sections.id', 'member_section.section_id')
+            ->distinct()
+            ->select('section_id as id', 'name')
+            ->where('club_member.club_id', $this->id)
+            ->orderBy('name')
+            ->get();
     }
 
     public static function logoPath($stub = ''):string
@@ -148,7 +165,7 @@ class Club extends Model
             $stat = self::getBlankStat();
             $count = 0;
 
-            $members = Member::members()->sectionMembers($section->id)
+            $members = Member::members()->sectionsMembers($section->id)
                 ->orderBy('surname')->orderBy('first_name')
                 ->get();
 
@@ -210,4 +227,27 @@ class Club extends Model
         return array_reverse($files);
     }
 
+    public function calcBlsvDebit(float $childrenDue, float $teenDue, float $adultDue): float
+    {
+        //Member::$_keyDate = Carbon::now()->startOfYear();
+        $children = $teens = $adults = 0;
+        $children = Member::members()->ageRange(null, 13)->count();
+        $teens = Member::members()->ageRange(14, 17)->count();
+        $adults = Member::members()->ageRange(18, null)->count();
+
+//        $members = Member::members()->get();
+//
+//        foreach ($members as $member) {
+//            $age = $member->age;
+//            if ($age < 14)
+//                $children++;
+//            else if ($age < 18)
+//                $teens++;
+//            else
+//                $adults++;
+//        }
+
+        dd($children, $teens, $adults);
+        return ($children * $childrenDue) + ($teens * $teenDue) + ($adults * $adultDue);
+    }
 }

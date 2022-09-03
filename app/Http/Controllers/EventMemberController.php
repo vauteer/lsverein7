@@ -24,10 +24,11 @@ class EventMemberController extends Controller
 
     public function create(Request $request, Member $member): Response
     {
-        return inertia('Members/EventMember')
-            ->with('origin', route('members.edit', $member->id))
-            ->with('events', Event::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]))
-            ->with('memberId', $member->id);
+        return inertia('Members/EventMember', [
+            'origin' => route('members.edit', $member->id),
+            'events' => Event::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'memberId' => $member->id,
+        ]);
     }
 
     public function store(Request $request, Member $member): RedirectResponse
@@ -44,10 +45,10 @@ class EventMemberController extends Controller
     {
         return inertia('Members/EventMember', [
             'eventMember' => $eventMember->getAttributes(),
-        ])
-            ->with('origin', route('members.edit', $member->id))
-            ->with('events', Event::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]))
-            ->with('memberId', $member->id);
+            'origin' => route('members.edit', $member->id),
+            'events' => Event::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'memberId' => $member->id,
+        ]);
     }
 
     public function update(Request $request, Member $member, Eventmember $eventMember): RedirectResponse

@@ -6,6 +6,7 @@ use App\Http\Resources\SectionResource;
 use App\Models\Section;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Response;
 
@@ -49,8 +50,9 @@ class SectionController extends Controller
 
     public function create(Request $request): Response
     {
-        return inertia('Sections/Edit')
-            ->with('origin', session(self::URL_KEY));
+        return inertia('Sections/Edit', [
+            'origin' => session(self::URL_KEY)
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -70,8 +72,9 @@ class SectionController extends Controller
     {
         return inertia('Sections/Edit', [
             'section' => $section->getAttributes(),
-        ])
-            ->with('origin', session(self::URL_KEY));
+            'deletable' => !$section->isInUse(),
+            'origin' => session(self::URL_KEY),
+        ]);
     }
 
     public function update(Request $request, Section $section): RedirectResponse

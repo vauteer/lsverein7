@@ -36,6 +36,7 @@ class ClubController extends Controller
             'logo' => 'nullable|string',
             'display' => 'required|int',
             'blsv_member' => 'boolean',
+            'use_items' => 'boolean',
             'honor_years' => 'nullable|regex:/^\d{1,2}(,\d{1,2})*$/'
         ];
 
@@ -61,9 +62,10 @@ class ClubController extends Controller
 
     public function create(Request $request): Response
     {
-        return inertia('Clubs/Edit')
-            ->with('origin', session(self::URL_KEY))
-            ->with('displayStyles', Club::displayStyles());
+        return inertia('Clubs/Edit', [
+            'origin' => session(self::URL_KEY),
+            'displayStyles' => Club::displayStyles(),
+        ]);
     }
 
     public function store(Request $request): \Illuminate\Http\RedirectResponse
@@ -91,9 +93,9 @@ class ClubController extends Controller
     {
         return inertia('Clubs/Edit', [
             'club' => $club->getAttributes(),
-        ])
-            ->with('origin', session(self::URL_KEY))
-            ->with('displayStyles', Club::displayStyles());
+            'origin' => session(self::URL_KEY),
+            'displayStyles' => Club::displayStyles(),
+        ]);
     }
 
     public function update(Request $request, Club $club): RedirectResponse

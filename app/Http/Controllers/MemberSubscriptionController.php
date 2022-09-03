@@ -23,10 +23,11 @@ class MemberSubscriptionController extends Controller
 
     public function create(Request $request, Member $member): Response
     {
-        return inertia('Members/MemberSubscription')
-            ->with('origin', route('members.edit', $member->id))
-            ->with('subscriptions', Subscription::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]))
-            ->with('memberId', $member->id);
+        return inertia('Members/MemberSubscription', [
+            'origin' => route('members.edit', $member->id),
+            'subscriptions' => Subscription::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'memberId' => $member->id,
+        ]);
     }
 
     public function store(Request $request, Member $member): RedirectResponse
@@ -43,10 +44,10 @@ class MemberSubscriptionController extends Controller
     {
         return inertia('Members/MemberSubscription', [
             'memberSubscription' => $memberSubscription->getAttributes(),
-        ])
-            ->with('origin', route('members.edit', $member->id))
-            ->with('subscriptions', Subscription::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]))
-            ->with('memberId', $member->id);
+            'origin' => route('members.edit', $member->id),
+            'subscriptions' => Subscription::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'memberId' => $member->id,
+        ]);
     }
 
     public function update(Request $request, Member $member, memberSubscription $memberSubscription): RedirectResponse

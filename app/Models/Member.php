@@ -30,7 +30,7 @@ class Member extends Model
     public static function getKeyDate(): Carbon
     {
         if (static::$_keyDate === null)
-            static::$_keyDate = Carbon::now();
+            static::$_keyDate = Carbon::now()->endOfDay();
 
         return static::$_keyDate->copy();
     }
@@ -94,6 +94,15 @@ class Member extends Model
             ->withTimestamps()
             ->orderBy('pivot_date', 'desc')
             ->using(EventMember::class);
+    }
+
+    public function items(): BelongsToMany
+    {
+        return $this->belongsToMany(Item::class)
+            ->withPivot(['id', 'memo', 'from', 'to'])
+            ->withTimestamps()
+            ->orderBy('pivot_from', 'desc')
+            ->using(ItemMember::class);
     }
 
     public function roles(): BelongsToMany
@@ -232,7 +241,7 @@ class Member extends Model
         return $this->scopeMembers($query, $keyDate, false);
     }
 
-    public function scopeSectionMembers($query, array|int $sections, ?Carbon $keyDate = null)
+    public function scopeSections($query, array|int $sections, ?Carbon $keyDate = null)
     {
         if ($keyDate === null)
             $keyDate = self::getKeyDate();
@@ -248,13 +257,13 @@ class Member extends Model
 
     public function scopeAgeRange($query, ?int $from, ?int $to)
     {
-        if ($from === null) {
-            $query->where('birthday', '>', self::getKeyDate()->subYears($to));
-        } else if ($to === null) {
-            $query->where('birthday', '<', self::getKeyDate()->subYears($from));
-        } else {
-            $query->whereBetween('birthday', [self::getKeyDate()->subYears($to),
-                self::getKeyDate()->subYears($from)]);
+        if ($to !== null) {
+            // geboren morgen vor ($to + 1) Jahren ab 00:00
+            $query->where('birthday', '>=', self::getKeyDate()->addDay()->subYears($to + 1)->startOfDay());
+        }
+        if ($from !== null) {
+            // geboren vor $from Jahren bis 23:59
+            $query->where('birthday', '<=', self::getKeyDate()->subYears($from)->endOfDay());
         }
     }
 
@@ -282,7 +291,7 @@ class Member extends Model
         $query->whereRaw('id in (select member_id from club_member where (YEAR(`to`) = ?))', [$year]);
     }
 
-    public function scopeDeaths($query, ?int $year = null)
+    public function scopeDead($query, ?int $year = null)
     {
         if ($year === null)
             $year = self::getKeyDate()->year;
@@ -340,6 +349,40 @@ class Member extends Model
 
         if ($id) {
             $where .= " and (p.role_id = {$id})";
+        }
+
+        $where .= ')';
+
+        $query->whereRaw($where, [$keyDate]);
+    }
+
+    public function scopeHasItem($query, int|null $id = null, ?Carbon $keyDate = null)
+    {
+        if ($keyDate === null)
+            $keyDate = self::getKeyDate();
+
+        $where = 'id in (select distinct(p.member_id) from item_member p ' .
+            'where (`from` < ?) and (`to` is null or `to` > ?)';
+
+        if ($id) {
+            $where .= " and (p.item_id = {$id})";
+        }
+
+        $where .= ')';
+
+        $query->whereRaw($where, [$keyDate, $keyDate]);
+    }
+
+    public function scopeEverItem($query, int|null $id = null, ?Carbon $keyDate = null)
+    {
+        if ($keyDate === null)
+            $keyDate = self::getKeyDate();
+
+        $where = 'id in (select distinct(p.member_id) from item_member p ' .
+            'where (`from` < ?)';
+
+        if ($id) {
+            $where .= " and (p.item_id = {$id})";
         }
 
         $where .= ')';

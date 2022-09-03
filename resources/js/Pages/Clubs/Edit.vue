@@ -32,6 +32,7 @@ let form = useForm({
     logo: '',
     display: '1',
     honor_years: '',
+    use_items: false,
 });
 
 onMounted(() => {
@@ -50,6 +51,7 @@ onMounted(() => {
         form.display = String(props.club.display);
         form.logo = props.club.logo;
         form.honor_years = props.club.honor_years;
+        form.use_items = Boolean(props.club.use_items)
 
         editMode.value = true;
     }
@@ -140,12 +142,14 @@ function back() {
                                     <TextInput class="sm:col-span-2 sm:ml-3" v-model="form.sepa_date" :error="form.errors.sepa_date"
                                                id="sepa_date"
                                                type='date' label="Sepa-Mandatsdatum" />
-                                    <CheckBox class="sm:col-span-6" v-model="form.blsv_member" :error="form.errors.blsv_member"
-                                              id="blsv_member" label="BLSV-Mitglied"/>
                                     <TextInput class="sm:col-span-6" v-model="form.honor_years" :error="form.errors.honor_years"
                                                id="honor-years" label="Ehrungen Mitgliedsjahre" placeholder="10,20,..." />
                                     <MySelect class="sm:col-span-6" v-model="form.display" :error="form.errors.display"
                                               :options="props.displayStyles" id="display" label="Anzeige"/>
+                                    <CheckBox class="sm:col-span-6" v-model="form.blsv_member" :error="form.errors.blsv_member"
+                                              id="blsv-member" label="BLSV-Mitglied"/>
+                                    <CheckBox class="sm:col-span-6" v-model="form.use_items" :error="form.errors.use_items"
+                                              id="use-items" label="Inventar benutzen"/>
                                 </div>
                             </div>
                             <div class="py-5">

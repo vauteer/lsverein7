@@ -35,15 +35,9 @@ class Section extends Model
             ->withTimeStamps();
     }
 
-    public static function used()
+    public function isInUse(): bool
     {
-        return DB::table('club_member')
-            ->join('member_section', 'club_member.member_id', 'member_section.member_id')
-            ->join('sections', 'sections.id', 'member_section.section_id')
-            ->distinct()
-            ->select('section_id as id', 'name')
-            ->where('club_member.club_id', currentClubId())
-            ->orderBy('name')
-            ->get();
+        return DB::table('member_section')->where('section_id', $this->id)->count() > 0;
     }
+
 }

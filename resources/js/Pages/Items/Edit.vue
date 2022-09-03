@@ -8,28 +8,23 @@ import CheckBox from "@/Shared/CheckBox.vue";
 import AbortButton from '@/Shared/AbortButton.vue';
 import SubmitButton from '@/Shared/SubmitButton.vue';
 import DeleteButton from '@/Shared/DeleteButton.vue';
-import MyConfirmation from "@/Shared/MyConfirmation.vue";
 
 
 let props = defineProps({
     origin: String,
-    role: Object,
-    deletable: Boolean,
+    item: Object,
 });
 
 let form = useForm({
     name: '',
-    global: false,
 });
 
 const user = computed(() => usePage().props.value.auth.user);
-let showDeleteConfirmation = ref(false);
 let editMode = ref(false);
 
 onMounted(() => {
-    if (props.role !== undefined) {
-        form.name = props.role.name;
-        form.global = props.role.club_id === null;
+    if (props.item !== undefined) {
+        form.name = props.item.name;
 
         editMode.value = true;
     }
@@ -38,19 +33,20 @@ onMounted(() => {
 
 let submit = () => {
     if (editMode.value === true) {
-        form.put(`/roles/${props.role.id}`);
+        form.put(`/items/${props.item.id}`);
     } else {
-        form.post('/roles');
+        form.post('/items');
     }
 };
 
-let deleteRole = () => {
-    showDeleteConfirmation.value = false;
-    Inertia.delete(`/roles/${props.role.id}`);
+let deleteItem = () => {
+    if (confirm('Wollen Sie das Inventar-Gut wirklich löschen ?')) {
+        Inertia.delete(`/items/${props.item.id}`);
+    }
 };
 
 const getTitle = computed(() => {
-    return editMode.value ? "Funktion bearbeiten" : "Neue Funktion";
+    return editMode.value ? "Inventar-Gut bearbeiten" : "Neues Inventar-Gut";
 });
 
 const getSubmitButtonText = computed(() => {
@@ -79,14 +75,12 @@ const getSubmitButtonText = computed(() => {
                                     <TextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name"
                                                id="name"
                                                label="Name"/>
-                                    <CheckBox v-if="user.admin" v-model="form.global" :error="form.errors.global"
-                                              id="global" label="Global" />
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
-                                        <DeleteButton v-if="deletable" @click.prevent="showDeleteConfirmation = true" />
+                                        <DeleteButton v-if="editMode" :onDelete="deleteItem"/>
                                         <div class="w-full flex justify-end">
-                                            <AbortButton :href="origin"  />
+                                            <AbortButton :href="origin" />
                                             <SubmitButton class="ml-2" :disabled="form.processing">
                                                 {{ getSubmitButtonText }}
                                             </SubmitButton>
@@ -99,8 +93,5 @@ const getSubmitButtonText = computed(() => {
                 </div>
             </div>
         </div>
-        <MyConfirmation v-if="showDeleteConfirmation" @canceled="showDeleteConfirmation = false" @confirmed="deleteRole">
-            {{ `Funktion '${role.name}' löschen`}}
-        </MyConfirmation>
     </Layout>
 </template>

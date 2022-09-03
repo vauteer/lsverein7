@@ -6,6 +6,7 @@ use App\Http\Resources\RoleResource;
 use App\Models\Role;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Response;
 
@@ -49,8 +50,9 @@ class RoleController extends Controller
 
     public function create(Request $request): Response
     {
-        return inertia('Roles/Edit')
-            ->with('origin', session(self::URL_KEY));
+        return inertia('Roles/Edit', [
+            'origin' => session(self::URL_KEY),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -70,8 +72,9 @@ class RoleController extends Controller
     {
         return inertia('Roles/Edit', [
             'role' => $role->getAttributes(),
-        ])
-            ->with('origin', session(self::URL_KEY));
+            'deletable' => !$role->isInUse(),
+            'origin' => session(self::URL_KEY),
+        ]);
     }
 
     public function update(Request $request, Role $role): RedirectResponse

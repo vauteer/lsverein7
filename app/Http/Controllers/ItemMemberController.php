@@ -3,18 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
-use App\Models\MemberRole;
-use App\Models\Role;
+use App\Models\ItemMember;
+use App\Models\Item;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Response;
 
-class MemberRoleController extends Controller
+class ItemMemberController extends Controller
 {
     protected function validationRules(): array
     {
         $rules = [
-            'role_id' => 'exists:App\Models\Role,id',
+            'item_id' => 'exists:App\Models\Item,id',
             'from' => 'required|date',
             'to' => 'nullable|date|after:from',
             'memo' => 'nullable|string',
@@ -25,9 +25,9 @@ class MemberRoleController extends Controller
 
     public function create(Request $request, Member $member): Response
     {
-        return inertia('Members/MemberRole', [
+        return inertia('Members/ItemMember', [
             'origin' => route('members.edit', $member->id),
-            'roles' => Role::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'items' => Item::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
             'memberId' => $member->id,
         ]);
     }
@@ -36,35 +36,35 @@ class MemberRoleController extends Controller
     {
         $attributes = $request->validate($this->validationRules());
 
-        $member->roles()->attach([auth()->user()->club_id => $attributes]);
+        $member->items()->attach([auth()->user()->club_id => $attributes]);
 
         return redirect()->route('members.edit', $member->id)
             ->with('success', 'Funktion hinzugefügt');
     }
 
-    public function edit(Request $request, Member $member, memberRole $memberRole):Response
+    public function edit(Request $request, Member $member, ItemMember $itemMember):Response
     {
-        return inertia('Members/MemberRole', [
-            'memberRole' => $memberRole->getAttributes(),
+        return inertia('Members/ItemMember', [
+            'itemMember' => $itemMember->getAttributes(),
             'origin' => route('members.edit', $member->id),
-            'roles' => Role::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'items' => Item::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
             'memberId' => $member->id,
         ]);
     }
 
-    public function update(Request $request, Member $member, memberRole $memberRole): RedirectResponse
+    public function update(Request $request, Member $member, ItemMember $itemMember): RedirectResponse
     {
         $attributes = $request->validate($this->validationRules());
 
-        $memberRole->update($attributes);
+        $itemMember->update($attributes);
 
         return redirect()->route('members.edit', $member->id)
             ->with('success', 'Funktion geändert');
     }
 
-    public function destroy(Request $request, Member $member, memberRole $memberRole): RedirectResponse
+    public function destroy(Request $request, Member $member, ItemMember $itemMember): RedirectResponse
     {
-        $memberRole->delete();
+        $itemMember->delete();
 
         return redirect()->route('members.edit', $member->id)
             ->with('success', 'Funktion gelöscht');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\ClubRole;
 use App\Http\Resources\EventMemberResource;
+use App\Http\Resources\ItemMemberResource;
 use App\Http\Resources\MemberResource;
 use App\Http\Resources\ClubMemberResource;
 use App\Http\Resources\MemberRoleResource;
@@ -12,6 +13,8 @@ use App\Http\Resources\MemberSubscriptionResource;
 use App\Models\ClubMember;
 use App\Models\Event;
 use App\Models\EventMember;
+use App\Models\Item;
+use App\Models\ItemMember;
 use App\Models\Member;
 use App\Models\MemberRole;
 use App\Models\MemberSection;
@@ -151,28 +154,31 @@ class MemberController extends Controller
 
     public function create(Request $request): \Inertia\Response
     {
-        return inertia('Members/Edit')
-            ->with('genders', Member::availableGenders())
-            ->with('paymentMethods', Member::availablePaymentMethods())
-            ->with('sections', Section::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]))
-            ->with('subscriptions', Subscription::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]));
+        return inertia('Members/Edit', [
+            'genders' => Member::availableGenders(),
+            'paymentMethods' => Member::availablePaymentMethods(),
+            'sections' => Section::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'subscriptions' => Subscription::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+        ]);
     }
 
     public function show(Request $request, Member $member):\Inertia\Response
     {
-        return inertia('Members/Show', [ 'member' => $member->getAttributes() ])
-            ->with('origin', session(self::URL_KEY))
-            ->with('advanced', auth()->user()->hasAdvancedRights())
-            ->with('birthday', formatDate($member->birthday))
-            ->with('death_day', formatDate($member->death_day))
-            ->with('age', $member->age)
-            ->with('entry', formatDate($member->entry()))
-            ->with('membershipYears', $member->membershipYears())
-            ->with('memberClubs', ClubMemberResource::collection(ClubMember::where('member_id', $member->id)->get()))
-            ->with('memberSections', MemberSectionResource::collection(MemberSection::where('member_id', $member->id)->get()))
-            ->with('memberSubscriptions', MemberSubscriptionResource::collection(MemberSubscription::where('member_id', $member->id)->get()))
-            ->with('memberEvents', EventMemberResource::collection(EventMember::where('member_id', $member->id)->get()))
-            ->with('memberRoles', MemberRoleResource::collection(MemberRole::where('member_id', $member->id)->get()));
+        return inertia('Members/Show', [
+            'member' => $member->getAttributes(),
+            'origin' => session(self::URL_KEY),
+            'advanced' => auth()->user()->hasAdvancedRights(),
+            'birthday' => formatDate($member->birthday),
+            'death_day' => formatDate($member->death_day),
+            'age' => $member->age,
+            'entry' => formatDate($member->entry()),
+            'membershipYears' => $member->membershipYears(),
+            'memberClubs' => ClubMemberResource::collection(ClubMember::where('member_id', $member->id)->get()),
+            'memberSections' => MemberSectionResource::collection(MemberSection::where('member_id', $member->id)->get()),
+            'memberSubscriptions', MemberSubscriptionResource::collection(MemberSubscription::where('member_id', $member->id)->get()),
+            'memberEvents', EventMemberResource::collection(EventMember::where('member_id', $member->id)->get()),
+            'memberRoles', MemberRoleResource::collection(MemberRole::where('member_id', $member->id)->get()),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -203,17 +209,20 @@ class MemberController extends Controller
 
     public function edit(Request $request, Member $member):\Inertia\Response
     {
-        return inertia('Members/Edit', [ 'member' => $member->getAttributes() ])
-            ->with('isMember', $member->isMember())
-            ->with('date', Carbon::today()->format('Y-m-d'))
-            ->with('origin', session(self::URL_KEY))
-            ->with('genders', Member::availableGenders())
-            ->with('paymentMethods', Member::availablePaymentMethods())
-            ->with('memberClubs', ClubMemberResource::collection(ClubMember::where('member_id', $member->id)->get()))
-            ->with('memberSections', MemberSectionResource::collection(MemberSection::where('member_id', $member->id)->get()))
-            ->with('memberSubscriptions', MemberSubscriptionResource::collection(MemberSubscription::where('member_id', $member->id)->get()))
-            ->with('memberEvents', EventMemberResource::collection(EventMember::where('member_id', $member->id)->get()))
-            ->with('memberRoles', MemberRoleResource::collection(MemberRole::where('member_id', $member->id)->get()));
+        return inertia('Members/Edit', [
+            'member' => $member->getAttributes(),
+            'isMember' => $member->isMember(),
+            'date' => Carbon::today()->format('Y-m-d'),
+            'origin' => session(self::URL_KEY),
+            'genders' => Member::availableGenders(),
+            'paymentMethods' => Member::availablePaymentMethods(),
+            'memberClubs' => ClubMemberResource::collection(ClubMember::where('member_id', $member->id)->get()),
+            'memberSections' => MemberSectionResource::collection(MemberSection::where('member_id', $member->id)->get()),
+            'memberSubscriptions' => MemberSubscriptionResource::collection(MemberSubscription::where('member_id', $member->id)->get()),
+            'memberEvents' => EventMemberResource::collection(EventMember::where('member_id', $member->id)->get()),
+            'memberRoles' => MemberRoleResource::collection(MemberRole::where('member_id', $member->id)->get()),
+            'memberItems' => ItemMemberResource::collection(ItemMember::where('member_id', $member->id)->get()),
+        ]);
     }
 
     public function update(Request $request, Member $member): RedirectResponse
@@ -255,27 +264,18 @@ class MemberController extends Controller
             4 => 'Gestorben',
             5 => 'Eintritte',
             6 => 'Austritte',
-            7 => 'Erwachsene',
-            8 => 'Kinder & Jugendliche',
-            9 => 'Fällige Ehrungen',
-            10 => 'Hat Funktion',
-            11 => 'Hatte Funktion',
-            12 => 'Ohne Beitrag',
+            7 => 'Kinder (-13 Jahre)',
+            8 => 'Jugendliche (14-17 Jahre)',
+            9 => 'Erwachsene',
+            10 => 'Fällige Ehrungen',
+            11 => 'Hat Funktion',
+            12 => 'Hatte Funktion',
+            13 => 'Ohne Beitrag',
         ];
 
-        $sections = Section::used();
+        $sections = currentClub()->usedSections();
         foreach ($sections as $section) {
             $filters["hasSection_" . $section->id] = "Abteilung: " . $section->name;
-        }
-
-        $subscriptions = Subscription::used();
-        foreach ($subscriptions as $subscription) {
-            $filters["hasSubscription_" . $subscription->id] = "Beitrag: " . $subscription->name;
-        }
-
-        $paymentMethods = Member::availablePaymentMethods();
-        foreach ($paymentMethods as $key => $value) {
-            $filters["hasPayment_" . $key] = "Zahlung: " . $value;
         }
 
         return $filters;
@@ -334,22 +334,23 @@ class MemberController extends Controller
             1 => $query->members(),
             2 => $query->noMembers(),
             3 => $query->members()->milestoneBirthdays(),
-            4 => $query->deaths(),
+            4 => $query->dead(),
             5 => $query->joined(),
             6 => $query->retired(),
-            7 => $query->members()->ageRange(18, null),
-            8 => $query->members()->ageRange(null, 18),
-            9 => $query->members()->dueHonor(),
-            10 => $query->members()->hasRole(),
-            11 => $query->everRole(),
-            12 => $query->members()->noSubscription(),
+            7 => $query->members()->ageRange(null, 13),
+            8 => $query->members()->ageRange(14, 17),
+            9 => $query->members()->ageRange(18, null),
+            10 => $query->members()->dueHonor(),
+            11 => $query->members()->hasRole(),
+            12 => $query->everRole(),
+            13 => $query->members()->noSubscription(),
         };
     }
 
     public function applySpecialFilters(string $filter, Builder $query, array &$filters)
     {
         if (preg_match('/^hasSection_(\d+)$/', $filter, $match)) {
-            $query->members()->sectionMembers($match[1]);
+            $query->members()->sections($match[1]);
         }
         else if (preg_match('/^hasSubscription_(\d+)$/', $filter, $match)) {
             // subscriptions don't have a range
@@ -372,6 +373,14 @@ class MemberController extends Controller
         else if (preg_match('/^hadEvent_(\d+)$/', $filter, $match)) {
             $query->hadEvent($match[1]);
             $filters[$filter] = Event::find($match[1])->name;
+        }
+        else if (preg_match('/^hasItem_(\d+)$/', $filter, $match)) {
+            $query->hasItem($match[1]);
+            $filters[$filter] = Item::find($match[1])->name . '(Aktuell)';
+        }
+        else if (preg_match('/^everItem_(\d+)$/', $filter, $match)) {
+            $query->everItem($match[1]);
+            $filters[$filter] = Item::find($match[1])->name . '(Jemals)';
         }
     }
 

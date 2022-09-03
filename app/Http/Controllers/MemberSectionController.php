@@ -25,10 +25,11 @@ class MemberSectionController extends Controller
 
     public function create(Request $request, Member $member): Response
     {
-        return inertia('Members/MemberSection')
-            ->with('origin', route('members.edit', $member->id))
-            ->with('sections', Section::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]))
-            ->with('memberId', $member->id);
+        return inertia('Members/MemberSection', [
+            'origin' => route('members.edit', $member->id),
+            'sections' => Section::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'memberId' => $member->id,
+        ]);
     }
 
     public function store(Request $request, Member $member): RedirectResponse
@@ -45,10 +46,10 @@ class MemberSectionController extends Controller
     {
         return inertia('Members/MemberSection', [
             'memberSection' => $memberSection->getAttributes(),
-        ])
-            ->with('origin', route('members.edit', $member->id))
-            ->with('sections', Section::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]))
-            ->with('memberId', $member->id);
+            'origin' => route('members.edit', $member->id),
+            'sections' => Section::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'memberId' => $member->id,
+        ]);
     }
 
     public function update(Request $request, Member $member, memberSection $memberSection): RedirectResponse

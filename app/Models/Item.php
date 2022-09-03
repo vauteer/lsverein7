@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 
-class Subscription extends Model
+class Item extends Model
 {
     use HasFactory;
 
@@ -18,7 +18,8 @@ class Subscription extends Model
     protected static function booted()
     {
         static::addGlobalScope('club', function (Builder $builder) {
-            $builder->where('club_id', currentClubId());
+            $builder->whereNull('club_id')
+                ->orWhere('club_id', currentClubId());
         });
     }
 
@@ -30,18 +31,13 @@ class Subscription extends Model
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(Member::class)
-            ->withPivot(['memo'])
+            ->withPivot(['memo', 'from', 'to'])
             ->withTimestamps();
     }
 
     public function isInUse(): bool
     {
-        return DB::table('member_subscription')->where('subscription_id', $this->id)->count() > 0;
+        return DB::table('item_member')->where('item_id', $this->id)->count() > 0;
     }
 
-    public function __toString()
-    {
-        $amount = number_format($this->amount, 2, ',');
-        return "{$this->name} ($amount €)";
-    }
 }

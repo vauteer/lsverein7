@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\DB;
 
 class Event extends Model
 {
@@ -32,6 +33,11 @@ class Event extends Model
         return $this->belongsToMany(Member::class)
             ->withPivot(['date', 'memo'])
             ->withTimestamps();
+    }
+
+    public function isInUse(): bool
+    {
+        return DB::table('event_member')->where('event_id', $this->id)->count() > 0;
     }
 
 }

@@ -31,7 +31,7 @@ class BackupController extends Controller
 
         Backup::restore($filename);
 
-        return redirect()->route('tournaments')
+        return redirect()->route('members')
             ->with('success', "Das Backup wurde wiederhergestellt.");
     }
 

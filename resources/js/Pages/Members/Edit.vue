@@ -26,6 +26,7 @@ let props = defineProps({
     memberSubscriptions: Object,
     memberEvents: Object,
     memberRoles: Object,
+    memberItems: Object,
 });
 
 let form = useForm({
@@ -412,6 +413,56 @@ const getSubmitButtonText = computed(() => {
                                                                     <div class="flex justify-end">
                                                                         <Link v-if="role.modifiable"
                                                                               :href="`/members/${props.member.id}/role/${role.id}/edit`">
+                                                                            <PencilIcon class="h-5 w-5 text-blue-500"/>
+                                                                        </Link>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="px-4 sm:px-6 lg:px-8 mt-3">
+                                        <div class="flex flex-col">
+                                            <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                                <div class="inline-block min-w-full py-2 align-middle md:px-2">
+                                                    <div
+                                                        class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                                                        <table class="min-w-full divide-y divide-gray-300">
+                                                            <thead class="bg-gray-50">
+                                                            <tr>
+                                                                <th scope="col"
+                                                                    class="py-2 pl-4 pr-3 text-left text-base font-semibold text-gray-900">
+                                                                    Inventar
+                                                                </th>
+                                                                <th scope="col">
+
+                                                                </th>
+                                                                <th scope="col"
+                                                                    class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
+                                                                    <Link
+                                                                        class="rounded-md border border-transparent bg-indigo-600 px-4 py-1 my-1 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                                                                        :href="`/members/${props.member.id}/item/create`" as="button" type="button">
+                                                                        Neu
+                                                                    </Link>
+                                                                </th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody class="divide-y divide-gray-200 bg-white">
+                                                            <tr v-for="item in memberItems.data">
+                                                                <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
+                                                                    {{ item.name }}
+                                                                </td>
+                                                                <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                                                                    {{ item.range }}
+                                                                </td>
+                                                                <td class="px-3">
+                                                                    <div class="flex justify-end">
+                                                                        <Link v-if="item.modifiable"
+                                                                              :href="`/members/${props.member.id}/item/${item.id}/edit`">
                                                                             <PencilIcon class="h-5 w-5 text-blue-500"/>
                                                                         </Link>
                                                                     </div>

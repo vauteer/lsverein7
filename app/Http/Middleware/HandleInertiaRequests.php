@@ -55,6 +55,7 @@ class HandleInertiaRequests extends Middleware
                     'logoUrl' => $club->logoUrl(),
                     'showName' => $club->display !== 2,
                     'showLogo' => $club->display < 3,
+                    'useItems' => $club->use_items,
                 ] : null,
             ],
             'locale' => $locale,

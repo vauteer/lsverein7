@@ -29,9 +29,10 @@ class ClubMemberController extends Controller
     public function create(Request $request, Member $member): Response
     {
 
-        return inertia('Members/ClubMember')
-            ->with('origin', route('members.edit', $member->id))
-            ->with('memberId', $member->id);
+        return inertia('Members/ClubMember', [
+            'origin' => route('members.edit', $member->id),
+            'memberId' => $member->id,
+        ]);
     }
 
     public function store(Request $request, Member $member): RedirectResponse
@@ -48,9 +49,9 @@ class ClubMemberController extends Controller
     {
         return inertia('Members/ClubMember', [
                 'clubMember' => $clubMember->getAttributes(),
-            ])
-            ->with('origin', route('members.edit', $member->id))
-            ->with('memberId', $member->id);
+                'origin' => route('members.edit', $member->id),
+                'memberId' => $member->id,
+            ]);
     }
 
     public function update(Request $request, Member $member, ClubMember $clubMember): RedirectResponse

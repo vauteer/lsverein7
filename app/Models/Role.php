@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Role extends Model
 {
@@ -34,4 +35,10 @@ class Role extends Model
             ->withPivot(['from', 'to', 'memo'])
             ->withTimestamps();
     }
+
+    public function isInUse(): bool
+    {
+        return DB::table('member_role')->where('role_id', $this->id)->count() > 0;
+    }
+
 }

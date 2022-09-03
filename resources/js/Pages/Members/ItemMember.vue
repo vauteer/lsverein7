@@ -1,56 +1,59 @@
 <script setup>
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
-import {useForm, usePage} from "@inertiajs/inertia-vue3";
+import {useForm} from "@inertiajs/inertia-vue3";
 import Layout from '@/Shared/Layout.vue';
+import MySelect from '@/Shared/MySelect.vue';
 import TextInput from '@/Shared/TextInput.vue';
-import CheckBox from "@/Shared/CheckBox.vue";
+import MyTextArea from '@/Shared/MyTextArea.vue';
 import AbortButton from '@/Shared/AbortButton.vue';
 import SubmitButton from '@/Shared/SubmitButton.vue';
 import DeleteButton from '@/Shared/DeleteButton.vue';
-import MyConfirmation from "@/Shared/MyConfirmation.vue";
-
 
 let props = defineProps({
     origin: String,
-    role: Object,
-    deletable: Boolean,
+    itemMember: Object,
+    memberId: Number,
+    items: Object,
 });
 
 let form = useForm({
-    name: '',
-    global: false,
+    item_id: null,
+    from: null,
+    to: null,
+    memo: null,
 });
 
-const user = computed(() => usePage().props.value.auth.user);
-let showDeleteConfirmation = ref(false);
 let editMode = ref(false);
 
 onMounted(() => {
-    if (props.role !== undefined) {
-        form.name = props.role.name;
-        form.global = props.role.club_id === null;
+    if (props.itemMember !== undefined) {
+        form.item_id = String(props.itemMember.item_id)
+        form.from = props.itemMember.from;
+        form.to = props.itemMember.to;
+        form.memo = props.itemMember.memo;
 
         editMode.value = true;
     }
-    document.getElementById('name').focus();
+    document.getElementById('item').focus();
 });
 
 let submit = () => {
     if (editMode.value === true) {
-        form.put(`/roles/${props.role.id}`);
+        form.put(`/members/${props.memberId}/item/${props.itemMember.id}/`);
     } else {
-        form.post('/roles');
+        form.post(`/members/${props.memberId}/item`);
     }
 };
 
-let deleteRole = () => {
-    showDeleteConfirmation.value = false;
-    Inertia.delete(`/roles/${props.role.id}`);
+let deleteItemMember = () => {
+    if (confirm('Inventar löschen ?')) {
+        Inertia.delete(`/members/${props.memberId}/item/${props.itemMember.id}`);
+    }
 };
 
 const getTitle = computed(() => {
-    return editMode.value ? "Funktion bearbeiten" : "Neue Funktion";
+    return editMode.value ? "Inventar bearbeiten" : "Neues Inventar";
 });
 
 const getSubmitButtonText = computed(() => {
@@ -76,17 +79,23 @@ const getSubmitButtonText = computed(() => {
                         <form @submit.prevent="submit" class="space-y-8 divide-y divide-gray-200">
                             <div class="space-y-8 divide-y divide-gray-200 my-3 mx-2">
                                 <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
-                                    <TextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name"
-                                               id="name"
-                                               label="Name"/>
-                                    <CheckBox v-if="user.admin" v-model="form.global" :error="form.errors.global"
-                                              id="global" label="Global" />
+                                    <MySelect class="sm:col-span-4" v-model="form.item_id"
+                                              :error="form.errors.item_id"
+                                              :options="props.items" id="item" label="Inventar"/>
+                                    <TextInput class="sm:col-span-3" v-model="form.from"
+                                               :error="form.errors.from"
+                                               id="from" type="date" label="Von"/>
+                                    <TextInput class="sm:col-span-3" v-model="form.to"
+                                               :error="form.errors.to"
+                                               id="to" type="date" label="Bis"/>
+                                    <MyTextArea class="sm:col-span-6" v-model="form.memo" :error="form.errors.memo"
+                                                id="memo" label="Memo"/>
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
-                                        <DeleteButton v-if="deletable" @click.prevent="showDeleteConfirmation = true" />
+                                        <DeleteButton v-if="editMode" :onDelete="deleteItemMember"/>
                                         <div class="w-full flex justify-end">
-                                            <AbortButton :href="origin"  />
+                                            <AbortButton :href="origin" />
                                             <SubmitButton class="ml-2" :disabled="form.processing">
                                                 {{ getSubmitButtonText }}
                                             </SubmitButton>
@@ -99,8 +108,5 @@ const getSubmitButtonText = computed(() => {
                 </div>
             </div>
         </div>
-        <MyConfirmation v-if="showDeleteConfirmation" @canceled="showDeleteConfirmation = false" @confirmed="deleteRole">
-            {{ `Funktion '${role.name}' löschen`}}
-        </MyConfirmation>
     </Layout>
 </template>

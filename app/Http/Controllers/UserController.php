@@ -72,9 +72,10 @@ class UserController extends Controller
 
     public function create(Request $request): Response
     {
-        return inertia('Users/Edit')
-            ->with('origin', session(self::URL_KEY))
-            ->with('roles', User::availableRoles());
+        return inertia('Users/Edit', [
+            'origin' => session(self::URL_KEY),
+            'roles' => User::availableRoles(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -108,9 +109,9 @@ class UserController extends Controller
                 'email' => $user->email,
                 'role' => $user->clubRole(),
             ],
-        ])
-            ->with('origin', session(self::URL_KEY))
-            ->with('roles', User::availableRoles());
+            'origin' => session(self::URL_KEY),
+            'roles' => User::availableRoles(),
+        ]);
     }
 
     public function update(Request $request, User $user): RedirectResponse
