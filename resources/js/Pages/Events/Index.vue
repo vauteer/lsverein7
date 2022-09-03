@@ -2,7 +2,7 @@
 import {computed, ref, watch} from "vue";
 import {Head, Link} from '@inertiajs/inertia-vue3';
 import {Inertia} from "@inertiajs/inertia";
-import {PencilIcon, UsersIcon } from '@heroicons/vue/24/outline';
+import {PencilIcon, GlobeAltIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 import Layout from "@/Shared/Layout.vue";
 import ActionLink from "@/Shared/ActionLink.vue";
@@ -59,6 +59,7 @@ watch(search, throttle(function (value) {
                                         class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
                                         Name
                                     </th>
+                                    <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Status</span></th>
                                     <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Show Members</span></th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                         <span class="sr-only">Edit</span>
@@ -73,6 +74,9 @@ watch(search, throttle(function (value) {
                                     </td>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                                         <div class="font-bold">{{ event.name }}</div>
+                                    </td>
+                                    <td class="px-3">
+                                        <GlobeAltIcon v-if="event.global" class="h-5 w-5" />
                                     </td>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                                         <a @click="showMembers(event.id)" as="button" class="cursor-pointer text-blue-500">

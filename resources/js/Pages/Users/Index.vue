@@ -5,7 +5,7 @@ import {computed, ref, watch} from "vue";
 import { Head, Link } from '@inertiajs/inertia-vue3';
 import ActionLink from '@/Shared/ActionLink.vue';
 import Pagination from '@/Shared/Pagination.vue';
-import { PencilIcon, StarIcon, CheckIcon, LoginIcon } from '@heroicons/vue/24/outline';
+import { PencilIcon, StarIcon, CheckIcon, ArrowLeftOnRectangleIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 
 let props = defineProps({
@@ -57,7 +57,7 @@ watch(search, throttle(function (value) {
                                               :href="`/users/${user.id}/login`"
                                               method="post" as="button"
                                         >
-                                            <LoginIcon class="h-5 w-5 text-blue-500" />
+                                            <ArrowLeftOnRectangleIcon class="h-5 w-5 text-blue-500" />
                                         </Link>
                                         <CheckIcon v-if="user.id === auth.user.id" class="h-5 w-5"/>
                                     </td>

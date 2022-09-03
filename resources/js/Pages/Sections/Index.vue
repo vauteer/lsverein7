@@ -2,7 +2,7 @@
 import {computed, ref, watch} from "vue";
 import {Head, Link} from '@inertiajs/inertia-vue3';
 import {Inertia} from "@inertiajs/inertia";
-import {PencilIcon, UsersIcon } from '@heroicons/vue/24/outline';
+import {PencilIcon, GlobeAltIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 import Category from "@/Shared/Category.vue";
 import ActionLink from "@/Shared/ActionLink.vue";
@@ -76,6 +76,7 @@ watch(search, throttle(function (value) {
                                         <div class="font-bold">{{ section.name }}</div>
                                     </td>
                                     <td class="px-3">
+                                        <GlobeAltIcon v-if="section.global" class="h-5 w-5" />
                                     </td>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                                         <a @click="showMembers(section.id)" as="button" class="cursor-pointer text-blue-500">
