@@ -9,6 +9,7 @@ import MyTextArea from '@/Shared/MyTextArea.vue';
 import MyAbortButton from '@/Shared/MyAbortButton.vue';
 import MySubmitButton from '@/Shared/MySubmitButton.vue';
 import MyDeleteButton from '@/Shared/MyDeleteButton.vue';
+import MyConfirmation from "@/Shared/MyConfirmation.vue";
 
 let props = defineProps({
     origin: String,
@@ -24,6 +25,7 @@ let form = useForm({
     memo: null,
 });
 
+let showDeleteConfirmation = ref(false);
 let editMode = ref(false);
 
 onMounted(() => {
@@ -47,9 +49,8 @@ let submit = () => {
 };
 
 let deleteMemberRole = () => {
-    if (confirm('Funktion löschen ?')) {
-        Inertia.delete(`/members/${props.memberId}/role/${props.memberRole.id}`);
-    }
+    showDeleteConfirmation.value = false;
+    Inertia.delete(`/members/${props.memberId}/role/${props.memberRole.id}`);
 };
 
 const getTitle = computed(() => {
@@ -93,7 +94,7 @@ const getMySubmitButtonText = computed(() => {
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
-                                        <MyDeleteButton v-if="editMode" :onDelete="deleteMemberRole"/>
+                                        <MyDeleteButton v-if="editMode" @click.prevent="showDeleteConfirmation = true"/>
                                         <div class="w-full flex justify-end">
                                             <MyAbortButton :href="origin" />
                                             <MySubmitButton class="ml-2" :disabled="form.processing">
@@ -108,5 +109,7 @@ const getMySubmitButtonText = computed(() => {
                 </div>
             </div>
         </div>
-    </MyLayout>
+        <MyConfirmation v-if="showDeleteConfirmation" @canceled="showDeleteConfirmation = false" @confirmed="deleteMemberRole">
+            Funktion löschen
+        </MyConfirmation> </MyLayout>
 </template>

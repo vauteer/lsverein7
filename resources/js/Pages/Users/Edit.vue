@@ -8,10 +8,12 @@ import MyAbortButton from '@/Shared/MyAbortButton.vue';
 import MySubmitButton from '@/Shared/MySubmitButton.vue';
 import MyDeleteButton from '@/Shared/MyDeleteButton.vue';
 import MySelect from '@/Shared/MySelect.vue';
+import MyConfirmation from "@/Shared/MyConfirmation.vue";
 
 let props = defineProps({
     origin: String,
     user: Object,
+    deletable: Boolean,
     roles: Object,
 });
 
@@ -21,6 +23,7 @@ let form = useForm({
     role: '1',
 });
 
+let showDeleteConfirmation = ref(false);
 let editMode = ref(false);
 
 onMounted(() => {
@@ -44,9 +47,8 @@ let submit = () => {
 };
 
 let deleteUser = () => {
-    if (confirm('Wollen Sie den Benutzer wirklich löschen ?')) {
-        Inertia.delete(`/users/${props.user.id}`);
-    }
+    showDeleteConfirmation.value = false;
+    Inertia.delete(`/users/${props.user.id}`);
 };
 
 const getTitle = computed(() => {
@@ -84,7 +86,7 @@ const getMySubmitButtonText = computed(() => {
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
-                                        <MyDeleteButton v-if="editMode" :onDelete="deleteUser"/>
+                                        <MyDeleteButton v-if="deletable" @click.prevent="showDeleteConfirmation = true" />
                                         <div class="w-full flex justify-end">
                                             <MyAbortButton :href="origin" />
                                             <MySubmitButton class="ml-2" :disabled="form.processing">
@@ -99,5 +101,8 @@ const getMySubmitButtonText = computed(() => {
                 </div>
             </div>
         </div>
+        <MyConfirmation v-if="showDeleteConfirmation" @canceled="showDeleteConfirmation = false" @confirmed="deleteUser">
+            {{ `Benutzer '${user.name}' löschen`}}
+        </MyConfirmation>
     </MyLayout>
 </template>

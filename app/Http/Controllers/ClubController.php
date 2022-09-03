@@ -93,6 +93,7 @@ class ClubController extends Controller
     {
         return inertia('Clubs/Edit', [
             'club' => $club->getAttributes(),
+            'deletable' => auth()->user()->admin,
             'origin' => session(self::URL_KEY),
             'displayStyles' => Club::displayStyles(),
         ]);

@@ -8,11 +8,12 @@ import MyCheckBox from "@/Shared/MyCheckBox.vue";
 import MyAbortButton from '@/Shared/MyAbortButton.vue';
 import MySubmitButton from '@/Shared/MySubmitButton.vue';
 import MyDeleteButton from '@/Shared/MyDeleteButton.vue';
-
+import MyConfirmation from "@/Shared/MyConfirmation.vue";
 
 let props = defineProps({
     origin: String,
     event: Object,
+    deletable: Boolean,
 });
 
 let form = useForm({
@@ -21,6 +22,7 @@ let form = useForm({
 });
 
 const user = computed(() => usePage().props.value.auth.user);
+let showDeleteConfirmation = ref(false);
 let editMode = ref(false);
 
 onMounted(() => {
@@ -42,9 +44,8 @@ let submit = () => {
 };
 
 let deleteEvent = () => {
-    if (confirm('Wollen Sie das Ereignis wirklich löschen ?')) {
-        Inertia.delete(`/events/${props.event.id}`);
-    }
+    showDeleteConfirmation.value = false;
+    Inertia.delete(`/events/${props.event.id}`);
 };
 
 const getTitle = computed(() => {
@@ -82,7 +83,7 @@ const getSubmitButtonText = computed(() => {
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
-                                        <MyDeleteButton v-if="editMode" :onDelete="deleteEvent"/>
+                                        <MyDeleteButton v-if="deletable" @click.prevent="showDeleteConfirmation = true" />
                                         <div class="w-full flex justify-end">
                                             <MyAbortButton :href="origin" />
                                             <MySubmitButton class="ml-2" :disabled="form.processing">
@@ -97,5 +98,8 @@ const getSubmitButtonText = computed(() => {
                 </div>
             </div>
         </div>
+        <MyConfirmation v-if="showDeleteConfirmation" @canceled="showDeleteConfirmation = false" @confirmed="deleteEvent">
+            {{ `Ereignis '${role.name}' löschen`}}
+        </MyConfirmation>
     </MyLayout>
 </template>

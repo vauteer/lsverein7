@@ -9,10 +9,12 @@ import MySelect from "@/Shared/MySelect.vue";
 import MySubmitButton from "@/Shared/MySubmitButton.vue";
 import MyDeleteButton from "@/Shared/MyDeleteButton.vue";
 import MyImageUpload from "@/Shared/MyImageUpload.vue";
+import MyConfirmation from "@/Shared/MyConfirmation.vue";
 
 let props = defineProps({
     origin: String,
     club: Object,
+    deletable: Boolean,
     displayStyles: Object,
 });
 
@@ -65,13 +67,13 @@ let submit = () => {
     }
 };
 
-let deleteEntity = () => {
-    if (confirm('Wollen Sie den Verein wirklich löschen ?')) {
-        Inertia.delete(`/clubs/${props.club.id}`);
-    }
+let deleteClub = () => {
+    showDeleteConfirmation.value = false;
+    Inertia.delete(`/clubs/${props.club.id}`);
 };
 
 let editMode = ref(false);
+let showDeleteConfirmation = ref(false);
 
 const getTitle = computed(() => {
     return editMode.value ? "Verein bearbeiten" : "Neuer Verein";
@@ -153,7 +155,7 @@ function back() {
                             </div>
                             <div class="py-5">
                                 <div class="flex justify-between">
-                                    <MyDeleteButton v-if="editMode" :onDelete="deleteEntity"/>
+                                    <MyDeleteButton v-if="deletable" @click.prevent="showDeleteConfirmation = true" />
                                     <div class="w-full flex justify-end">
                                         <MyAbortButton :href="origin" />
                                         <MySubmitButton class="ml-2" :disabled="form.processing">
@@ -167,5 +169,8 @@ function back() {
                 </div>
             </div>
         </div>
+        <MyConfirmation v-if="showDeleteConfirmation" @canceled="showDeleteConfirmation = false" @confirmed="deleteClub">
+            {{ `Verein '${club.name}' löschen`}}
+        </MyConfirmation>
     </MyLayout>
 </template>

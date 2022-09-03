@@ -109,6 +109,7 @@ class UserController extends Controller
                 'email' => $user->email,
                 'role' => $user->clubRole(),
             ],
+            'deletable' => auth()->user()->hasAdminRights() && auth()->id() !== $user->id,
             'origin' => session(self::URL_KEY),
             'roles' => User::availableRoles(),
         ]);

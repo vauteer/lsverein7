@@ -10,7 +10,6 @@ import MySubmitButton from '@/Shared/MySubmitButton.vue';
 import MyDeleteButton from '@/Shared/MyDeleteButton.vue';
 import MyConfirmation from "@/Shared/MyConfirmation.vue";
 
-
 let props = defineProps({
     origin: String,
     role: Object,
