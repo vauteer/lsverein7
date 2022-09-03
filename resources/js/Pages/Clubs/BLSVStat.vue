@@ -1,6 +1,6 @@
 <script setup>
 import {Head} from '@inertiajs/inertia-vue3';
-import Layout from "@/Shared/Layout.vue";
+import MyLayout from "@/Shared/MyLayout.vue";
 
 let props = defineProps({
     downloads: Object,
@@ -9,7 +9,7 @@ let props = defineProps({
 </script>
 
 <template>
-    <Layout>
+    <MyLayout>
         <Head title="downloads"/>
 
         <div
@@ -34,5 +34,5 @@ let props = defineProps({
                 </ul>
             </div>
         </div>
-    </Layout>
+    </MyLayout>
 </template>

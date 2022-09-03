@@ -1,3 +1,25 @@
+<script>
+export default {
+    layout: null,
+}
+</script>
+
+<script setup>
+import { useForm, Head } from "@inertiajs/inertia-vue3";
+
+const props = defineProps({
+    status: String,
+});
+
+const form = useForm({
+    email: '',
+});
+
+let submit = () => {
+    form.post('/forgot-password');
+};
+</script>
+
 <template>
     <div>
         <Head title="Passwort vergessen" />
@@ -36,24 +58,3 @@
     </div>
 </template>
 
-<script>
-export default {
-    layout: null,
-}
-</script>
-
-<script setup>
-import { useForm } from "@inertiajs/inertia-vue3";
-
-const props = defineProps({
-    status: String,
-});
-
-const form = useForm({
-    email: '',
-});
-
-let submit = () => {
-    form.post('/forgot-password');
-};
-</script>

@@ -1,8 +1,8 @@
 <script setup>
 import { computed } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/inertia-vue3';
-import Layout from '@/Shared/Layout.vue';
-import SubmitButton from '@/Shared/SubmitButton.vue';
+import MyLayout from '@/Shared/MyLayout.vue';
+import MySubmitButton from '@/Shared/MySubmitButton.vue';
 
 const props = defineProps({
     status: String,
@@ -18,7 +18,7 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
 </script>
 
 <template>
-    <Layout>
+    <MyLayout>
         <Head title="Email Verification" />
 
         <div class="mb-4 text-sm text-gray-600">
@@ -31,12 +31,12 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
 
         <form @submit.prevent="submit">
             <div class="mt-4 flex items-center justify-between">
-                <SubmitButton :disabled="form.processing" class="w-full">
+                <MySubmitButton :disabled="form.processing" class="w-full">
                     Resend Verification Email
-                </SubmitButton>
+                </MySubmitButton>
 
                 <Link :href="route('logout')" method="post" as="button" class="underline text-sm text-gray-600 hover:text-gray-900">Log Out</Link>
             </div>
         </form>
-    </Layout>
+    </MyLayout>
 </template>

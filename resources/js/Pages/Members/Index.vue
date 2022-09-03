@@ -4,10 +4,10 @@ import {Head, Link} from '@inertiajs/inertia-vue3';
 import {Inertia} from "@inertiajs/inertia";
 import {PencilIcon, IdentificationIcon, CloudIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
-import Layout from "@/Shared/Layout.vue";
-import Pagination from "@/Shared/Pagination.vue";
-import ActionLink from "@/Shared/ActionLink.vue";
-import TextInput from "@/Shared/TextInput.vue";
+import MyLayout from "@/Shared/MyLayout.vue";
+import MyPagination from "@/Shared/MyPagination.vue";
+import MyActionLink from "@/Shared/MyActionLink.vue";
+import MyTextInput from "@/Shared/MyTextInput.vue";
 import MySelect from "@/Shared/MySelect.vue";
 
 let props = defineProps({
@@ -53,14 +53,14 @@ watch(state, throttle(function (newValue) {
 </script>
 
 <template>
-    <Layout>
+    <MyLayout>
         <Head title="Mitglieder"/>
 
         <div
             class="w-full max-w-4xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-2 px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-8 py-2 mt-2">
                 <MySelect class="sm:col-span-2" v-model="state.filter" :options="props.filters" id="quick-filters" :label="`Auswahl (${members.meta.total} Personen)`" />
-                <TextInput class="sm:col-span-2" v-model="state.search" id="search" label="Suchen"
+                <MyTextInput class="sm:col-span-2" v-model="state.search" id="search" label="Suchen"
                        placeholder="Suchen..."/>
                 <MySelect class="sm:col-span-2" :disabled="!yearEnabled" v-model="state.year" :options="props.years" id="years" label="Stichtag" :hideDisabled="true"/>
                 <MySelect class="sm:col-span-2" v-model="state.sort" :options="props.sorts" id="sorts" label="Sortierung"/>
@@ -95,7 +95,7 @@ watch(state, throttle(function (newValue) {
                                         </div>
                                     </th>
                                     <th scope="col" class="relative pl-3 pr-2 sm:pr-2 w-6">
-                                        <ActionLink v-if="clubAdmin" href="/members/create">Neu</ActionLink>
+                                        <MyActionLink v-if="clubAdmin" href="/members/create">Neu</MyActionLink>
                                     </th>
                                 </tr>
                                 </thead>
@@ -135,12 +135,12 @@ watch(state, throttle(function (newValue) {
                             >
                                 Keine Daten
                             </div>
-                            <Pagination v-if="members.meta.last_page > 1" class="mt-6"
-                                        :meta="members.meta"></Pagination>
+                            <MyPagination v-if="members.meta.last_page > 1" class="mt-6"
+                                        :meta="members.meta"></MyPagination>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </Layout>
+    </MyLayout>
 </template>

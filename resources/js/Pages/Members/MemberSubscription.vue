@@ -2,14 +2,12 @@
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-vue3";
-import Layout from '@/Shared/Layout.vue';
+import MyLayout from '@/Shared/MyLayout.vue';
 import MySelect from '@/Shared/MySelect.vue';
-import TextInput from '@/Shared/TextInput.vue';
 import MyTextArea from '@/Shared/MyTextArea.vue';
-import AbortButton from '@/Shared/AbortButton.vue';
-import SubmitButton from '@/Shared/SubmitButton.vue';
-import DeleteButton from '@/Shared/DeleteButton.vue';
-
+import MyAbortButton from '@/Shared/MyAbortButton.vue';
+import MySubmitButton from '@/Shared/MySubmitButton.vue';
+import MyDeleteButton from '@/Shared/MyDeleteButton.vue';
 
 let props = defineProps({
     origin: String,
@@ -55,14 +53,14 @@ const getTitle = computed(() => {
     return editMode.value ? "Beitrag bearbeiten" : "Neuer Beitrag";
 });
 
-const getSubmitButtonText = computed(() => {
+const getMySubmitButtonText = computed(() => {
     return editMode.value ? "Speichern" : "Hinzufügen";
 });
 
 </script>
 
 <template>
-    <Layout>
+    <MyLayout>
         <div>
             <button
                 tabindex="-1"
@@ -86,12 +84,12 @@ const getSubmitButtonText = computed(() => {
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
-                                        <DeleteButton v-if="editMode" :onDelete="deletememberSubscription"/>
+                                        <MyDeleteButton v-if="editMode" :onDelete="deletememberSubscription"/>
                                         <div class="w-full flex justify-end">
-                                            <AbortButton :href="origin" />
-                                            <SubmitButton class="ml-2" :disabled="form.processing">
-                                                {{ getSubmitButtonText }}
-                                            </SubmitButton>
+                                            <MyAbortButton :href="origin" />
+                                            <MySubmitButton class="ml-2" :disabled="form.processing">
+                                                {{ getMySubmitButtonText }}
+                                            </MySubmitButton>
                                         </div>
                                     </div>
                                 </div>
@@ -101,5 +99,5 @@ const getSubmitButtonText = computed(() => {
                 </div>
             </div>
         </div>
-    </Layout>
+    </MyLayout>
 </template>

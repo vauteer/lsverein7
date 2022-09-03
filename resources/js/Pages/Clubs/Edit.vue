@@ -2,14 +2,13 @@
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import { useForm, Head, Link } from "@inertiajs/inertia-vue3";
-import Layout from "@/Shared/Layout.vue";
-import TextInput from "@/Shared/TextInput.vue";
-import CheckBox from "@/Shared/CheckBox.vue";
+import MyLayout from "@/Shared/MyLayout.vue";
+import MyTextInput from "@/Shared/MyTextInput.vue";
+import MyCheckBox from "@/Shared/MyCheckBox.vue";
 import MySelect from "@/Shared/MySelect.vue";
-import AbortButton from "@/Shared/AbortButton.vue";
-import SubmitButton from "@/Shared/SubmitButton.vue";
-import DeleteButton from "@/Shared/DeleteButton.vue";
-import ImageUpload from "@/Shared/ImageUpload.vue";
+import MySubmitButton from "@/Shared/MySubmitButton.vue";
+import MyDeleteButton from "@/Shared/MyDeleteButton.vue";
+import MyImageUpload from "@/Shared/MyImageUpload.vue";
 
 let props = defineProps({
     origin: String,
@@ -98,7 +97,7 @@ function back() {
 
 <template>
     <Head title="Vereine" />
-    <Layout>
+    <MyLayout>
         <button
             tabindex="-1"
             class="hidden md:block fixed z-20 inset-0 h-full w-full bg-black opacity-50 cursor-default"
@@ -111,7 +110,7 @@ function back() {
                     <form  @submit.prevent="submit" class="space-y-8 divide-y divide-gray-200">
                         <div class="space-y-8 divide-y divide-gray-200 my-3 mx-2">
                             <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-8">
-                                <ImageUpload
+                                <MyImageUpload
                                     label="Logo"
                                     class="sm:col-span-2"
                                     id="logo"
@@ -121,45 +120,45 @@ function back() {
                                     v-on:change="onLogoChanged"
                                 />
                                 <div class="sm:col-span-6 grid sm:grid-cols-6 gap-y-4">
-                                    <TextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name" id="name"
+                                    <MyTextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name" id="name"
                                                label="Name"/>
-                                    <TextInput class="sm:col-span-6" v-model="form.street" :error="form.errors.street" id="street"
+                                    <MyTextInput class="sm:col-span-6" v-model="form.street" :error="form.errors.street" id="street"
                                                label="Straße"/>
-                                    <TextInput class="sm:col-span-1" v-model="form.zipcode" :error="form.errors.zipcode"
+                                    <MyTextInput class="sm:col-span-1" v-model="form.zipcode" :error="form.errors.zipcode"
                                         id="zipcode" label="PLZ" />
-                                    <TextInput class="sm:col-span-5 sm:ml-3" v-model="form.city" :error="form.errors.city"
+                                    <MyTextInput class="sm:col-span-5 sm:ml-3" v-model="form.city" :error="form.errors.city"
                                         id="city" label="Ort" />
-                                    <TextInput class="sm:col-span-6" v-model="form.bank" :error="form.errors.bank"
+                                    <MyTextInput class="sm:col-span-6" v-model="form.bank" :error="form.errors.bank"
                                         id="bank" label="Bankinstitut" />
-                                    <TextInput class="sm:col-span-6" v-model="form.account_owner" :error="form.errors.account_owner"
+                                    <MyTextInput class="sm:col-span-6" v-model="form.account_owner" :error="form.errors.account_owner"
                                         id="account_owner" label="Kontoinhaber" />
-                                    <TextInput class="sm:col-span-6" v-model="form.iban" :error="form.errors.iban"
+                                    <MyTextInput class="sm:col-span-6" v-model="form.iban" :error="form.errors.iban"
                                         id="iban" label="IBAN" />
-                                    <TextInput class="sm:col-span-6" v-model="form.bic" :error="form.errors.bic"
+                                    <MyTextInput class="sm:col-span-6" v-model="form.bic" :error="form.errors.bic"
                                         id="bic" label="BIC" />
-                                    <TextInput class="sm:col-span-4" v-model="form.sepa" :error="form.errors.sepa"
+                                    <MyTextInput class="sm:col-span-4" v-model="form.sepa" :error="form.errors.sepa"
                                         id="sepa" label="Sepa-Mandat" />
-                                    <TextInput class="sm:col-span-2 sm:ml-3" v-model="form.sepa_date" :error="form.errors.sepa_date"
+                                    <MyTextInput class="sm:col-span-2 sm:ml-3" v-model="form.sepa_date" :error="form.errors.sepa_date"
                                                id="sepa_date"
                                                type='date' label="Sepa-Mandatsdatum" />
-                                    <TextInput class="sm:col-span-6" v-model="form.honor_years" :error="form.errors.honor_years"
+                                    <MyTextInput class="sm:col-span-6" v-model="form.honor_years" :error="form.errors.honor_years"
                                                id="honor-years" label="Ehrungen Mitgliedsjahre" placeholder="10,20,..." />
                                     <MySelect class="sm:col-span-6" v-model="form.display" :error="form.errors.display"
                                               :options="props.displayStyles" id="display" label="Anzeige"/>
-                                    <CheckBox class="sm:col-span-6" v-model="form.blsv_member" :error="form.errors.blsv_member"
+                                    <MyCheckBox class="sm:col-span-6" v-model="form.blsv_member" :error="form.errors.blsv_member"
                                               id="blsv-member" label="BLSV-Mitglied"/>
-                                    <CheckBox class="sm:col-span-6" v-model="form.use_items" :error="form.errors.use_items"
+                                    <MyCheckBox class="sm:col-span-6" v-model="form.use_items" :error="form.errors.use_items"
                                               id="use-items" label="Inventar benutzen"/>
                                 </div>
                             </div>
                             <div class="py-5">
                                 <div class="flex justify-between">
-                                    <DeleteButton v-if="editMode" :onDelete="deleteEntity"/>
+                                    <MyDeleteButton v-if="editMode" :onDelete="deleteEntity"/>
                                     <div class="w-full flex justify-end">
-                                        <AbortButton :href="origin" />
-                                        <SubmitButton class="ml-2" :disabled="form.processing">
+                                        <MyAbortButton :href="origin" />
+                                        <MySubmitButton class="ml-2" :disabled="form.processing">
                                             {{ getSubmitButtonText }}
-                                        </SubmitButton>
+                                        </MySubmitButton>
                                     </div>
                                 </div>
                             </div>
@@ -168,5 +167,5 @@ function back() {
                 </div>
             </div>
         </div>
-    </Layout>
+    </MyLayout>
 </template>

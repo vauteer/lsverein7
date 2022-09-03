@@ -3,14 +3,13 @@ import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm, Link, Head} from "@inertiajs/inertia-vue3";
 import {PencilIcon, LockClosedIcon} from '@heroicons/vue/24/outline';
-import Layout from "@/Shared/Layout.vue";
-import TextInput from "@/Shared/TextInput.vue";
+import MyLayout from "@/Shared/MyLayout.vue";
+import MyTextInput from "@/Shared/MyTextInput.vue";
 import MyTextArea from "@/Shared/MyTextArea.vue"
 import MySelect from "@/Shared/MySelect.vue";
-import AbortButton from "@/Shared/AbortButton.vue";
-import SubmitButton from "@/Shared/SubmitButton.vue";
-import DeleteButton from "@/Shared/DeleteButton.vue";
-import ActionLink from "@/Shared/ActionLink.vue";
+import MyAbortButton from "@/Shared/MyAbortButton.vue";
+import MySubmitButton from "@/Shared/MySubmitButton.vue";
+import MyActionLink from "@/Shared/MyActionLink.vue";
 
 let props = defineProps({
     isMember: { type: Boolean, default: false },
@@ -96,7 +95,7 @@ const getTitle = computed(() => {
     return editMode.value ? "Mitglied bearbeiten" : "Neues Mitglied";
 });
 
-const getSubmitButtonText = computed(() => {
+const getMySubmitButtonText = computed(() => {
     return editMode.value ? "Speichern" : "Hinzufügen";
 });
 
@@ -105,7 +104,7 @@ const getSubmitButtonText = computed(() => {
 <template>
     <Head title="Mitglieder"/>
 
-    <Layout>
+    <MyLayout>
         <button
             tabindex="-1"
             class="hidden md:block fixed z-20 inset-0 h-full w-full bg-black opacity-50 cursor-default"
@@ -125,29 +124,29 @@ const getSubmitButtonText = computed(() => {
                                 <div class="sm:col-span-3 grid gap-y-4 gap-x-4">
                                     <MySelect class="sm:col-span-1" v-model="form.gender" :error="form.errors.gender"
                                               :options="props.genders" id="gender" label="Geschlecht"/>
-                                    <TextInput class="sm:col-span-3" v-model="form.first_name"
+                                    <MyTextInput class="sm:col-span-3" v-model="form.first_name"
                                                :error="form.errors.first_name"
                                                id="first_name" label="Vorname"/>
-                                    <TextInput class="sm:col-span-3" v-model="form.surname" :error="form.errors.surname"
+                                    <MyTextInput class="sm:col-span-3" v-model="form.surname" :error="form.errors.surname"
                                                id="surname"
                                                label="Nachname"/>
-                                    <TextInput class="sm:col-span-3" v-model="form.street" :error="form.errors.street"
+                                    <MyTextInput class="sm:col-span-3" v-model="form.street" :error="form.errors.street"
                                                id="street" label="Straße"/>
-                                    <TextInput class="sm:col-span-1" v-model="form.zipcode" :error="form.errors.zipcode"
+                                    <MyTextInput class="sm:col-span-1" v-model="form.zipcode" :error="form.errors.zipcode"
                                                id="zipcode" label="PLZ"/>
-                                    <TextInput class="sm:col-span-2" v-model="form.city" :error="form.errors.city"
+                                    <MyTextInput class="sm:col-span-2" v-model="form.city" :error="form.errors.city"
                                                id="city" label="Wohnort"/>
-                                    <TextInput class="sm:col-span-1" v-model="form.birthday"
+                                    <MyTextInput class="sm:col-span-1" v-model="form.birthday"
                                                :error="form.errors.birthday"
                                                id="birthday" type="date" label="Geburtstag"/>
-                                    <TextInput v-if="editMode" class="sm:col-span-1" v-model="form.death_day"
+                                    <MyTextInput v-if="editMode" class="sm:col-span-1" v-model="form.death_day"
                                                :error="form.errors.death_day"
                                                id="death-day" type="date" label="Gestorben"/>
-                                    <TextInput class="sm:col-span-3" v-model="form.email" :error="form.errors.email"
+                                    <MyTextInput class="sm:col-span-3" v-model="form.email" :error="form.errors.email"
                                                id="email" label="Email" type="email"/>
-                                    <TextInput class="sm:col-span-3" v-model="form.phone" :error="form.errors.phone"
+                                    <MyTextInput class="sm:col-span-3" v-model="form.phone" :error="form.errors.phone"
                                                id="phone" label="Telefon" type="tel"/>
-                                    <TextInput v-if="!editMode" class="sm:col-span-1" v-model="form.entry_date"
+                                    <MyTextInput v-if="!editMode" class="sm:col-span-1" v-model="form.entry_date"
                                                :error="form.errors.entry_date"
                                                id="entry-date" type="date" label="Eintritt"/>
                                     <MySelect v-if="!editMode" class="sm:col-span-2" v-model="form.section"
@@ -160,14 +159,14 @@ const getSubmitButtonText = computed(() => {
                                     <MySelect class="sm:col-span-1" v-model="form.payment_method"
                                               :error="form.errors.payment_method"
                                               :options="props.paymentMethods" id="payment-method" label="Zahlweise"/>
-                                    <TextInput class="sm:col-span-3" v-model="form.bank" :error="form.errors.bank"
+                                    <MyTextInput class="sm:col-span-3" v-model="form.bank" :error="form.errors.bank"
                                                id="bank" label="Bank"/>
-                                    <TextInput class="sm:col-span-3" v-model="form.account_owner"
+                                    <MyTextInput class="sm:col-span-3" v-model="form.account_owner"
                                                :error="form.errors.account_owner"
                                                id="account_owner" label="Kontoinhaber"/>
-                                    <TextInput class="sm:col-span-3" v-model="form.iban" :error="form.errors.iban"
+                                    <MyTextInput class="sm:col-span-3" v-model="form.iban" :error="form.errors.iban"
                                                id="iban" label="IBAN"/>
-                                    <TextInput class="sm:col-span-3" v-model="form.bic" :error="form.errors.bic"
+                                    <MyTextInput class="sm:col-span-3" v-model="form.bic" :error="form.errors.bic"
                                                id="bic" label="BIC"/>
                                     <MyTextArea class="sm:col-span-3" v-model="form.memo" :error="form.errors.memo"
                                                 id="memo" label="Memo"/>
@@ -218,12 +217,12 @@ const getSubmitButtonText = computed(() => {
                                         </div>
                                     </div>
                                     <div class="flex justify-end mt-2" v-if="isMember">
-                                        <TextInput class="" v-model="resignDate"
+                                        <MyTextInput class="" v-model="resignDate"
                                                    id="resign-date" type="date"/>
-                                        <ActionLink :href="`/members/${member.id}/resign`" method="put"
+                                        <MyActionLink :href="`/members/${member.id}/resign`" method="put"
                                                     :data="{ date: resignDate }"
                                                     class="bg-red-500 mx-2"
-                                        >Austritt</ActionLink>
+                                        >Austritt</MyActionLink>
                                     </div>
                                     <div class="px-4 sm:px-6 lg:px-8 mt-3">
                                         <div class="flex flex-col">
@@ -480,10 +479,10 @@ const getSubmitButtonText = computed(() => {
                             <div class="py-5">
                                 <div class="flex justify-between">
                                     <div class="w-full flex justify-end">
-                                        <AbortButton :href="origin" />
-                                        <SubmitButton class="ml-2" :disabled="form.processing">
-                                            {{ getSubmitButtonText }}
-                                        </SubmitButton>
+                                        <MyAbortButton :href="origin" />
+                                        <MySubmitButton class="ml-2" :disabled="form.processing">
+                                            {{ getMySubmitButtonText }}
+                                        </MySubmitButton>
                                     </div>
                                 </div>
                             </div>
@@ -492,5 +491,5 @@ const getSubmitButtonText = computed(() => {
                 </div>
             </div>
         </div>
-    </Layout>
+    </MyLayout>
 </template>

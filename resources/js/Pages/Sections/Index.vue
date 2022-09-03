@@ -1,13 +1,12 @@
 <script setup>
-import {computed, ref, watch} from "vue";
+import {ref, watch} from "vue";
 import {Head, Link} from '@inertiajs/inertia-vue3';
 import {Inertia} from "@inertiajs/inertia";
 import {PencilIcon, GlobeAltIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
-import Category from "@/Shared/Category.vue";
-import ActionLink from "@/Shared/ActionLink.vue";
-import Pagination from "@/Shared/Pagination.vue";
-import Layout from "@/Shared/Layout.vue";
+import MyActionLink from "@/Shared/MyActionLink.vue";
+import MyPagination from "@/Shared/MyPagination.vue";
+import MyLayout from "@/Shared/MyLayout.vue";
 
 let props = defineProps({
     sections: Object,
@@ -37,7 +36,7 @@ watch(search, throttle(function (value) {
 </script>
 
 <template>
-    <Layout>
+    <MyLayout>
         <Head title="Abteilungen"/>
 
         <div class="w-full max-w-2xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-2 px-4 sm:px-6 lg:px-8">
@@ -63,7 +62,7 @@ watch(search, throttle(function (value) {
                                     <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Show Members</span></th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                         <span class="sr-only">Edit</span>
-                                        <ActionLink v-if="props.canCreate" href="/sections/create">Neu</ActionLink>
+                                        <MyActionLink v-if="props.canCreate" href="/sections/create">Neu</MyActionLink>
                                     </th>
                                 </tr>
                                 </thead>
@@ -98,12 +97,12 @@ watch(search, throttle(function (value) {
                             >
                                 Keine Daten
                             </div>
-                            <Pagination v-if="sections.meta.last_page > 1" class="mt-6"
-                                        :meta="sections.meta"></Pagination>
+                            <MyPagination v-if="sections.meta.last_page > 1" class="mt-6"
+                                        :meta="sections.meta"></MyPagination>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </Layout>
+    </MyLayout>
 </template>

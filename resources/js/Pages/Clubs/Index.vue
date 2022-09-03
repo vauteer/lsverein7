@@ -4,9 +4,9 @@ import {Head, Link} from '@inertiajs/inertia-vue3';
 import {Inertia} from "@inertiajs/inertia";
 import {PencilIcon, ChevronDoubleRightIcon, CheckIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
-import Layout from "@/Shared/Layout.vue";
-import ActionLink from "@/Shared/ActionLink.vue";
-import Pagination from "@/Shared/Pagination.vue";
+import MyLayout from "@/Shared/MyLayout.vue";
+import MyActionLink from "@/Shared/MyActionLink.vue";
+import MyPagination from "@/Shared/MyPagination.vue";
 
 let props = defineProps({
     auth: Object,
@@ -27,7 +27,7 @@ watch(search, throttle(function (value) {
 </script>
 
 <template>
-    <Layout>
+    <MyLayout>
         <Head title="Vereine"/>
 
         <div
@@ -54,7 +54,7 @@ watch(search, throttle(function (value) {
                                     <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Status</span></th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                         <span class="sr-only">Edit</span>
-                                        <ActionLink v-if="props.canCreate" href="/clubs/create">Neu</ActionLink>
+                                        <MyActionLink v-if="props.canCreate" href="/clubs/create">Neu</MyActionLink>
                                     </th>
                                 </tr>
                                 </thead>
@@ -97,12 +97,12 @@ watch(search, throttle(function (value) {
                             >
                                 Keine Daten
                             </div>
-                            <Pagination v-if="clubs.meta.last_page > 1" class="mt-6"
-                                        :meta="clubs.meta"></Pagination>
+                            <MyPagination v-if="clubs.meta.last_page > 1" class="mt-6"
+                                        :meta="clubs.meta"></MyPagination>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </Layout>
+    </MyLayout>
 </template>

@@ -1,7 +1,7 @@
 <script setup>
 import {Head, Link, useForm} from '@inertiajs/inertia-vue3';
-import TextInput from '@/Shared/TextInput.vue';
-import SubmitButton from '@/Shared/SubmitButton.vue';
+import MyTextInput from '@/Shared/MyTextInput.vue';
+import MySubmitButton from '@/Shared/MySubmitButton.vue';
 
 const form = useForm({
     name: '',
@@ -22,19 +22,19 @@ const submit = () => {
     <Head title="Register"/>
 
     <form @submit.prevent="submit">
-        <TextInput v-model="form.name"
+        <MyTextInput v-model="form.name"
                    :error="form.errors.name" id="name"
                    label="Name" type="text" required/>
 
-        <TextInput v-model="form.email"
+        <MyTextInput v-model="form.email"
                    :error="form.errors.email" id="email"
                    label="Email" type="email" required/>
 
-        <TextInput v-model="form.password"
+        <MyTextInput v-model="form.password"
                    :error="form.errors.password" id="password"
                    label="Passwort" type="password" required/>
 
-        <TextInput v-model="form.password_confirmation"
+        <MyTextInput v-model="form.password_confirmation"
                    :error="form.errors.password_confirmation" id="password_confirmation"
                    label="Passwort bestätigen" type="password" required/>
 
@@ -43,9 +43,9 @@ const submit = () => {
                 Already registered?
             </Link>
 
-            <SubmitButton :disabled="form.processing" class="w-full">
+            <MySubmitButton :disabled="form.processing" class="w-full">
                 Register
-            </SubmitButton>
+            </MySubmitButton>
         </div>
     </form>
 </template>

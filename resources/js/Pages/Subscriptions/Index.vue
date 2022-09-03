@@ -4,10 +4,10 @@ import {Head, Link} from '@inertiajs/inertia-vue3';
 import {Inertia} from "@inertiajs/inertia";
 import {PencilIcon, ChevronDoubleRightIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
-import TextInput from "@/Shared/TextInput.vue";
-import ActionLink from "@/Shared/ActionLink.vue";
-import Pagination from "@/Shared/Pagination.vue";
-import Layout from "@/Shared/Layout.vue";
+import MyTextInput from "@/Shared/MyTextInput.vue";
+import MyActionLink from "@/Shared/MyActionLink.vue";
+import MyPagination from "@/Shared/MyPagination.vue";
+import MyLayout from "@/Shared/MyLayout.vue";
 
 let props = defineProps({
     subscriptions: Object,
@@ -42,7 +42,7 @@ watch(search, throttle(function (value) {
 </script>
 
 <template>
-    <Layout>
+    <MyLayout>
         <Head title="Beiträge"/>
 
         <div
@@ -52,10 +52,10 @@ watch(search, throttle(function (value) {
                        class="text-gray-700 px-2 my-2 text-base border rounded-lg"
                 />
                 <div v-else class="flex">
-                    <ActionLink v-if="anySelected" class="my-2 ml-2" href="/subscriptions/debit" method="post"
+                    <MyActionLink v-if="anySelected" class="my-2 ml-2" href="/subscriptions/debit" method="post"
                                 :data="{ subscriptions: selected, date: date }"
-                    >Abbuchen zum:</ActionLink>
-                    <TextInput v-if="anySelected" class="my-2 ml-2" v-model="date" id="date" type="date" label=""/>
+                    >Abbuchen zum:</MyActionLink>
+                    <MyTextInput v-if="anySelected" class="my-2 ml-2" v-model="date" id="date" type="date" label=""/>
                 </div>
             </div>
 
@@ -81,7 +81,7 @@ watch(search, throttle(function (value) {
                                     <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Show Members</span></th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                         <span class="sr-only">Edit</span>
-                                        <ActionLink v-if="props.canCreate" href="/subscriptions/create">Neu</ActionLink>
+                                        <MyActionLink v-if="props.canCreate" href="/subscriptions/create">Neu</MyActionLink>
                                     </th>
                                 </tr>
                                 </thead>
@@ -122,12 +122,12 @@ watch(search, throttle(function (value) {
                             >
                                 Keine Daten
                             </div>
-                            <Pagination v-if="subscriptions.meta.last_page > 1" class="mt-6"
-                                        :meta="subscriptions.meta"></Pagination>
+                            <MyPagination v-if="subscriptions.meta.last_page > 1" class="mt-6"
+                                        :meta="subscriptions.meta"></MyPagination>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </Layout>
+    </MyLayout>
 </template>

@@ -2,13 +2,12 @@
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-vue3";
-import Layout from '@/Shared/Layout.vue';
-import TextInput from '@/Shared/TextInput.vue';
+import MyLayout from '@/Shared/MyLayout.vue';
+import MyTextInput from '@/Shared/MyTextInput.vue';
 import MyTextArea from '@/Shared/MyTextArea.vue';
-import AbortButton from '@/Shared/AbortButton.vue';
-import SubmitButton from '@/Shared/SubmitButton.vue';
-import DeleteButton from '@/Shared/DeleteButton.vue';
-
+import MyAbortButton from '@/Shared/MyAbortButton.vue';
+import MySubmitButton from '@/Shared/MySubmitButton.vue';
+import MyDeleteButton from '@/Shared/MyDeleteButton.vue';
 
 let props = defineProps({
     clubMember: Object,
@@ -53,14 +52,14 @@ const getTitle = computed(() => {
     return editMode.value ? "Mitgliedschaft bearbeiten" : "Neue Mitgliedschaft";
 });
 
-const getSubmitButtonText = computed(() => {
+const getMySubmitButtonText = computed(() => {
     return editMode.value ? "Speichern" : "Hinzufügen";
 });
 
 </script>
 
 <template>
-    <Layout>
+    <MyLayout>
         <div>
             <button
                 tabindex="-1"
@@ -76,10 +75,10 @@ const getSubmitButtonText = computed(() => {
                         <form @submit.prevent="submit" class="space-y-8 divide-y divide-gray-200">
                             <div class="space-y-8 divide-y divide-gray-200 my-3 mx-2">
                                 <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
-                                    <TextInput class="sm:col-span-3" v-model="form.from"
+                                    <MyTextInput class="sm:col-span-3" v-model="form.from"
                                                :error="form.errors.from"
                                                id="from" type="date" label="Von"/>
-                                    <TextInput class="sm:col-span-3" v-model="form.to"
+                                    <MyTextInput class="sm:col-span-3" v-model="form.to"
                                                :error="form.errors.to"
                                                id="to" type="date" label="Bis"/>
                                     <MyTextArea class="sm:col-span-6" v-model="form.memo" :error="form.errors.memo"
@@ -87,12 +86,12 @@ const getSubmitButtonText = computed(() => {
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
-                                        <DeleteButton v-if="editMode" :onDelete="deleteClubMember"/>
+                                        <MyDeleteButton v-if="editMode" :onDelete="deleteClubMember"/>
                                         <div class="w-full flex justify-end">
-                                            <AbortButton :href="origin" />
-                                            <SubmitButton class="ml-2" :disabled="form.processing">
-                                                {{ getSubmitButtonText }}
-                                            </SubmitButton>
+                                            <MyAbortButton :href="origin" />
+                                            <MySubmitButton class="ml-2" :disabled="form.processing">
+                                                {{ getMySubmitButtonText }}
+                                            </MySubmitButton>
                                         </div>
                                     </div>
                                 </div>
@@ -102,5 +101,5 @@ const getSubmitButtonText = computed(() => {
                 </div>
             </div>
         </div>
-    </Layout>
+    </MyLayout>
 </template>

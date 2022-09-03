@@ -2,12 +2,11 @@
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm, usePage} from "@inertiajs/inertia-vue3";
-import Layout from '@/Shared/Layout.vue';
-import TextInput from '@/Shared/TextInput.vue';
-import CheckBox from "@/Shared/CheckBox.vue";
-import AbortButton from '@/Shared/AbortButton.vue';
-import SubmitButton from '@/Shared/SubmitButton.vue';
-import DeleteButton from '@/Shared/DeleteButton.vue';
+import MyLayout from '@/Shared/MyLayout.vue';
+import MyTextInput from '@/Shared/MyTextInput.vue';
+import MyAbortButton from '@/Shared/MyAbortButton.vue';
+import MySubmitButton from '@/Shared/MySubmitButton.vue';
+import MyDeleteButton from '@/Shared/MyDeleteButton.vue';
 
 
 let props = defineProps({
@@ -49,14 +48,14 @@ const getTitle = computed(() => {
     return editMode.value ? "Inventar-Gut bearbeiten" : "Neues Inventar-Gut";
 });
 
-const getSubmitButtonText = computed(() => {
+const getMySubmitButtonText = computed(() => {
     return editMode.value ? "Speichern" : "Hinzufügen";
 });
 
 </script>
 
 <template>
-    <Layout>
+    <MyLayout>
         <div>
             <button
                 tabindex="-1"
@@ -72,18 +71,18 @@ const getSubmitButtonText = computed(() => {
                         <form @submit.prevent="submit" class="space-y-8 divide-y divide-gray-200">
                             <div class="space-y-8 divide-y divide-gray-200 my-3 mx-2">
                                 <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
-                                    <TextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name"
+                                    <MyTextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name"
                                                id="name"
                                                label="Name"/>
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
-                                        <DeleteButton v-if="editMode" :onDelete="deleteItem"/>
+                                        <MyDeleteButton v-if="editMode" :onDelete="deleteItem"/>
                                         <div class="w-full flex justify-end">
-                                            <AbortButton :href="origin" />
-                                            <SubmitButton class="ml-2" :disabled="form.processing">
-                                                {{ getSubmitButtonText }}
-                                            </SubmitButton>
+                                            <MyAbortButton :href="origin" />
+                                            <MySubmitButton class="ml-2" :disabled="form.processing">
+                                                {{ getMySubmitButtonText }}
+                                            </MySubmitButton>
                                         </div>
                                     </div>
                                 </div>
@@ -93,5 +92,5 @@ const getSubmitButtonText = computed(() => {
                 </div>
             </div>
         </div>
-    </Layout>
+    </MyLayout>
 </template>

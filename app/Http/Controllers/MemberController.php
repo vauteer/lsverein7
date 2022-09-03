@@ -155,6 +155,7 @@ class MemberController extends Controller
     public function create(Request $request): \Inertia\Response
     {
         return inertia('Members/Edit', [
+            'origin' => session(self::URL_KEY),
             'genders' => Member::availableGenders(),
             'paymentMethods' => Member::availablePaymentMethods(),
             'sections' => Section::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),

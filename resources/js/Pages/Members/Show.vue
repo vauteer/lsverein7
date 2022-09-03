@@ -1,8 +1,7 @@
 <script setup>
 import {Head, Link} from '@inertiajs/inertia-vue3';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
-import Layout from '@/Shared/Layout.vue';
-import AbortButton from '@/Shared/AbortButton.vue';
+import MyLayout from '@/Shared/MyLayout.vue';
 
 let props = defineProps({
     origin: String,
@@ -23,7 +22,7 @@ let props = defineProps({
 </script>
 
 <template>
-    <Layout>
+    <MyLayout>
         <div>
             <button
                 tabindex="-1"
@@ -102,5 +101,5 @@ let props = defineProps({
                 </div>
             </div>
         </div>
-    </Layout>
+    </MyLayout>
 </template>
