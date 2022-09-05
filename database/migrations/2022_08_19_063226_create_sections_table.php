@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id()->from(200);
             $table->foreignId('club_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('name');
+            $table->integer('blsv_id')->nullable();
             $table->timestamps();
 
             $table->unique(['club_id', 'name']);

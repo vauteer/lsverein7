@@ -34,7 +34,7 @@ class MemberSubscriptionController extends Controller
     {
         $attributes = $request->validate($this->validationRules());
 
-        $member->subscriptions()->attach([auth()->user()->club_id => $attributes]);
+        $member->subscriptions()->attach([currentClubId() => $attributes]);
 
         return redirect()->route('members.edit', $member->id)
             ->with('success', 'Beitrag hinzugefügt');

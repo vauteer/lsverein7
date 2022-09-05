@@ -2,7 +2,7 @@
 import {ref, watch} from "vue";
 import {Head, Link} from '@inertiajs/inertia-vue3';
 import {Inertia} from "@inertiajs/inertia";
-import {PencilIcon, UsersIcon, GlobeAltIcon } from '@heroicons/vue/24/outline';
+import {PencilIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 import MyLayout from "@/Shared/MyLayout.vue";
 import MyActionLink from "@/Shared/MyActionLink.vue";
@@ -77,7 +77,6 @@ watch(search, throttle(function (value) {
                                         <div class="font-bold">{{ role.name }}</div>
                                     </td>
                                     <td class="px-3">
-                                        <GlobeAltIcon v-if="role.global" class="h-5 w-5" />
                                     </td>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-blue-500 sm:pl-6">
                                         <div>

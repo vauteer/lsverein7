@@ -4,7 +4,6 @@ import {Inertia} from "@inertiajs/inertia";
 import {useForm, usePage} from "@inertiajs/inertia-vue3";
 import MyLayout from '@/Shared/MyLayout.vue';
 import MyTextInput from '@/Shared/MyTextInput.vue';
-import MyCheckBox from "@/Shared/MyCheckBox.vue";
 import MyAbortButton from '@/Shared/MyAbortButton.vue';
 import MySubmitButton from '@/Shared/MySubmitButton.vue';
 import MyDeleteButton from '@/Shared/MyDeleteButton.vue';
@@ -18,7 +17,6 @@ let props = defineProps({
 
 let form = useForm({
     name: '',
-    global: false,
 });
 
 const user = computed(() => usePage().props.value.auth.user);
@@ -28,7 +26,6 @@ let editMode = ref(false);
 onMounted(() => {
     if (props.event !== undefined) {
         form.name = props.event.name;
-        form.global = props.event.club_id === null;
 
         editMode.value = true;
     }
@@ -78,8 +75,6 @@ const getSubmitButtonText = computed(() => {
                                     <MyTextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name"
                                                id="name"
                                                label="Name"/>
-                                    <MyCheckBox v-if="user.admin" v-model="form.global" :error="form.errors.global"
-                                        id="global" label="Global" />
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">

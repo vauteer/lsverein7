@@ -17,7 +17,7 @@ class SectionResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'global' => $this->club_id === null,
+            'blsv_id' => $this->blsv_id,
 
             'modifiable' => auth()->user()->can('update', $this->resource),
         ];

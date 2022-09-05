@@ -2,7 +2,7 @@
 import {ref, watch} from "vue";
 import {Head, Link} from '@inertiajs/inertia-vue3';
 import {Inertia} from "@inertiajs/inertia";
-import {PencilIcon, GlobeAltIcon } from '@heroicons/vue/24/outline';
+import {PencilIcon, CheckIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 import MyActionLink from "@/Shared/MyActionLink.vue";
 import MyPagination from "@/Shared/MyPagination.vue";
@@ -58,7 +58,7 @@ watch(search, throttle(function (value) {
                                         class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
                                         Name
                                     </th>
-                                    <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Status</span></th>
+                                    <th scope="col" class="px-3 py-3.5 w-6">BLSV</th>
                                     <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Show Members</span></th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                         <span class="sr-only">Edit</span>
@@ -75,7 +75,7 @@ watch(search, throttle(function (value) {
                                         <div class="font-bold">{{ section.name }}</div>
                                     </td>
                                     <td class="px-3">
-                                        <GlobeAltIcon v-if="section.global" class="h-5 w-5" />
+                                        <CheckIcon v-if="section.blsv_id !== null" class="h-5 w-5"/>
                                     </td>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                                         <a @click="showMembers(section.id)" as="button" class="cursor-pointer text-blue-500">

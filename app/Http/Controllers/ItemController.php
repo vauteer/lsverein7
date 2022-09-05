@@ -20,7 +20,7 @@ class ItemController extends Controller
                 'required',
                 'string',
                 Rule::unique('items')
-                    ->where(fn ($query) => $query->where('club_id', auth()->user()->club_id))
+                    ->where(fn ($query) => $query->where('club_id', currentClubId()))
                     ->ignore($id),
             ],
         ];

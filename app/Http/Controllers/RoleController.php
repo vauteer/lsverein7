@@ -21,7 +21,7 @@ class RoleController extends Controller
                 'required',
                 'string',
                 Rule::unique('roles')
-                    ->where(fn ($query) => $query->where('club_id', auth()->user()->club_id))
+                    ->where(fn ($query) => $query->where('club_id', currentClubId()))
                     ->ignore($id),
             ],
             'global' => 'boolean',
@@ -59,10 +59,9 @@ class RoleController extends Controller
     {
         $attributes = $request->validate($this->validationRules(-1));
 
-        Role::create([
-            'club_id' => $attributes['global'] ? null : currentClubId(),
-            'name' => $attributes['name'],
-        ]);
+        Role::create(array_merge($attributes, [
+            'club_id' => currentClubId(),
+        ]));
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Funktion hinzugefügt');
@@ -81,10 +80,7 @@ class RoleController extends Controller
     {
         $attributes = $request->validate($this->validationRules($role->id));
 
-        $role->update([
-            'club_id' => $attributes['global'] ? null : currentClubId(),
-            'name' => $attributes['name'],
-        ]);
+        $role->update($attributes);
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Funktion geändert');

@@ -36,7 +36,7 @@ class MemberRoleController extends Controller
     {
         $attributes = $request->validate($this->validationRules());
 
-        $member->roles()->attach([auth()->user()->club_id => $attributes]);
+        $member->roles()->attach([currentClubId() => $attributes]);
 
         return redirect()->route('members.edit', $member->id)
             ->with('success', 'Funktion hinzugefügt');

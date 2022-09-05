@@ -17,7 +17,6 @@ class RoleResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'global' => $this->club_id === null,
 
             'modifiable' => auth()->user()->can('update', $this->resource),
         ];

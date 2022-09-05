@@ -35,7 +35,7 @@ class EventMemberController extends Controller
     {
         $attributes = $request->validate($this->validationRules());
 
-        $member->events()->attach([auth()->user()->club_id => $attributes]);
+        $member->events()->attach([currentClubId() => $attributes]);
 
         return redirect()->route('members.edit', $member->id)
             ->with('success', 'Ereignis hinzugefügt');

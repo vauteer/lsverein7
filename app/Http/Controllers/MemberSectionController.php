@@ -36,7 +36,7 @@ class MemberSectionController extends Controller
     {
         $attributes = $request->validate($this->validationRules());
 
-        $member->sections()->attach([auth()->user()->club_id => $attributes]);
+        $member->sections()->attach([currentClubId() => $attributes]);
 
         return redirect()->route('members.edit', $member->id)
             ->with('success', 'Sparten-Mitgliedschaft hinzugefügt');

@@ -36,7 +36,7 @@ class ItemMemberController extends Controller
     {
         $attributes = $request->validate($this->validationRules());
 
-        $member->items()->attach([auth()->user()->club_id => $attributes]);
+        $member->items()->attach([currentClubId() => $attributes]);
 
         return redirect()->route('members.edit', $member->id)
             ->with('success', 'Funktion hinzugefügt');

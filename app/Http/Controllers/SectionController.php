@@ -21,10 +21,10 @@ class SectionController extends Controller
                 'required',
                 'string',
                 Rule::unique('sections')
-                    ->where(fn ($query) => $query->where('club_id', auth()->user()->club_id))
+                    ->where(fn ($query) => $query->where('club_id', currentClubId()))
                     ->ignore($id),
             ],
-            'global' => 'boolean',
+            'blsv_id' => 'nullable|integer',
         ];
 
         return $rules;
@@ -51,7 +51,8 @@ class SectionController extends Controller
     public function create(Request $request): Response
     {
         return inertia('Sections/Edit', [
-            'origin' => session(self::URL_KEY)
+            'origin' => session(self::URL_KEY),
+            'blsvSections' => Section::BLSV_SECTIONS,
         ]);
     }
 
@@ -59,10 +60,9 @@ class SectionController extends Controller
     {
         $attributes = $request->validate($this->validationRules(-1));
 
-        Section::create([
-            'club_id' => $attributes['global'] ? null : currentClubId(),
-            'name' => $attributes['name'],
-        ]);
+        Section::create(array_merge($attributes, [
+            'club_id' => currentClubId(),
+        ]));
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Abteilung hinzugefügt');
@@ -74,6 +74,7 @@ class SectionController extends Controller
             'section' => $section->getAttributes(),
             'deletable' => !$section->isInUse(),
             'origin' => session(self::URL_KEY),
+            'blsvSections' => Section::BLSV_SECTIONS,
         ]);
     }
 
@@ -81,10 +82,7 @@ class SectionController extends Controller
     {
         $attributes = $request->validate($this->validationRules($section->id));
 
-        $section->update([
-            'club_id' => $attributes['global'] ? null : currentClubId(),
-            'name' => $attributes['name'],
-        ]);
+        $section->update($attributes);
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Abteilung geändert');

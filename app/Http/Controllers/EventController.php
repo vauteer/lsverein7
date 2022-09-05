@@ -20,7 +20,7 @@ class EventController extends Controller
                 'required',
                 'string',
                 Rule::unique('events')
-                    ->where(fn ($query) => $query->where('club_id', auth()->user()->club_id))
+                    ->where(fn ($query) => $query->where('club_id', currentClubId()))
                     ->ignore($id),
             ],
             'global' => 'boolean',
@@ -58,10 +58,9 @@ class EventController extends Controller
     {
         $attributes = $request->validate($this->validationRules(-1));
 
-        Event::create([
-            'club_id' => $attributes['global'] ? null : currentClubId(),
-            'name' => $attributes['name'],
-        ]);
+        Event::create(array_merge($attributes, [
+            'club_id' => currentClubId(),
+        ]));
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Ereignis hinzugefügt');
@@ -80,10 +79,7 @@ class EventController extends Controller
     {
         $attributes = $request->validate($this->validationRules($event->id));
 
-        $event->update([
-            'club_id' => $attributes['global'] ? null : currentClubId(),
-            'name' => $attributes['name'],
-        ]);
+        $event->update($attributes);
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Ereignis geändert');

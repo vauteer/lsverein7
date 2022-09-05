@@ -23,7 +23,7 @@ class SubscriptionController extends Controller
                 'required',
                 'string',
                 Rule::unique('subscriptions')
-                    ->where(fn ($query) => $query->where('club_id', auth()->user()->club_id))
+                    ->where(fn ($query) => $query->where('club_id', currentClubId()))
                     ->ignore($id),
             ],
             'amount' => 'numeric|min:0',
@@ -65,7 +65,7 @@ class SubscriptionController extends Controller
     {
         $attributes = $request->validate($this->validationRules(-1));
 
-        Subscription::create(array_merge($attributes, ['club_id' => auth()->user()->club_id]));
+        Subscription::create(array_merge($attributes, ['club_id' => currentClubId()]));
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Funktion hinzugefügt');

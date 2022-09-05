@@ -4,7 +4,7 @@ import {Inertia} from "@inertiajs/inertia";
 import {useForm, usePage} from "@inertiajs/inertia-vue3";
 import MyLayout from '@/Shared/MyLayout.vue';
 import MyTextInput from '@/Shared/MyTextInput.vue';
-import MyCheckBox from "@/Shared/MyCheckBox.vue";
+import MySelect from "@/Shared/MySelect.vue";
 import MyAbortButton from '@/Shared/MyAbortButton.vue';
 import MySubmitButton from '@/Shared/MySubmitButton.vue';
 import MyDeleteButton from '@/Shared/MyDeleteButton.vue';
@@ -14,11 +14,12 @@ let props = defineProps({
     origin: String,
     section: Object,
     deletable: Boolean,
+    blsvSections: Object,
 });
 
 let form = useForm({
     name: '',
-    global: false,
+    blsv_id: null,
 });
 
 const user = computed(() => usePage().props.value.auth.user);
@@ -28,7 +29,7 @@ let editMode = ref(false);
 onMounted(() => {
     if (props.section !== undefined) {
         form.name = props.section.name;
-        form.global = props.section.club_id === null;
+        form.blsv_id = props.section.blsv_id,
 
         editMode.value = true;
     }
@@ -78,8 +79,10 @@ const getMySubmitButtonText = computed(() => {
                                     <MyTextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name"
                                                id="name"
                                                label="Name"/>
-                                    <MyCheckBox v-if="user.admin" v-model="form.global" :error="form.errors.global"
-                                              id="global" label="Global" />
+                                    <MySelect class="sm:col-span-6" v-model="form.blsv_id" :error="form.errors.blsv_id"
+                                              :options="props.blsvSections" id="blsv-id" label="BLSV-Zuordnung"
+                                              nullValue="(BLSV-Sparte)"
+                                    />
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
