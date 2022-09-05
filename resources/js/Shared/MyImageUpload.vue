@@ -61,7 +61,7 @@ onMounted(() => {
         >
             <div class="space-y-1 text-center dropzone" id="my-dropzone">
                 <div class="font-medium text-indigo-900 cursor-pointer dz-message" id="upload-text">
-                    Upload a file
+                    Upload a image
                 </div>
                 <div v-if="currentImageUrl" class="h-20 w-20 overflow-hidden">
                     <img :src="currentImageUrl" alt="image" class="w-full" id="current-image">

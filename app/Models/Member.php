@@ -241,7 +241,7 @@ class Member extends Model
         return $this->scopeMembers($query, $keyDate, false);
     }
 
-    public function scopeSections($query, array|int $sections, ?Carbon $keyDate = null)
+    public function scopeInSections($query, array|int $sections, ?Carbon $keyDate = null)
     {
         if ($keyDate === null)
             $keyDate = self::getKeyDate();
@@ -250,6 +250,21 @@ class Member extends Model
 
         $where = 'id in (select distinct(p.id) from members p join member_section m on p.id = m.member_id ' .
             'where (m.section_id in (' . join(', ',$sections) .')) and (p.death_day is null or p.death_day > ?) and ' .
+            '(m.from <= ? and (m.to is null or m.to >= ?)))';
+
+        $query->whereRaw($where, [$keyDate, $keyDate, $keyDate]);
+    }
+
+    public function scopeInBlsvSections($query, array|int $sections, ?Carbon $keyDate = null)
+    {
+        if ($keyDate === null)
+            $keyDate = self::getKeyDate();
+
+        $sections = Arr::wrap($sections);
+
+        $where = 'id in (select distinct(p.id) from members p join member_section m on p.id = m.member_id ' .
+            'join sections s on s.id = m.section_id ' .
+            'where (s.blsv_id in (' . join(', ',$sections) .')) and (p.death_day is null or p.death_day > ?) and ' .
             '(m.from <= ? and (m.to is null or m.to >= ?)))';
 
         $query->whereRaw($where, [$keyDate, $keyDate, $keyDate]);

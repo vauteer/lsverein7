@@ -161,11 +161,14 @@ class Club extends Model
 
         foreach (Section::orderBy('name')->get() as $section)
         {
+            if ($section->blsv_id === null)
+                continue;
+
             $csv = null;
             $stat = self::getBlankStat();
             $count = 0;
 
-            $members = Member::members()->sectionsMembers($section->id)
+            $members = Member::members()->inBlsvSections($section->blsv_id)
                 ->orderBy('surname')->orderBy('first_name')
                 ->get();
 

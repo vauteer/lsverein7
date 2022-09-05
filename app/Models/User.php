@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\ClubRole;
+use App\Notifications\MailNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -132,6 +133,11 @@ class User extends Authenticatable
         }
 
         return false;
+    }
+
+    public function test()
+    {
+        $this->notify(new MailNotification('text', 'TEST'));
     }
 
     public static function availableRoles(): array

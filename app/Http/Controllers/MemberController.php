@@ -271,8 +271,11 @@ class MemberController extends Controller
             10 => 'Fällige Ehrungen',
             11 => 'Hat Funktion',
             12 => 'Hatte Funktion',
-            13 => 'Ohne Beitrag',
         ];
+
+        if (currentUser()->hasAdminRights()) {
+            $filters[13] = 'Ohne Beitrag';
+        }
 
         $sections = currentClub()->usedSections();
         foreach ($sections as $section) {
@@ -351,7 +354,7 @@ class MemberController extends Controller
     public function applySpecialFilters(string $filter, Builder $query, array &$filters)
     {
         if (preg_match('/^hasSection_(\d+)$/', $filter, $match)) {
-            $query->members()->sections($match[1]);
+            $query->members()->inSections($match[1]);
         }
         else if (preg_match('/^hasSubscription_(\d+)$/', $filter, $match)) {
             // subscriptions don't have a range

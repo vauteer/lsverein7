@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Club;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -22,6 +23,13 @@ if (!function_exists('currentClub')) {
     function currentClub(): Club
     {
         return Club::find(currentClubId());
+    }
+}
+
+if (!function_exists('currentUser')) {
+    function currentUser(): User
+    {
+        return isCli() ? User::find(1) : auth()->user();
     }
 }
 

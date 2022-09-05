@@ -9,6 +9,7 @@ import MyLayout from "@/Shared/MyLayout.vue";
 
 let props = defineProps({
     user: Object,
+    origin: String,
 });
 
 let form = useForm({
@@ -55,7 +56,7 @@ function onProfileImageChanged(filename) {
                             <div class="space-y-8 divide-y divide-gray-200 my-3 mx-2">
                                 <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
                                     <MyImageUpload
-                                        label="Profile Image"
+                                        label="Profilbild"
                                         class="sm:col-span-2"
                                         id="profile-image"
                                         :image-url="getProfileImageUrl"
@@ -82,7 +83,7 @@ function onProfileImageChanged(filename) {
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-end">
-                                        <MyAbortButton />
+                                        <MyAbortButton :href="origin" />
                                         <MySubmitButton class="mx-2" :disabled="form.processing" />
                                     </div>
 
