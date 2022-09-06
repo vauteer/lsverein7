@@ -3,13 +3,16 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\ActionType;
 use App\ClubRole;
 use App\Mail\MarkDownMail;
 use App\Notifications\InvoicePaid;
 use App\Notifications\UserNotification;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Mail;
@@ -60,6 +63,11 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    public function tracings(): HasMany
+    {
+        return $this->hasMany(Tracing::class);
+    }
+
     public function hasAdminRights(?int $clubId = null)
     {
         return $this->clubRole($clubId) >= ClubRole::Admin->value;
@@ -86,6 +94,13 @@ class User extends Authenticatable
         }
 
         return $this->clubRoles[$clubId];
+    }
+
+    public function lastLogin(): ?Carbon
+    {
+        $lastLogin = $this->tracings()->actionType(ActionType::Login)->orderByDesc('at')->first();
+
+        return $lastLogin?->at;
     }
 
     public function profileURL(): string

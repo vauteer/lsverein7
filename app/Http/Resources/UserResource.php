@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'role' => ClubRole::from($this->clubRole(currentClubId()))->name,
+            'lastLogin' => $this->lastLogin()?->format('d.m.Y H:i'),
 
             'modifiable' => Auth::user()->admin,
         ];
