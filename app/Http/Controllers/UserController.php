@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use App\Notifications\MailNotification;
+use App\Notifications\UserNotification;
 use App\Notifications\NewUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -95,7 +95,7 @@ class UserController extends Controller
             'role' => $request->get('role')
         ]);
 
-        $user->notify(new MailNotification("Für Sie wurde ein Zugang erstellt.", "Ihr Passwort lautet: {$password}"));
+        $user->notify(new UserNotification("Für Sie wurde ein Zugang erstellt.", "Ihr Passwort lautet: {$password}"));
 
         return redirect(session(self::URL_KEY))
             ->with('success', "{$user->name} wurde hinzugefügt.");

@@ -40,7 +40,8 @@
 {{ $salutation }}
 @else
 @lang('Regards'),<br>
-{{ config('app.name') }}, by Gerald Lindner
+{{ $senderName }}<br>
+{{ $clubName }}
 @endif
 
 {{-- Subcopy --}}

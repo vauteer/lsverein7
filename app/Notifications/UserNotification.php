@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class MailNotification extends Notification implements ShouldQueue
+class UserNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -47,10 +47,12 @@ class MailNotification extends Notification implements ShouldQueue
         $fromUser = currentUser();
 
         return (new MailMessage)
+            ->markdown('emails.user', ['senderName' => $fromUser->name, 'clubName' => currentClub()->name])
             ->line($this->headline)
             ->line($this->text)
             ->action('Login', url('/'))
             ->line(__('thank_you_for_using_our_application'))
+//            ->replyTo($fromUser->email, $fromUser->name)
             ->from($fromUser->email, $fromUser->name);
     }
 
