@@ -144,6 +144,11 @@ class Member extends Model
         return $this->born() && !$this->gone();
     }
 
+    public function fullName(): string
+    {
+        return $this->first_name . ' ' . $this->surname;
+    }
+
     public function isMember()
     {
         if (!$this->alive())
