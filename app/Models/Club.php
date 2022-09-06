@@ -193,25 +193,25 @@ class Club extends Model
             {
                 $stats[$section->id] = $stat;
                 $stats[$section->id]['name'] = $section->name;
-                $filename = "storage/downloads/BE{$year}_{$section->name}.txt";
-                $fullFilename = public_path($filename);
-                $handle = fopen($fullFilename, 'w');
+                $filename = "BE{$year}_{$section->name}.txt";
+                $path = storage_path("downloads/{$this->id}_" . $filename);
+                $handle = fopen($path, 'w');
                 fputs($handle, $csv);
                 fclose($handle);
 
-                $files[] = ['name' => $section->name, 'href' => asset($filename)];
+                $files[] = ['name' => $section->name, 'href' => "/downloads/{$filename}"];
             }
         }
 
         if ($totalCsv)
         {
-            $filename = "storage/downloads/BE{$year}_Gesamt.txt";
-            $fullFilename = public_path($filename);
-            $handle = fopen($fullFilename, 'w');
+            $filename = "BE{$year}_Gesamt.txt";
+            $path = storage_path("downloads/{$this->id}_" . $filename);
+            $handle = fopen($path, 'w');
             fputs($handle, $totalCsv);
             fclose($handle);
 
-            $files[] = ['name' => "Alle Sparten", 'href' => asset($filename)];
+            $files[] = ['name' => "Alle Sparten", 'href' => "/downloads/{$filename}"];
         }
 
         $clubName = $this->name;
@@ -220,12 +220,12 @@ class Club extends Model
 
         $pdfResult = $pdf->getOutput($stats, $keyDate, $clubName);
 
-        $filename = "storage/downloads/blsv-stat.pdf";
-        $fullFilename = public_path($filename);
-        $handle = fopen($fullFilename, 'w');
+        $filename = "blsv_stat.pdf";
+        $path = storage_path("downloads/{$this->id}_" . $filename);
+        $handle = fopen($path, 'w');
         fputs($handle, $pdfResult);
         fclose($handle);
-        $files[] = ['name' => 'Alters-Statistik', 'href' => asset($filename)];
+        $files[] = ['name' => 'Alters-Statistik', 'href' => "/downloads/{$filename}"];
 
         return array_reverse($files);
     }

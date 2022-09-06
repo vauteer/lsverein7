@@ -134,7 +134,18 @@ class ClubController extends Controller
     public function blsvStatistic(Request $request, Club $club): Response
     {
         return inertia('Clubs/BLSVStat', [
+            'origin' => session(self::URL_KEY),
             'downloads' => $club->getBLSVStatistic(),
         ]);
     }
+
+    public function downloads(Request $request, string $filename)
+    {
+        $path = storage_path('downloads/' . currentClubId() . '_' . $filename);
+        if (!file_exists($path))
+            abort(404);
+
+        return response()->download($path, $filename);
+    }
+
 }

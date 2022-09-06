@@ -82,6 +82,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::delete('/clubs/{club}', [ClubController::class, 'destroy'])->can('delete', 'club');
     Route::post('/clubs/{club}/change', [ClubController::class, 'change'])->can('change', 'club');
     Route::get('/clubs/{club}/blsv-statistic', [ClubController::class, 'blsvStatistic'])->can('update', 'club');
+    Route::get('/downloads/{filename}', [ClubController::class, 'downloads'])->can('download', Club::class);
 
     Route::get('/sections', [SectionController::class, 'index'])->name('sections')->can('viewAny', Section::class);
     Route::get('/sections/create', [SectionController::class, 'create'])->can('create', Section::class);
@@ -117,8 +118,6 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/subscriptions/{subscription}/edit', [SubscriptionController::class, 'edit'])->can('update', 'subscription');
     Route::put('/subscriptions/{subscription}', [SubscriptionController::class, 'update'])->can('update', 'subscription');
     Route::delete('/subscriptions/{subscription}', [SubscriptionController::class, 'destroy'])->can('delete', 'subscription');
-    Route::post('/subscriptions/debit', [SubscriptionController::class, 'sepa'])->name('subscriptions.debit')
-        ->can('update', Subscription::class);
     Route::post('/subscriptions/debit', [SubscriptionController::class, 'debit'])->name('subscriptions.debit')
         ->can('debit', Subscription::class);
 
@@ -168,7 +167,6 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/members/{member}/role/{memberRole}/edit', [MemberRoleController::class, 'edit'])->can('update', 'member');
     Route::put('/members/{member}/role/{memberRole}', [MemberRoleController::class, 'update'])->can('update', 'member');
     Route::delete('/members/{member}/role/{memberRole}', [MemberRoleController::class, 'destroy'])->can('update', 'member');
-
 });
 
 require __DIR__.'/auth.php';

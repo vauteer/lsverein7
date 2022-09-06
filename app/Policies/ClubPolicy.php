@@ -34,4 +34,9 @@ class ClubPolicy
     {
         return $user->admin;
     }
+
+    public function download(User $user)
+    {
+        return $user->hasAdminRights();
+    }
 }

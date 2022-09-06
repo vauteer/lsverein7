@@ -159,23 +159,24 @@ class SubscriptionController extends Controller
         $data['nbOfTxs'] = count($debits);
         $data['ctrlSum'] = sprintf('%01.2f', $totalAmount);
         $data['payments'] = $debits;
-        $sepaSubPath = 'storage/downloads/beitraege_sepa.xml';
-        $filename = public_path($sepaSubPath);
+        $sepaName = "beitraege_sepa.xml";
+        $sepaPath = storage_path("downloads/{$club->id}_" . $sepaName);
         $data['header'] = '<?xml version="1.0" encoding="utf-8"?>'; // <? Würde in view als PHP gewertet !
         $sepaData = view('sepaxml', $data)->render();
 
-        file_put_contents($filename, $sepaData);
+        file_put_contents($sepaPath, $sepaData);
 
         $pdf = new SepaPdf();
 
-        $pdfSubPath = 'storage/downloads/beitraege.pdf';
-        file_put_contents(public_path($pdfSubPath), $pdf->getOutput($debits, 'Sepa-Bankeinzug', $club->name));
+        $pdfName = "beitraege.pdf";
+        $pdfPath = storage_path("downloads/{$club->id}_" . $pdfName);
+        file_put_contents($pdfPath, $pdf->getOutput($debits, 'Sepa-Bankeinzug', $club->name));
 
         return inertia('Subscriptions/Debit', [
-            'title' => 'Downloads für SEPA-Bankeinzug',
+            'origin' => session(self::URL_KEY),
             'downloads' => [
-                0 => ['name' => 'Sepa-Datei', 'href' => asset($sepaSubPath)],
-                1 => ['name' => 'Begleitzettel', 'href' => asset($pdfSubPath)],
+                0 => ['name' => 'Sepa-Datei', 'href' => "/downloads/{$sepaName}"],
+                1 => ['name' => 'Begleitzettel', 'href' => "/downloads/{$pdfName}"],
             ],
             'outStandings' => $outStandings,
         ]);
