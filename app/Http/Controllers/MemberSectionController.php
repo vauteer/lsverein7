@@ -27,7 +27,8 @@ class MemberSectionController extends Controller
     {
         return inertia('Members/MemberSection', [
             'origin' => route('members.edit', $member->id),
-            'sections' => Section::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'sections' => Section::orderBy('name')->get(['id', 'name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'memberId' => $member->id,
         ]);
     }
@@ -47,7 +48,8 @@ class MemberSectionController extends Controller
         return inertia('Members/MemberSection', [
             'memberSection' => $memberSection->getAttributes(),
             'origin' => route('members.edit', $member->id),
-            'sections' => Section::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'sections' => Section::orderBy('name')->get(['id', 'name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'memberId' => $member->id,
         ]);
     }

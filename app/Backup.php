@@ -83,7 +83,7 @@ class Backup
 
     public static function makeFilename(): string
     {
-        return self::prefix() . Carbon::now()->format(self::DATE_FORMAT) . '.sql.gz';
+        return self::prefix() . now()->format(self::DATE_FORMAT) . '.sql.gz';
     }
 
     private static function copyS3(string $filePath): void
@@ -105,7 +105,7 @@ class Backup
     {
         $result = [];
         $id = 1;
-        $now = Carbon::now();
+        $now = now();
         $pattern = '/' . self::prefix() .'(.*)\.sql/';
 
         foreach (glob(self::path('*.sql.gz')) as $filename) {

@@ -75,7 +75,7 @@ class UserController extends Controller
     {
         return inertia('Users/Edit', [
             'origin' => session(self::URL_KEY),
-            'roles' => User::availableRoles(),
+            'roles' => optionsFromArray(User::availableRoles(), false),
         ]);
     }
 
@@ -112,7 +112,7 @@ class UserController extends Controller
             ],
             'deletable' => auth()->user()->hasAdminRights() && auth()->id() !== $user->id,
             'origin' => session(self::URL_KEY),
-            'roles' => User::availableRoles(),
+            'roles' => optionsFromArray(User::availableRoles(), false),
         ]);
     }
 

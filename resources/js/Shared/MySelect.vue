@@ -27,7 +27,7 @@ defineEmits(['update:modelValue']);
                 @change="$emit('update:modelValue', $event.target.value)"
         >
             <option v-if="nullValue !== null" value="" v-text="nullValue" />
-            <option v-for="(value, key) in options" :value="key" v-text="value" />
+            <option v-for="option in options" :value="option.id" v-text="option.name" />
         </select>
         <div v-if="error" class="block text-xs font-medium text-red-500 mt-1">{{ error }}</div>
     </div>

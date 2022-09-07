@@ -16,9 +16,10 @@ class DebitResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->member->fullName(),
+            'member_name' => $this->member->fullName(),
             'amount' => $this->amount,
             'transfer_text' => $this->transfer_text,
+            'due_at' => formatDate($this->due_at),
 
             'modifiable' => auth()->user()->can('update', $this->resource),
         ];

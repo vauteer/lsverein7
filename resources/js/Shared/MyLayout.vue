@@ -18,6 +18,7 @@ const getNavigation = computed(() => {
         { name: 'Ereignisse', route: 'events', visible: true },
         { name: 'Funktionen', route: 'roles', visible: true },
         { name: 'Beiträge', route: 'subscriptions', visible: user.value.clubAdmin },
+        { name: 'Lastschriften', route: 'debits', visible: user.value.clubAdmin },
         { name: 'Inventar', route: 'items', visible: club.value.useItems },
     ];
 })

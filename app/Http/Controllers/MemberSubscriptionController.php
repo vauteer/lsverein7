@@ -25,7 +25,8 @@ class MemberSubscriptionController extends Controller
     {
         return inertia('Members/MemberSubscription', [
             'origin' => route('members.edit', $member->id),
-            'subscriptions' => Subscription::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'subscriptions' => Subscription::orderBy('name')->get(['id', 'name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'memberId' => $member->id,
         ]);
     }
@@ -45,7 +46,8 @@ class MemberSubscriptionController extends Controller
         return inertia('Members/MemberSubscription', [
             'memberSubscription' => $memberSubscription->getAttributes(),
             'origin' => route('members.edit', $member->id),
-            'subscriptions' => Subscription::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'subscriptions' => Subscription::orderBy('name')->get(['id', 'name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'memberId' => $member->id,
         ]);
     }

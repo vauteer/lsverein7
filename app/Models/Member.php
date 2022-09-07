@@ -30,21 +30,21 @@ class Member extends Model
     public static function getKeyDate(): Carbon
     {
         if (static::$_keyDate === null)
-            static::$_keyDate = Carbon::now()->endOfDay();
+            static::$_keyDate = now()->endOfDay();
 
         return static::$_keyDate->copy();
     }
 
 //    public function getAgeAttribute()
 //    {
-//        return Carbon::now()->diffInYears($this->birthday);
+//        return now()->diffInYears($this->birthday);
 //    }
 //
     public function age(): Attribute
     {
         return new Attribute(
             get: function() {
-                $keyDate = $this->gone() ? $this->death_day : self::getKeyDate() ?? Carbon::now();
+                $keyDate = $this->gone() ? $this->death_day : self::getKeyDate() ?? now();
                 return $this->birthday->diffInYears($keyDate);
                 },
         );

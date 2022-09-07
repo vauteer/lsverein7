@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\DebitResource;
 use App\Models\Debit;
+use App\Models\Member;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -16,7 +18,7 @@ class DebitController extends Controller
     protected function validationRules($id): array
     {
         $rules = [
-            'member_id' => 'required|exists:members',
+            'member_id' => 'required|exists:members,id',
             'amount' => 'numeric|min:0',
             'transfer_text' => 'required|string',
             'due_at' => 'required|date'
@@ -47,6 +49,10 @@ class DebitController extends Controller
     {
         return inertia('Debits/Edit', [
             'origin' => session(self::URL_KEY),
+            'members' => Member::members()->orderBy('surname')->orderBy('first_name')
+                ->get(['id', 'surname', 'first_name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->surname . ' ' . $item->first_name]),
+            'date' => now()->format('Y-m-d'),
         ]);
     }
 
@@ -63,8 +69,11 @@ class DebitController extends Controller
     public function edit(Request $request, Debit $debit):Response
     {
         return inertia('Debits/Edit', [
-            'debit' => $debit->getAttributes(),
             'origin' => session(self::URL_KEY),
+            'debit' => $debit->getAttributes(),
+            'members' => Member::members()->orderBy('surname')->orderBy('first_name')
+                ->get(['id', 'surname', 'first_name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->surname . ' ' . $item->first_name]),
         ]);
     }
 

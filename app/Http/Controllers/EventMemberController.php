@@ -26,7 +26,8 @@ class EventMemberController extends Controller
     {
         return inertia('Members/EventMember', [
             'origin' => route('members.edit', $member->id),
-            'events' => Event::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'events' => Event::orderBy('name')->get(['id', 'name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'memberId' => $member->id,
         ]);
     }
@@ -46,7 +47,8 @@ class EventMemberController extends Controller
         return inertia('Members/EventMember', [
             'eventMember' => $eventMember->getAttributes(),
             'origin' => route('members.edit', $member->id),
-            'events' => Event::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'events' => Event::orderBy('name')->get(['id', 'name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'memberId' => $member->id,
         ]);
     }

@@ -3,6 +3,7 @@
 use App\Models\Club;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
 if (!function_exists('isCli')) {
@@ -128,5 +129,17 @@ if (!function_exists('mod97')) {
         }
 
         return $checksum;
+    }
+}
+
+if (!function_exists('optionsFromArray')) {
+    function optionsFromArray(array $array, bool $sorted = true)
+    {
+        $result = Arr::map($array, function ($value, $key) {
+           return ['id' => $key, 'name' => $value];
+        });
+
+
+        return $sorted ? Arr::sort($result, fn ($item) => $item['name']) : $result;
     }
 }

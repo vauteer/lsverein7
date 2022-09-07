@@ -27,7 +27,8 @@ class MemberRoleController extends Controller
     {
         return inertia('Members/MemberRole', [
             'origin' => route('members.edit', $member->id),
-            'roles' => Role::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'roles' => Role::orderBy('name')->get(['id', 'name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'memberId' => $member->id,
         ]);
     }
@@ -47,7 +48,8 @@ class MemberRoleController extends Controller
         return inertia('Members/MemberRole', [
             'memberRole' => $memberRole->getAttributes(),
             'origin' => route('members.edit', $member->id),
-            'roles' => Role::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'roles' => Role::orderBy('name')->get(['id', 'name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'memberId' => $member->id,
         ]);
     }

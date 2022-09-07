@@ -86,9 +86,9 @@ class MemberController extends Controller
             ),
 
             'searchString' => $currentSelection['search'],
-            'filters' => $currentSelection['quickFilters'],
-            'years' => $this->getAvailableYears(),
-            'sorts' => self::SORT_METHODS,
+            'filters' => optionsFromArray($currentSelection['quickFilters'], false),
+            'years' => optionsFromArray($this->getAvailableYears(), false),
+            'sorts' => optionsFromArray(self::SORT_METHODS, false),
             'currentYear' => $currentSelection['keyDate']->year,
             'currentFilter' => strval($currentSelection['filter']),
             'currentSort' => $currentSelection['sort'],
@@ -156,10 +156,12 @@ class MemberController extends Controller
     {
         return inertia('Members/Edit', [
             'origin' => session(self::URL_KEY),
-            'genders' => Member::availableGenders(),
-            'paymentMethods' => Member::availablePaymentMethods(),
-            'sections' => Section::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
-            'subscriptions' => Subscription::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'genders' => optionsFromArray(Member::availableGenders(), false),
+            'paymentMethods' => optionsFromArray(Member::availablePaymentMethods(), false),
+            'sections' => Section::orderBy('name')->get(['id', 'name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
+            'subscriptions' => Subscription::orderBy('name')->get(['id', 'name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
         ]);
     }
 
@@ -215,8 +217,8 @@ class MemberController extends Controller
             'isMember' => $member->isMember(),
             'date' => Carbon::today()->format('Y-m-d'),
             'origin' => session(self::URL_KEY),
-            'genders' => Member::availableGenders(),
-            'paymentMethods' => Member::availablePaymentMethods(),
+            'genders' => optionsFromArray(Member::availableGenders(), false),
+            'paymentMethods' => optionsFromArray(Member::availablePaymentMethods(), false),
             'memberClubs' => ClubMemberResource::collection(ClubMember::where('member_id', $member->id)->get()),
             'memberSections' => MemberSectionResource::collection(MemberSection::where('member_id', $member->id)->get()),
             'memberSubscriptions' => MemberSubscriptionResource::collection(MemberSubscription::where('member_id', $member->id)->get()),
@@ -287,7 +289,7 @@ class MemberController extends Controller
 
     private function getAvailableYears()
     {
-        $now = Carbon::now();
+        $now = now();
         $result[$now->year] = formatDate($now);
 
         $lastYear = $now->year - 1;
@@ -305,8 +307,8 @@ class MemberController extends Controller
         $result['filter'] = $request->has('filter') ? $request->input('filter') : '1';
         $result['search'] = $request->has('search') ? $request->input('search') : '';
         $result['sort'] = $request->has('sort') ? intval($request->input('sort')) : 1;
-        $result['year'] = $request->has('year') ? intval($request->input('year')) : Carbon::now()->year;
-        $result['keyDate'] = Carbon::create($result['year'], 12, 31, 23, 59, 59)->min(Carbon::now());
+        $result['year'] = $request->has('year') ? intval($request->input('year')) : now()->year;
+        $result['keyDate'] = Carbon::create($result['year'], 12, 31, 23, 59, 59)->min(now());
         Member::$_keyDate = $result['keyDate'];
 
         $query = Member::query()->with(['memberships', 'events', 'sections', 'subscriptions', 'roles']);
@@ -358,7 +360,7 @@ class MemberController extends Controller
         }
         else if (preg_match('/^hasSubscription_(\d+)$/', $filter, $match)) {
             // subscriptions don't have a range
-            $keyDate = Carbon::now();
+            $keyDate = now();
             Member::$_keyDate = $keyDate;
             $query->members()->hasSubscription($match[1]);
             $filters[$filter] = "Beitrag: " . Subscription::find($match[1])->name;

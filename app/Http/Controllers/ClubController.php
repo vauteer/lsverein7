@@ -64,7 +64,7 @@ class ClubController extends Controller
     {
         return inertia('Clubs/Edit', [
             'origin' => session(self::URL_KEY),
-            'displayStyles' => Club::displayStyles(),
+            'displayStyles' => optionsFromArray(Club::displayStyles(), false),
         ]);
     }
 
@@ -95,7 +95,7 @@ class ClubController extends Controller
             'club' => $club->getAttributes(),
             'deletable' => auth()->user()->admin,
             'origin' => session(self::URL_KEY),
-            'displayStyles' => Club::displayStyles(),
+            'displayStyles' => optionsFromArray(Club::displayStyles(), false),
         ]);
     }
 

@@ -139,7 +139,7 @@ class Club extends Model
     public function getBLSVStatistic(): array
     {
         // Statistik ist zum 1. Januar, Austritte zum 31.12. und Eintritte zum 1.1. werden realisiert
-        $keyDate = Carbon::now()->startOfYear();
+        $keyDate = now()->startOfYear();
         Member::$_keyDate = $keyDate;
         $year = $keyDate->year;
 
@@ -232,7 +232,7 @@ class Club extends Model
 
     public function calcBlsvDebit(float $childrenDue, float $teenDue, float $adultDue): float
     {
-        //Member::$_keyDate = Carbon::now()->startOfYear();
+        //Member::$_keyDate = now()->startOfYear();
         $children = $teens = $adults = 0;
         $children = Member::members()->ageRange(null, 13)->count();
         $teens = Member::members()->ageRange(14, 17)->count();

@@ -52,7 +52,7 @@ class SectionController extends Controller
     {
         return inertia('Sections/Edit', [
             'origin' => session(self::URL_KEY),
-            'blsvSections' => Section::BLSV_SECTIONS,
+            'blsvSections' => optionsFromArray(Section::BLSV_SECTIONS),
         ]);
     }
 
@@ -74,7 +74,7 @@ class SectionController extends Controller
             'section' => $section->getAttributes(),
             'deletable' => !$section->isInUse(),
             'origin' => session(self::URL_KEY),
-            'blsvSections' => Section::BLSV_SECTIONS,
+            'blsvSections' => optionsFromArray(Section::BLSV_SECTIONS),
         ]);
     }
 

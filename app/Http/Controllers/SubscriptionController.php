@@ -50,7 +50,7 @@ class SubscriptionController extends Controller
 
             'filters' => $request->only(['search']),
             'canCreate' => auth()->user()->can('create', Subscription::class),
-            'sepaDate' => Carbon::now()->addDays(8)->format('Y-m-d'),
+            'sepaDate' => now()->addDays(8)->format('Y-m-d'),
         ]);
     }
 
@@ -103,7 +103,7 @@ class SubscriptionController extends Controller
         $paymentMethods = Member::availablePaymentMethods();
         $subscriptions = $request->input('subscriptions');
         $executionDate = new Carbon($request->input('date'));
-        $creationDate = Carbon::now();
+        $creationDate = now();
         $year = $executionDate->year;
         $club = currentClub();
         $defaultDate = $club->sepa_date;

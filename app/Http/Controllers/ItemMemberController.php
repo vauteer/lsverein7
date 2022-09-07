@@ -27,7 +27,8 @@ class ItemMemberController extends Controller
     {
         return inertia('Members/ItemMember', [
             'origin' => route('members.edit', $member->id),
-            'items' => Item::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'items' => Item::orderBy('name')->get(['id', 'name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'memberId' => $member->id,
         ]);
     }
@@ -47,7 +48,8 @@ class ItemMemberController extends Controller
         return inertia('Members/ItemMember', [
             'itemMember' => $itemMember->getAttributes(),
             'origin' => route('members.edit', $member->id),
-            'items' => Item::get(['id', 'name'])->mapWithKeys(fn ($item) => [$item->id => $item->name]),
+            'items' => Item::orderBy('name')->get(['id', 'name'])
+                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'memberId' => $member->id,
         ]);
     }

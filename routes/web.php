@@ -4,6 +4,7 @@ use App\Backup;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\ClubMemberController;
+use App\Http\Controllers\DebitController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventMemberController;
 use App\Http\Controllers\ItemController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
 use App\Models\Club;
+use App\Models\Debit;
 use App\Models\Event;
 use App\Models\Item;
 use App\Models\Member;
@@ -120,6 +122,15 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::delete('/subscriptions/{subscription}', [SubscriptionController::class, 'destroy'])->can('delete', 'subscription');
     Route::post('/subscriptions/debit', [SubscriptionController::class, 'debit'])->name('subscriptions.debit')
         ->can('debit', Subscription::class);
+
+    Route::get('/debits', [DebitController::class, 'index'])->name('debits')->can('viewAny', Debit::class);
+    Route::get('/debits/create', [DebitController::class, 'create'])->can('create', Debit::class);
+    Route::post('/debits', [DebitController::class, 'store'])->can('create', Debit::class);
+    Route::get('/debits/{debit}/edit', [DebitController::class, 'edit'])->can('update', 'debit');
+    Route::put('/debits/{debit}', [DebitController::class, 'update'])->can('update', 'debit');
+    Route::delete('/debits/{debit}', [DebitController::class, 'destroy'])->can('delete', 'debit');
+    Route::post('/debits/debit', [DebitController::class, 'debit'])->name('debits.debit')
+        ->can('debit', Debit::class);
 
     Route::get('/members', [MemberController::class, 'index'])->name('members')->can('viewAny', Member::class);
     Route::get('/members/{member}/show', [MemberController::class, 'show'])->name('members.show')->can('view', 'member');

@@ -8,6 +8,7 @@ import MyCheckBox from "@/Shared/MyCheckBox.vue";
 import MySelect from "@/Shared/MySelect.vue";
 import MySubmitButton from "@/Shared/MySubmitButton.vue";
 import MyDeleteButton from "@/Shared/MyDeleteButton.vue";
+import MyAbortButton from "@/Shared/MyAbortButton.vue";
 import MyImageUpload from "@/Shared/MyImageUpload.vue";
 import MyConfirmation from "@/Shared/MyConfirmation.vue";
 
