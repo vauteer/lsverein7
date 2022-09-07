@@ -23,14 +23,18 @@ class MemberRoleController extends Controller
         return $rules;
     }
 
-    public function create(Request $request, Member $member): Response
+    private function editOptions(Member $member): array
     {
-        return inertia('Members/MemberRole', [
+        return [
             'origin' => route('members.edit', $member->id),
             'roles' => Role::orderBy('name')->get(['id', 'name'])
                 ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'memberId' => $member->id,
-        ]);
+        ];
+    }
+    public function create(Request $request, Member $member): Response
+    {
+        return inertia('Members/MemberRole', $this->editOptions($member));
     }
 
     public function store(Request $request, Member $member): RedirectResponse
@@ -45,13 +49,10 @@ class MemberRoleController extends Controller
 
     public function edit(Request $request, Member $member, memberRole $memberRole):Response
     {
-        return inertia('Members/MemberRole', [
+        return inertia('Members/MemberRole', array_merge($this->editOptions($member), [
             'memberRole' => $memberRole->getAttributes(),
             'origin' => route('members.edit', $member->id),
-            'roles' => Role::orderBy('name')->get(['id', 'name'])
-                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
-            'memberId' => $member->id,
-        ]);
+        ]));
     }
 
     public function update(Request $request, Member $member, memberRole $memberRole): RedirectResponse

@@ -21,14 +21,19 @@ class MemberSubscriptionController extends Controller
         return $rules;
     }
 
-    public function create(Request $request, Member $member): Response
+    public function editOptions(Member $member): array
     {
-        return inertia('Members/MemberSubscription', [
+        return [
             'origin' => route('members.edit', $member->id),
             'subscriptions' => Subscription::orderBy('name')->get(['id', 'name'])
                 ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'memberId' => $member->id,
-        ]);
+        ];
+    }
+
+    public function create(Request $request, Member $member): Response
+    {
+        return inertia('Members/MemberSubscription', $this->editOptions($member));
     }
 
     public function store(Request $request, Member $member): RedirectResponse
@@ -43,13 +48,9 @@ class MemberSubscriptionController extends Controller
 
     public function edit(Request $request, Member $member, memberSubscription $memberSubscription):Response
     {
-        return inertia('Members/MemberSubscription', [
+        return inertia('Members/MemberSubscription', array_merge($this->editOptions($member), [
             'memberSubscription' => $memberSubscription->getAttributes(),
-            'origin' => route('members.edit', $member->id),
-            'subscriptions' => Subscription::orderBy('name')->get(['id', 'name'])
-                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
-            'memberId' => $member->id,
-        ]);
+        ]));
     }
 
     public function update(Request $request, Member $member, memberSubscription $memberSubscription): RedirectResponse

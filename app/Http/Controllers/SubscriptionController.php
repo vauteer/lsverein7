@@ -54,11 +54,15 @@ class SubscriptionController extends Controller
         ]);
     }
 
+    private function editOptions(): array
+    {
+        return [
+            'origin' => session(self::URL_KEY),
+        ];
+    }
     public function create(Request $request): Response
     {
-        return inertia('Subscriptions/Edit', [
-            'origin' => session(self::URL_KEY),
-        ]);
+        return inertia('Subscriptions/Edit', $this->editOptions());
     }
 
     public function store(Request $request): RedirectResponse
@@ -73,11 +77,10 @@ class SubscriptionController extends Controller
 
     public function edit(Request $request, Subscription $subscription):Response
     {
-        return inertia('Subscriptions/Edit', [
+        return inertia('Subscriptions/Edit', array_merge($this->editOptions(), [
             'subscription' => $subscription->getAttributes(),
             'deletable' => !$subscription->isInUse(),
-            'origin' => session(self::URL_KEY),
-        ]);
+        ]));
     }
 
     public function update(Request $request, Subscription $subscription): RedirectResponse

@@ -152,17 +152,23 @@ class MemberController extends Controller
 
     }
 
-    public function create(Request $request): \Inertia\Response
+    private function editOptions(): array
     {
-        return inertia('Members/Edit', [
+        return [
             'origin' => session(self::URL_KEY),
             'genders' => optionsFromArray(Member::availableGenders(), false),
             'paymentMethods' => optionsFromArray(Member::availablePaymentMethods(), false),
+        ];
+    }
+
+    public function create(Request $request): \Inertia\Response
+    {
+        return inertia('Members/Edit', array_merge($this->editOptions(), [
             'sections' => Section::orderBy('name')->get(['id', 'name'])
                 ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'subscriptions' => Subscription::orderBy('name')->get(['id', 'name'])
                 ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
-        ]);
+        ]));
     }
 
     public function show(Request $request, Member $member):\Inertia\Response
@@ -212,20 +218,17 @@ class MemberController extends Controller
 
     public function edit(Request $request, Member $member):\Inertia\Response
     {
-        return inertia('Members/Edit', [
+        return inertia('Members/Edit', array_merge($this->editOptions(), [
             'member' => $member->getAttributes(),
             'isMember' => $member->isMember(),
             'date' => Carbon::today()->format('Y-m-d'),
-            'origin' => session(self::URL_KEY),
-            'genders' => optionsFromArray(Member::availableGenders(), false),
-            'paymentMethods' => optionsFromArray(Member::availablePaymentMethods(), false),
             'memberClubs' => ClubMemberResource::collection(ClubMember::where('member_id', $member->id)->get()),
             'memberSections' => MemberSectionResource::collection(MemberSection::where('member_id', $member->id)->get()),
             'memberSubscriptions' => MemberSubscriptionResource::collection(MemberSubscription::where('member_id', $member->id)->get()),
             'memberEvents' => EventMemberResource::collection(EventMember::where('member_id', $member->id)->get()),
             'memberRoles' => MemberRoleResource::collection(MemberRole::where('member_id', $member->id)->get()),
             'memberItems' => ItemMemberResource::collection(ItemMember::where('member_id', $member->id)->get()),
-        ]);
+        ]));
     }
 
     public function update(Request $request, Member $member): RedirectResponse

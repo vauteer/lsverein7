@@ -1,7 +1,7 @@
 <script setup>
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
-import {useForm, Link, Head} from "@inertiajs/inertia-vue3";
+import {useForm, Link, Head, usePage} from "@inertiajs/inertia-vue3";
 import {PencilIcon, LockClosedIcon} from '@heroicons/vue/24/outline';
 import MyLayout from "@/Shared/MyLayout.vue";
 import MyTextInput from "@/Shared/MyTextInput.vue";
@@ -90,6 +90,7 @@ let deleteEntity = () => {
 
 let editMode = ref(false);
 let resignDate = ref(props.date);
+const club = computed(() => usePage().props.value.auth.club);
 
 const getTitle = computed(() => {
     return editMode.value ? "Mitglied bearbeiten" : "Neues Mitglied";
@@ -424,7 +425,7 @@ const getMySubmitButtonText = computed(() => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="px-4 sm:px-6 lg:px-8 mt-3">
+                                    <div v-if="club.useItems" class="px-4 sm:px-6 lg:px-8 mt-3">
                                         <div class="flex flex-col">
                                             <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
                                                 <div class="inline-block min-w-full py-2 align-middle md:px-2">

@@ -47,11 +47,16 @@ class EventController extends Controller
         ]);
     }
 
+    private function editOptions(): array
+    {
+        return [
+            'origin' => session(self::URL_KEY),
+        ];
+    }
+
     public function create(Request $request): Response
     {
-        return inertia('Events/Edit', [
-            'origin' => session(self::URL_KEY),
-        ]);
+        return inertia('Events/Edit', $this->editOptions());
     }
 
     public function store(Request $request): RedirectResponse
@@ -68,11 +73,10 @@ class EventController extends Controller
 
     public function edit(Request $request, Event $event):Response
     {
-        return inertia('Events/Edit', [
+        return inertia('Events/Edit', array_merge($this->editOptions(), [
             'event' => $event->getAttributes(),
             'deletable' => !$event->isInUse(),
-            'origin' => session(self::URL_KEY),
-        ]);
+        ]));
     }
 
     public function update(Request $request, Event $event): RedirectResponse

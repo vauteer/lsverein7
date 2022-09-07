@@ -60,12 +60,17 @@ class ClubController extends Controller
         ]);
     }
 
-    public function create(Request $request): Response
+    private function editOptions(): array
     {
-        return inertia('Clubs/Edit', [
+        return [
             'origin' => session(self::URL_KEY),
             'displayStyles' => optionsFromArray(Club::displayStyles(), false),
-        ]);
+        ];
+    }
+
+    public function create(Request $request): Response
+    {
+        return inertia('Clubs/Edit', $this->editOptions());
     }
 
     public function store(Request $request): \Illuminate\Http\RedirectResponse
@@ -91,12 +96,10 @@ class ClubController extends Controller
 
     public function edit(Request $request, Club $club):Response
     {
-        return inertia('Clubs/Edit', [
+        return inertia('Clubs/Edit', array_merge($this->editOptions(), [
             'club' => $club->getAttributes(),
             'deletable' => auth()->user()->admin,
-            'origin' => session(self::URL_KEY),
-            'displayStyles' => optionsFromArray(Club::displayStyles(), false),
-        ]);
+        ]));
     }
 
     public function update(Request $request, Club $club): RedirectResponse

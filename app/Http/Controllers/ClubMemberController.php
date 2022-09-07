@@ -26,13 +26,17 @@ class ClubMemberController extends Controller
     }
 
 
-    public function create(Request $request, Member $member): Response
+    private function editOptions(Member $member): array
     {
-
-        return inertia('Members/ClubMember', [
+        return [
             'origin' => route('members.edit', $member->id),
             'memberId' => $member->id,
-        ]);
+        ];
+    }
+
+    public function create(Request $request, Member $member): Response
+    {
+        return inertia('Members/ClubMember', $this->editOptions($member));
     }
 
     public function store(Request $request, Member $member): RedirectResponse
@@ -47,11 +51,9 @@ class ClubMemberController extends Controller
 
     public function edit(Request $request, Member $member, ClubMember $clubMember):Response
     {
-        return inertia('Members/ClubMember', [
+        return inertia('Members/ClubMember', array_merge($this->editOptions($member), [
                 'clubMember' => $clubMember->getAttributes(),
-                'origin' => route('members.edit', $member->id),
-                'memberId' => $member->id,
-            ]);
+            ]));
     }
 
     public function update(Request $request, Member $member, ClubMember $clubMember): RedirectResponse

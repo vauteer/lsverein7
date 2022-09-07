@@ -23,14 +23,18 @@ class MemberSectionController extends Controller
         return $rules;
     }
 
-    public function create(Request $request, Member $member): Response
+    public function editOptions(Member $member): array
     {
-        return inertia('Members/MemberSection', [
+        return [
             'origin' => route('members.edit', $member->id),
             'sections' => Section::orderBy('name')->get(['id', 'name'])
                 ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
             'memberId' => $member->id,
-        ]);
+        ];
+    }
+    public function create(Request $request, Member $member): Response
+    {
+        return inertia('Members/MemberSection', $this->editOptions($member));
     }
 
     public function store(Request $request, Member $member): RedirectResponse
@@ -45,13 +49,9 @@ class MemberSectionController extends Controller
 
     public function edit(Request $request, Member $member, memberSection $memberSection):Response
     {
-        return inertia('Members/MemberSection', [
+        return inertia('Members/MemberSection', array_merge($this->editOptions($member), [
             'memberSection' => $memberSection->getAttributes(),
-            'origin' => route('members.edit', $member->id),
-            'sections' => Section::orderBy('name')->get(['id', 'name'])
-                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
-            'memberId' => $member->id,
-        ]);
+        ]));
     }
 
     public function update(Request $request, Member $member, memberSection $memberSection): RedirectResponse

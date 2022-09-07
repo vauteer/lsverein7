@@ -46,11 +46,16 @@ class ItemController extends Controller
         ]);
     }
 
+    private function editOptions(): array
+    {
+        return [
+            'origin' => session(self::URL_KEY),
+        ];
+    }
+
     public function create(Request $request): Response
     {
-        return inertia('Items/Edit', [
-            'origin' => session(self::URL_KEY),
-        ]);
+        return inertia('Items/Edit', $this->editOptions());
     }
 
     public function store(Request $request): RedirectResponse
@@ -65,11 +70,10 @@ class ItemController extends Controller
 
     public function edit(Request $request, Item $item):Response
     {
-        return inertia('Items/Edit', [
+        return inertia('Items/Edit', array_merge($this->editOptions(), [
             'item' => $item->getAttributes(),
             'deletable' => !$item->isInUse(),
-            'origin' => session(self::URL_KEY),
-        ]);
+        ]));
     }
 
     public function update(Request $request, Item $item): RedirectResponse

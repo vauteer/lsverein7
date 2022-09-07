@@ -71,12 +71,17 @@ class UserController extends Controller
         ]);
     }
 
-    public function create(Request $request): Response
+    private function editOptions(): array
     {
-        return inertia('Users/Edit', [
+        return [
             'origin' => session(self::URL_KEY),
             'roles' => optionsFromArray(User::availableRoles(), false),
-        ]);
+        ];
+    }
+
+    public function create(Request $request): Response
+    {
+        return inertia('Users/Edit', $this->editOptions());
     }
 
     public function store(Request $request): RedirectResponse
@@ -103,7 +108,7 @@ class UserController extends Controller
 
     public function edit(Request $request, User $user): Response
     {
-        return inertia('Users/Edit', [
+        return inertia('Users/Edit', array_merge($this->editOptions(), [
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -111,9 +116,7 @@ class UserController extends Controller
                 'role' => $user->clubRole(),
             ],
             'deletable' => auth()->user()->hasAdminRights() && auth()->id() !== $user->id,
-            'origin' => session(self::URL_KEY),
-            'roles' => optionsFromArray(User::availableRoles(), false),
-        ]);
+        ]));
     }
 
     public function update(Request $request, User $user): RedirectResponse

@@ -46,7 +46,7 @@ let deleteItem = () => {
 };
 
 const getTitle = computed(() => {
-    return editMode.value ? "Inventar-Gut bearbeiten" : "Neues Inventar-Gut";
+    return editMode.value ? "Inventar bearbeiten" : "Neues Inventar";
 });
 
 const getMySubmitButtonText = computed(() => {

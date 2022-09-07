@@ -45,15 +45,20 @@ class DebitController extends Controller
         ]);
     }
 
-    public function create(Request $request): Response
+    private function editOptions(): array
     {
-        return inertia('Debits/Edit', [
+        return [
             'origin' => session(self::URL_KEY),
             'members' => Member::members()->orderBy('surname')->orderBy('first_name')
                 ->get(['id', 'surname', 'first_name'])
                 ->map(fn ($item) => ['id' => $item->id, 'name' => $item->surname . ' ' . $item->first_name]),
-            'date' => now()->format('Y-m-d'),
-        ]);
+            'today' => now()->format('Y-m-d'),
+        ];
+    }
+
+    public function create(Request $request): Response
+    {
+        return inertia('Debits/Edit', $this->editOptions());
     }
 
     public function store(Request $request): RedirectResponse
@@ -68,13 +73,9 @@ class DebitController extends Controller
 
     public function edit(Request $request, Debit $debit):Response
     {
-        return inertia('Debits/Edit', [
-            'origin' => session(self::URL_KEY),
+        return inertia('Debits/Edit', array_merge($this->editOptions(), [
             'debit' => $debit->getAttributes(),
-            'members' => Member::members()->orderBy('surname')->orderBy('first_name')
-                ->get(['id', 'surname', 'first_name'])
-                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->surname . ' ' . $item->first_name]),
-        ]);
+        ]));
     }
 
     public function update(Request $request, Debit $debit): RedirectResponse

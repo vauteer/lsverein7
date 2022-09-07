@@ -14,7 +14,7 @@ let props = defineProps({
     origin: String,
     debit: Object,
     members: Object,
-    date: String,
+    today: String,
     deletable: Boolean,
 });
 
@@ -22,7 +22,7 @@ let form = useForm({
     member_id: null,
     amount: 0.0,
     transfer_text: '',
-    due_at: props.date,
+    due_at: props.today,
 });
 
 let showDeleteConfirmation = ref(false);

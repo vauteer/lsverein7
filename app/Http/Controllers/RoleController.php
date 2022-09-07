@@ -48,11 +48,16 @@ class RoleController extends Controller
         ]);
     }
 
+    public function editOptions(): array
+    {
+        return [
+            'origin' => session(self::URL_KEY),
+        ];
+    }
+
     public function create(Request $request): Response
     {
-        return inertia('Roles/Edit', [
-            'origin' => session(self::URL_KEY),
-        ]);
+        return inertia('Roles/Edit', $this->editOptions());
     }
 
     public function store(Request $request): RedirectResponse
@@ -69,11 +74,10 @@ class RoleController extends Controller
 
     public function edit(Request $request, Role $role):Response
     {
-        return inertia('Roles/Edit', [
+        return inertia('Roles/Edit', array_merge($this->editOptions(), [
             'role' => $role->getAttributes(),
             'deletable' => !$role->isInUse(),
-            'origin' => session(self::URL_KEY),
-        ]);
+        ]));
     }
 
     public function update(Request $request, Role $role): RedirectResponse

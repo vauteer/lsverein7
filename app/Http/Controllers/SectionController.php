@@ -48,12 +48,17 @@ class SectionController extends Controller
         ]);
     }
 
-    public function create(Request $request): Response
+    private function editOptions(): array
     {
-        return inertia('Sections/Edit', [
+        return [
             'origin' => session(self::URL_KEY),
             'blsvSections' => optionsFromArray(Section::BLSV_SECTIONS),
-        ]);
+        ];
+    }
+
+    public function create(Request $request): Response
+    {
+        return inertia('Sections/Edit', $this->editOptions());
     }
 
     public function store(Request $request): RedirectResponse
@@ -70,12 +75,10 @@ class SectionController extends Controller
 
     public function edit(Request $request, Section $section):Response
     {
-        return inertia('Sections/Edit', [
+        return inertia('Sections/Edit', array_merge($this->editOptions(), [
             'section' => $section->getAttributes(),
             'deletable' => !$section->isInUse(),
-            'origin' => session(self::URL_KEY),
-            'blsvSections' => optionsFromArray(Section::BLSV_SECTIONS),
-        ]);
+        ]));
     }
 
     public function update(Request $request, Section $section): RedirectResponse
