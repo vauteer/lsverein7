@@ -49,9 +49,12 @@ class DebitController extends Controller
     {
         return [
             'origin' => session(self::URL_KEY),
-            'members' => Member::members()->orderBy('surname')->orderBy('first_name')
-                ->get(['id', 'surname', 'first_name'])
-                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->surname . ' ' . $item->first_name]),
+            'members' => Member::members()->hasAccount()->orderBy('surname')->orderBy('first_name')
+                ->get(['id', 'surname', 'first_name', 'iban'])
+                ->map(fn ($item) => [
+                    'id' => $item->id,
+                    'name' => "{$item->surname} {$item->first_name} ({$item->accountNumber()})",
+                ]),
             'today' => now()->format('Y-m-d'),
         ];
     }

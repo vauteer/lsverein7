@@ -149,6 +149,11 @@ class Member extends Model
         return $this->first_name . ' ' . $this->surname;
     }
 
+    public function accountNumber(): string
+    {
+        return ltrim(str_replace(' ', '', substr($this->iban, -12)), "0");
+    }
+
     public function isMember()
     {
         if (!$this->alive())
@@ -324,6 +329,11 @@ class Member extends Model
         $methods = Arr::wrap($methods);
 
         $query->whereIn('payment_method', $methods);
+    }
+
+    public function scopeHasAccount($query)
+    {
+        $query->where('iban', '<>', '');  // schließt wohl auch NULL aus
     }
 
     public function scopeHadEvent($query, int|null $id = null, ?Carbon $keyDate = null)
