@@ -86,7 +86,7 @@ const getMySubmitButtonText = computed(() => {
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
-                                        <MyDeleteButton v-if="deletable" @click.prevent="showDeleteConfirmation=true"/>
+                                        <MyDeleteButton v-if="deletable" @click.prevent="showRestoreConfirmation=true"/>
                                         <div class="w-full flex justify-end">
                                             <MyAbortButton :href="origin" />
                                             <MySubmitButton class="ml-2" :disabled="form.processing">
@@ -101,7 +101,7 @@ const getMySubmitButtonText = computed(() => {
                 </div>
             </div>
         </div>
-        <MyConfirmation v-if="showDeleteConfirmation" @canceled="showDeleteConfirmation = false" @confirmed="deleteSection">
+        <MyConfirmation v-if="showDeleteConfirmation" @canceled="showRestoreConfirmation = false" @confirmed="deleteSection">
             {{ `Abteilung '${section.name}' löschen`}}
         </MyConfirmation>
     </MyLayout>

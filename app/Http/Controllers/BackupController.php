@@ -35,4 +35,8 @@ class BackupController extends Controller
             ->with('success', "Das Backup wurde wiederhergestellt.");
     }
 
+    public function download(Request $request, string $filename): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        return \response()->download(Backup::path($filename), $filename);
+    }
 }

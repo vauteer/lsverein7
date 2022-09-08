@@ -75,6 +75,8 @@ Route::middleware(['auth', 'verified'])->group(function() {
         ->can('create', Backup::class);
     Route::post('/backups/restore', [BackupController::class, 'restore'])
         ->can('restore', Backup::class);
+    Route::get('/backups/download/{filename}', [BackupController::class, 'download'])->name('backups.download')
+        ->can('restore', Backup::class);
 
     Route::get('/clubs', [ClubController::class, 'index'])->name('clubs')->can('viewAny', Club::class);
     Route::get('/clubs/create', [ClubController::class, 'create'])->can('create', Club::class);

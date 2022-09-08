@@ -4,18 +4,27 @@ import {Head, Link} from '@inertiajs/inertia-vue3';
 import { Inertia } from '@inertiajs/inertia';
 import MyCategory from "@/Shared/MyCategory.vue";
 import MyLayout from "@/Shared/MyLayout.vue";
+import MyConfirmation from "@/Shared/MyConfirmation.vue";
+import MyDeleteButton from "@/Shared/MyDeleteButton.vue";
 
 let props = defineProps({
     backups: Object,
     isDirty: Boolean,
 });
 
-let restoreBackup = (backup) => {
-    if (confirm(`Wollen Sie das Backup vom '${backup.date}' wirklich wiederherstellen ?`)) {
-        Inertia.post('/backups/restore', {
-            filename: backup.filename,
-        })
-    }
+let showRestoreConfirmation = ref(false);
+let currentBackup = ref(null);
+
+let confirmRestore = (backup) => {
+    currentBackup.value = backup;
+    showRestoreConfirmation.value = true;
+}
+
+let restoreBackup = () => {
+    showRestoreConfirmation.value = false;
+    Inertia.post('/backups/restore', {
+        filename: currentBackup.value.filename,
+    });
 };
 
 let dsa = computed(() => {
@@ -48,6 +57,9 @@ let dsa = computed(() => {
                                             Datum
                                         </th>
                                         <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
+                                            <span class="sr-only">Backup</span>
+                                        </th>
+                                        <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                             <span class="sr-only">Restore</span>
                                         </th>
                                     </tr>
@@ -58,11 +70,15 @@ let dsa = computed(() => {
                                             <div class="font-bold">{{ backup.date }}</div>
                                         </td>
                                         <td class="px-3">
-                                            <div class="h-5">
-                                                <Link as="button" @click="restoreBackup(backup)">
-                                                    Wiederherstellen
-                                                </Link>
-                                            </div>
+                                            <a class="text-blue-500"
+                                               :href="route('backups.download', backup.filename)">
+                                                Download
+                                            </a>
+                                        </td>
+                                        <td class="px-3">
+                                            <MyDeleteButton @click.prevent="confirmRestore(backup)">
+                                                Wiederherstellen
+                                            </MyDeleteButton>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -77,6 +93,9 @@ let dsa = computed(() => {
                     </div>
                 </div>
             </div>
+            <MyConfirmation v-if="showRestoreConfirmation" @canceled="showRestoreConfirmation = false" @confirmed="restoreBackup" subText="Die jetzigen Daten werden vorher gesichert">
+                {{ `${currentBackup.date} wiederherstellen ?` }}
+            </MyConfirmation>
         </MyLayout>
     </div>
 </template>
