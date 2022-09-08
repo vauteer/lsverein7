@@ -42,6 +42,7 @@ class DebitController extends Controller
 
             'filters' => $request->only(['search']),
             'canCreate' => auth()->user()->can('create', Debit::class),
+            'sepaDate' => now()->addDays(8)->format('Y-m-d'),
         ]);
     }
 

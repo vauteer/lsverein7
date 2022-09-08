@@ -5,6 +5,7 @@ import {Inertia} from "@inertiajs/inertia";
 import {PencilIcon, GlobeAltIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 import MyLayout from "@/Shared/MyLayout.vue";
+import MyTextInput from "@/Shared/MyTextInput.vue";
 import MyActionLink from "@/Shared/MyActionLink.vue";
 import MyPagination from "@/Shared/MyPagination.vue";
 
@@ -12,6 +13,7 @@ let props = defineProps({
     debits: Object,
     filters: Object,
     canCreate: Boolean,
+    sepaDate: String,
 });
 
 let showMembers = (id) => {
@@ -25,6 +27,7 @@ let showMembers = (id) => {
 };
 
 let search = ref(props.filters.search);
+const date = ref(props.sepaDate);
 
 watch(search, throttle(function (value) {
     Inertia.get('/debits', {search: value}, {
@@ -41,9 +44,17 @@ watch(search, throttle(function (value) {
 
         <div
             class="w-full max-w-2xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-2 px-4 sm:px-6 lg:px-8">
-            <input type="text" placeholder="Suchen..." v-model="search"
-                   class="text-gray-700 px-2 mr-4 my-2 text-base border rounded-lg"
-            />
+            <div class="w-full flex justify-between">
+                <input type="text" placeholder="Suchen..." v-model="search"
+                       class="text-gray-700 px-2 mr-4 my-2 text-base border rounded-lg"
+                />
+                <div class="flex">
+                    <MyActionLink class="my-2 ml-2" href="/debits/debit" method="post"
+                                  :data="{ date: date }"
+                    >Abbuchen zum:</MyActionLink>
+                    <MyTextInput class="my-2 ml-2" v-model="date" id="date" type="date" label=""/>
+                </div>
+            </div>
 
             <div class="mt-4 mb-4 flex flex-col">
                 <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">

@@ -103,85 +103,12 @@ class SubscriptionController extends Controller
 
     public function debit(Request $request): Response
     {
-        $paymentMethods = Member::availablePaymentMethods();
         $subscriptions = $request->input('subscriptions');
         $executionDate = new Carbon($request->input('date'));
-        $creationDate = now();
-        $year = $executionDate->year;
-        $club = currentClub();
-        $defaultDate = $club->sepa_date;
-        $debits = [];
-        $outStandings = [];
-        $totalAmount = 0.0;
-        $data['msgId'] = 'M' . $creationDate->format('YmdHis');
-        $data['pmtInfId'] = 'P' . $creationDate->format('YmdHis');
-        $data['creDtTm'] = substr($creationDate->toISO8601String(), 0, 19);
-        $data['reqdColltnDt'] = $executionDate->format('Y-m-d');
-        $data['nm'] = $club->name;
-        $data['iban'] = str_replace(" ", "", $club->iban);
-        $data['bic'] = $club->bic;
-        $data['sepaId'] = str_replace(" ", "", $club->sepa);
 
-        $members = Member::members()
-            ->hasSubscription($subscriptions)
-            ->orderBy('surname')->orderBy('first_name')
-            ->get();
-
-        foreach ($members as $member) {
-            foreach ($member->subscriptions as $subscription) {
-                if (!in_array($subscription->id, $subscriptions))
-                    continue;
-
-                if ($member->payment_method !== 'k') {
-                    $outStandings[] = [
-                        'name' => $member->first_name . ' ' . $member->surname,
-                        'subscription' => $subscription->__toString(),
-                        'paymentMethod' => $paymentMethods[$member->payment_method],
-                    ];
-                    continue;
-                }
-
-                $totalAmount += $subscription->amount;
-                $transferText = str_replace(['<AJ>', '<VN>', '<NN>'], [$year, $member->first_name, $member->surname],
-                    $subscription->transfer_text);
-                $dateOfSignature = $defaultDate->max($member->entry());
-
-                $debits[] = [
-                    'nm' =>$member->account_owner,
-                    'iban' => str_replace(" ", "", $member->iban),
-                    'bic' => $member->bic,
-                    'amount' => $subscription->amount,
-                    'instdAmt' => sprintf('%01.2f', $subscription->amount),
-                    'ustrd' => $transferText,
-                    'mndtId' => $member->id,
-                    'dtOfSgntr' => $dateOfSignature->format('Y-m-d'),
-                ];
-            }
-        }
-
-        $data['nbOfTxs'] = count($debits);
-        $data['ctrlSum'] = sprintf('%01.2f', $totalAmount);
-        $data['payments'] = $debits;
-        $sepaName = "beitraege_sepa.xml";
-        $sepaPath = storage_path("downloads/{$club->id}_" . $sepaName);
-        $data['header'] = '<?xml version="1.0" encoding="utf-8"?>'; // <? Würde in view als PHP gewertet !
-        $sepaData = view('sepaxml', $data)->render();
-
-        file_put_contents($sepaPath, $sepaData);
-
-        $pdf = new SepaPdf();
-
-        $pdfName = "beitraege.pdf";
-        $pdfPath = storage_path("downloads/{$club->id}_" . $pdfName);
-        file_put_contents($pdfPath, $pdf->getOutput($debits, 'Sepa-Bankeinzug', $club->name));
-
-        return inertia('Subscriptions/Debit', [
+        return inertia('Subscriptions/Debit',
+            array_merge(Subscription::debitSubscriptions($subscriptions, $executionDate), [
             'origin' => session(self::URL_KEY),
-            'downloads' => [
-                0 => ['name' => 'Sepa-Datei', 'href' => "/downloads/{$sepaName}"],
-                1 => ['name' => 'Begleitzettel', 'href' => "/downloads/{$pdfName}"],
-            ],
-            'outStandings' => $outStandings,
-        ]);
+        ]));
     }
 }
