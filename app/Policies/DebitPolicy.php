@@ -30,7 +30,7 @@ class DebitPolicy
         return $user->hasAdminRights();
     }
 
-    public function debit(User $user, Debit $debit)
+    public function debit(User $user)
     {
         return $user->hasAdminRights();
     }

@@ -17,6 +17,8 @@ class Subscription extends Model
 {
     use HasFactory;
 
+    public const VAR_DESCRIPTION = "Variablen: <AJ> Jahr, <VN> Vorname, <NN> Nachname";
+
     protected $guarded = [];
 
     protected static function booted()
@@ -49,7 +51,7 @@ class Subscription extends Model
         return "{$this->name} ($amount €)";
     }
 
-    public static function debitSubscriptions(array $subscriptions, Carbon $executionDate): array
+    public static function debit(array $subscriptions, Carbon $executionDate): array
     {
         $paymentMethods = Member::availablePaymentMethods();
 
@@ -129,7 +131,7 @@ class Subscription extends Model
         $data['ctrlSum'] = sprintf('%01.2f', $totalAmount);
         $data['payments'] = $payments;
 
-        $sepaName = "beitraege_sepa.xml";
+        $sepaName = "sepa.xml";
         $sepaPath = storage_path("downloads/{$club->id}_" . $sepaName);
         $data['header'] = '<?xml version="1.0" encoding="utf-8"?>'; // <? Würde in view als PHP gewertet !
         $sepaData = view('sepaxml', $data)->render();
@@ -138,7 +140,7 @@ class Subscription extends Model
 
         $pdf = new SepaPdf();
 
-        $pdfName = "beitraege.pdf";
+        $pdfName = "Abbuchungen.pdf";
         $pdfPath = storage_path("downloads/{$club->id}_" . $pdfName);
         file_put_contents($pdfPath, $pdf->getOutput($payments, 'Sepa-Bankeinzug', $club->name));
 

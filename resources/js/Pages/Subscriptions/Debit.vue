@@ -38,18 +38,20 @@ let props = defineProps({
                 </ul>
             </div>
 
-            <div class="w-full text-2xl font-medium text-gray-900 mt-2">Außenstände</div>
+            <div v-if="outStandings">
+                <div class="w-full text-2xl font-medium text-gray-900 mt-2">Außenstände</div>
 
-            <div class="overflow-hidden bg-white shadow sm:rounded-md my-4">
-                <ul role="list" class="divide-y divide-gray-200 text-sm">
-                    <li v-for="outStanding in outStandings">
-                        <div class="grid grid-cols-3 gap-4 gap-y-4 px-4 py-2 sm:px-6">
-                            <div>{{ outStanding.name }}</div>
-                            <div>{{ outStanding.paymentMethod }}</div>
-                            <div>{{ outStanding.subscription }}</div>
-                        </div>
-                    </li>
-                </ul>
+                <div class="overflow-hidden bg-white shadow sm:rounded-md my-4">
+                    <ul role="list" class="divide-y divide-gray-200 text-sm">
+                        <li v-for="outStanding in outStandings">
+                            <div class="grid grid-cols-3 gap-4 gap-y-4 px-4 py-2 sm:px-6">
+                                <div>{{ outStanding.name }}</div>
+                                <div>{{ outStanding.paymentMethod }}</div>
+                                <div>{{ outStanding.subscription }}</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div class="py-5 flex justify-end">
                 <MyAbortButton :href="origin">Zurück</MyAbortButton>

@@ -13,6 +13,7 @@ let props = defineProps({
     origin: String,
     subscription: Object,
     deletable: Boolean,
+    varDescription: String,
 });
 
 let form = useForm({
@@ -82,7 +83,7 @@ const getMySubmitButtonText = computed(() => {
                                     <MyTextInput class="sm:col-span-2" v-model="form.amount" :error="form.errors.amount"
                                                id="amount" type="number" step="any" label="Betrag"/>
                                     <MyTextInput class="sm:col-span-6" v-model="form.transfer_text" :error="form.errors.transfer_text"
-                                        id="transfer_text" label="Verwendungszweck" />
+                                        id="transfer_text" label="Verwendungszweck" :placeholder="varDescription"/>
                                     <MyTextInput class="sm:col-span-6" v-model="form.memo" :error="form.errors.memo"
                                         id="memo" label="Memo" />
                                 </div>

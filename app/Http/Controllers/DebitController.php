@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\DebitResource;
 use App\Models\Debit;
 use App\Models\Member;
+use App\Models\Subscription;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -57,6 +58,7 @@ class DebitController extends Controller
                     'name' => "{$item->surname} {$item->first_name} ({$item->accountNumber()})",
                 ]),
             'today' => now()->format('Y-m-d'),
+            'varDescription' => Subscription::VAR_DESCRIPTION,
         ];
     }
 
@@ -98,6 +100,16 @@ class DebitController extends Controller
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Lastschrift gelöscht');
+    }
+
+    public function debit(Request $request): Response
+    {
+        $executionDate = new Carbon($request->input('date'));
+
+        return inertia('Subscriptions/Debit',
+            array_merge(Debit::debit($executionDate), [
+                'origin' => session(self::URL_KEY),
+            ]));
     }
 
 }

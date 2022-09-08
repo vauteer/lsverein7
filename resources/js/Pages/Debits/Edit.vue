@@ -15,6 +15,7 @@ let props = defineProps({
     debit: Object,
     members: Object,
     today: String,
+    varDescription: String,
     deletable: Boolean,
 });
 
@@ -84,9 +85,9 @@ const getMySubmitButtonText = computed(() => {
                                               :error="form.errors.member_id"
                                               :options="props.members" id="member" label="Mitglied"/>
                                     <MyTextInput class="sm:col-span-2" v-model="form.amount" :error="form.errors.amount"
-                                                 id="amount" type="number" step="any" label="Betrag"/>
+                                                 id="amount" type="number" step="0.01" label="Betrag"/>
                                     <MyTextInput class="sm:col-span-6" v-model="form.transfer_text" :error="form.errors.transfer_text"
-                                                 id="transfer_text" label="Verwendungszweck" />
+                                                 id="transfer_text" label="Verwendungszweck" :placeholder="varDescription"/>
                                     <MyTextInput class="sm:col-span-2" v-model="form.due_at"
                                                  :error="form.errors.due_at"
                                                  id="due-at" type="date" label="Fällig am"/>

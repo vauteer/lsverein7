@@ -58,8 +58,10 @@ class SubscriptionController extends Controller
     {
         return [
             'origin' => session(self::URL_KEY),
+            'varDescription' => Subscription::VAR_DESCRIPTION,
         ];
     }
+
     public function create(Request $request): Response
     {
         return inertia('Subscriptions/Edit', $this->editOptions());
@@ -107,7 +109,7 @@ class SubscriptionController extends Controller
         $executionDate = new Carbon($request->input('date'));
 
         return inertia('Subscriptions/Debit',
-            array_merge(Subscription::debitSubscriptions($subscriptions, $executionDate), [
+            array_merge(Subscription::debit($subscriptions, $executionDate), [
             'origin' => session(self::URL_KEY),
         ]));
     }

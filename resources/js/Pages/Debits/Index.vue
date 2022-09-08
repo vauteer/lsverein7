@@ -48,7 +48,7 @@ watch(search, throttle(function (value) {
                 <input type="text" placeholder="Suchen..." v-model="search"
                        class="text-gray-700 px-2 mr-4 my-2 text-base border rounded-lg"
                 />
-                <div class="flex">
+                <div v-if="debits.data.length > 0" class="flex">
                     <MyActionLink class="my-2 ml-2" href="/debits/debit" method="post"
                                   :data="{ date: date }"
                     >Abbuchen zum:</MyActionLink>
