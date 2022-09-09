@@ -35,6 +35,12 @@ let submit = () => {
                                    :error="form.errors.password" id="password"
                                    label="Passwort" type="password"/>
 
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm">
+                                <a href="/forgot-password" class="font-medium text-indigo-600 hover:text-indigo-500"> Passwort vergessen ?</a>
+                            </div>
+                        </div>
+
                         <MySubmitButton :disabled="form.processing" class="w-full">
                             Anmelden
                         </MySubmitButton>
