@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'reset' => 'Ihr Passwort wurde zur&uuml;ckgesetzt!',
-    'sent' => 'Wir haben Ihnen den Link zum zur&uuml;cksetzen des Passwortes zugesandt!',
+    'reset' => 'Ihr Passwort wurde zurückgesetzt!',
+    'sent' => 'Wir haben Ihnen den Link zum zurücksetzen des Passwortes zugesandt!',
     'throttled' => 'Bitte warten Sie, bevor Sie es nochmals versuchen.',
-    'token' => 'Das Token zum zur&uuml;cksetzen des Passwortes ist ung&uuml;ltig.',
-    'user' => "Wir k&ouml;nnen keinen Benutzer mit dieser Email-Adresse finden.",
+    'token' => 'Das Token zum zurücksetzen des Passwortes ist ungültig.',
+    'user' => "Wir können keinen Benutzer mit dieser Email-Adresse finden.",
 
 ];
