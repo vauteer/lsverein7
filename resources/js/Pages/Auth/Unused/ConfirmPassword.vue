@@ -2,7 +2,7 @@
 import { Head, useForm } from '@inertiajs/inertia-vue3';
 import MyLayout from '@/Shared/MyLayout.vue';
 import MyTextInput from '@/Shared/MyTextInput.vue';
-import MySubmitButton from '@/Shared/MySubmitButton.vue'
+import MyButton from '@/Shared/MyButton.vue'
 
 const form = useForm({
     password: '',
@@ -33,10 +33,10 @@ const submit = () => {
                                    required autocomplete="current-password" autofocus
                                    label="Passwort"/>
 
-                        <MySubmitButton :disabled="form.processing" :class="{ 'opacity-25': form.processing }"
+                        <MyButton type="submit" :disabled="form.processing" :class="{ 'opacity-25': form.processing }"
                                       class="w-full">
                             Bestätigen
-                        </MySubmitButton>
+                        </MyButton>
                     </form>
                 </div>
             </div>

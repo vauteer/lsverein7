@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
+import MyButton from "@/Shared/MyButton.vue";
 
 let props = defineProps({
     subText: {
@@ -15,7 +16,7 @@ const open = ref(true)
 </script><!-- This example requires Tailwind CSS v2.0+ -->
 <template>
     <TransitionRoot as="template" :show="open">
-        <Dialog as="div" class="relative z-30" @close="open = false">
+        <Dialog as="div" class="relative z-10" @close="open = false">
             <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
             </TransitionChild>
@@ -36,8 +37,15 @@ const open = ref(true)
                                 </div>
                             </div>
                             <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                                <button type="button" class="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm" @click="$emit('confirmed')">Ok</button>
-                                <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:w-auto sm:text-sm" @click="$emit('canceled')" ref="cancelButtonRef">Abbrechen</button>
+                                <MyButton nature="danger" @click="$emit('confirmed')"
+                                          class="w-full sm:ml-3 sm:w-1/4">
+                                    Ja
+                                </MyButton>
+                                <MyButton nature="abort" @click="$emit('canceled')" ref="cancelButtonRef"
+                                          class="w-full sm:w-1/4"
+                                >
+                                    Nein
+                                </MyButton>
                             </div>
                         </DialogPanel>
                     </TransitionChild>

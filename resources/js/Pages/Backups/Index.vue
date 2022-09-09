@@ -5,23 +5,23 @@ import { Inertia } from '@inertiajs/inertia';
 import MyCategory from "@/Shared/MyCategory.vue";
 import MyLayout from "@/Shared/MyLayout.vue";
 import MyConfirmation from "@/Shared/MyConfirmation.vue";
-import MyDeleteButton from "@/Shared/MyDeleteButton.vue";
+import MyButton from "@/Shared/MyButton.vue";
 
 let props = defineProps({
     backups: Object,
     isDirty: Boolean,
 });
 
-let showRestoreConfirmation = ref(false);
+let showConfirmation = ref(false);
 let currentBackup = ref(null);
 
 let confirmRestore = (backup) => {
     currentBackup.value = backup;
-    showRestoreConfirmation.value = true;
+    showConfirmation.value = true;
 }
 
 let restoreBackup = () => {
-    showRestoreConfirmation.value = false;
+    showConfirmation.value = false;
     Inertia.post('/backups/restore', {
         filename: currentBackup.value.filename,
     });
@@ -76,9 +76,9 @@ let dsa = computed(() => {
                                             </a>
                                         </td>
                                         <td class="px-3">
-                                            <MyDeleteButton @click.prevent="confirmRestore(backup)">
+                                            <MyButton theme="danger" @click="confirmRestore(backup)">
                                                 Wiederherstellen
-                                            </MyDeleteButton>
+                                            </MyButton>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -93,7 +93,7 @@ let dsa = computed(() => {
                     </div>
                 </div>
             </div>
-            <MyConfirmation v-if="showRestoreConfirmation" @canceled="showRestoreConfirmation = false" @confirmed="restoreBackup" subText="Die jetzigen Daten werden vorher gesichert">
+            <MyConfirmation v-if="showConfirmation" @canceled="showConfirmation = false" @confirmed="restoreBackup" subText="Die jetzigen Daten werden vorher gesichert">
                 {{ `${currentBackup.date} wiederherstellen ?` }}
             </MyConfirmation>
         </MyLayout>

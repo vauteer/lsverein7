@@ -4,9 +4,7 @@ import {Inertia} from "@inertiajs/inertia";
 import {useForm, usePage} from "@inertiajs/inertia-vue3";
 import MyLayout from '@/Shared/MyLayout.vue';
 import MyTextInput from '@/Shared/MyTextInput.vue';
-import MyAbortButton from '@/Shared/MyAbortButton.vue';
-import MySubmitButton from '@/Shared/MySubmitButton.vue';
-import MyDeleteButton from '@/Shared/MyDeleteButton.vue';
+import MyButton from '@/Shared/MyButton.vue';
 import MyConfirmation from "@/Shared/MyConfirmation.vue";
 
 let props = defineProps({
@@ -20,7 +18,7 @@ let form = useForm({
 });
 
 const user = computed(() => usePage().props.value.auth.user);
-let showDeleteConfirmation = ref(false);
+let showConfirmation = ref(false);
 let editMode = ref(false);
 
 onMounted(() => {
@@ -41,7 +39,7 @@ let submit = () => {
 };
 
 let deleteEvent = () => {
-    showDeleteConfirmation.value = false;
+    showConfirmation.value = false;
     Inertia.delete(`/events/${props.event.id}`);
 };
 
@@ -78,12 +76,12 @@ const getSubmitButtonText = computed(() => {
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
-                                        <MyDeleteButton v-if="deletable" @click.prevent="showDeleteConfirmation = true" />
+                                        <MyButton v-if="deletable" @click="showConfirmation = true">Löschen</MyButton>
                                         <div class="w-full flex justify-end">
-                                            <MyAbortButton :href="origin" />
-                                            <MySubmitButton class="ml-2" :disabled="form.processing">
+                                            <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
+                                            <MyButton type="submit" class="ml-2" :disabled="form.processing">
                                                 {{ getSubmitButtonText }}
-                                            </MySubmitButton>
+                                            </MyButton>
                                         </div>
                                     </div>
                                 </div>
@@ -93,7 +91,7 @@ const getSubmitButtonText = computed(() => {
                 </div>
             </div>
         </div>
-        <MyConfirmation v-if="showDeleteConfirmation" @canceled="showDeleteConfirmation = false" @confirmed="deleteEvent">
+        <MyConfirmation v-if="showConfirmation" @canceled="showConfirmation = false" @confirmed="deleteEvent">
             {{ `Ereignis '${role.name}' löschen`}}
         </MyConfirmation>
     </MyLayout>

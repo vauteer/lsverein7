@@ -1,7 +1,7 @@
 <script setup>
 import {Head, Link, useForm} from '@inertiajs/inertia-vue3';
 import MyTextInput from '@/Shared/MyTextInput.vue';
-import MySubmitButton from '@/Shared/MySubmitButton.vue';
+import MyButton from '@/Shared/MyButton.vue';
 
 const form = useForm({
     name: '',
@@ -43,9 +43,9 @@ const submit = () => {
                 Already registered?
             </Link>
 
-            <MySubmitButton :disabled="form.processing" class="w-full">
+            <MyButton type="submit" :disabled="form.processing" class="w-full">
                 Register
-            </MySubmitButton>
+            </MyButton>
         </div>
     </form>
 </template>

@@ -1,6 +1,7 @@
 <script setup>
+import {Inertia} from "@inertiajs/inertia";
 import MyLayout from "@/Shared/MyLayout.vue";
-import MyAbortButton from "@/Shared/MyAbortButton.vue";
+import MyButton from "@/Shared/MyButton.vue";
 
 let props = defineProps({
     origin: String,
@@ -54,7 +55,7 @@ let props = defineProps({
                 </div>
             </div>
             <div class="py-5 flex justify-end">
-                <MyAbortButton :href="origin">Zurück</MyAbortButton>
+                <MyButton theme="abort" @click="Inertia.get(origin)">Zurück</MyButton>
             </div>
         </div>
     </MyLayout>

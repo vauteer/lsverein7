@@ -6,7 +6,7 @@ import {PencilIcon, GlobeAltIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 import MyLayout from "@/Shared/MyLayout.vue";
 import MyTextInput from "@/Shared/MyTextInput.vue";
-import MyActionLink from "@/Shared/MyActionLink.vue";
+import MyButton from "@/Shared/MyButton.vue";
 import MyPagination from "@/Shared/MyPagination.vue";
 
 let props = defineProps({
@@ -25,6 +25,10 @@ let showMembers = (id) => {
             replace: true,
         });
 };
+
+let debit = () => {
+    Inertia.post('/debits/debit', { date: date });
+}
 
 let search = ref(props.filters.search);
 const date = ref(props.sepaDate);
@@ -49,9 +53,7 @@ watch(search, throttle(function (value) {
                        class="text-gray-700 px-2 mr-4 my-2 text-base border rounded-lg"
                 />
                 <div v-if="debits.data.length > 0" class="flex">
-                    <MyActionLink class="my-2 ml-2" href="/debits/debit" method="post"
-                                  :data="{ date: date }"
-                    >Abbuchen zum:</MyActionLink>
+                    <MyButton theme="danger" @click="debit" class="my-2 ml-2">Abbuchen zum:</MyButton>
                     <MyTextInput class="my-2 ml-2" v-model="date" id="date" type="date" label=""/>
                 </div>
             </div>
@@ -73,7 +75,7 @@ watch(search, throttle(function (value) {
                                     </th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                         <span class="sr-only">Edit</span>
-                                        <MyActionLink v-if="props.canCreate" href="/debits/create">Neu</MyActionLink>
+                                        <MyButton v-if="props.canCreate" @click="Inertia.get('/debits/create')">Neu</MyButton>
                                     </th>
                                 </tr>
                                 </thead>

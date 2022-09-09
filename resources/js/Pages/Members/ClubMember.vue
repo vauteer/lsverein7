@@ -5,9 +5,7 @@ import {useForm} from "@inertiajs/inertia-vue3";
 import MyLayout from '@/Shared/MyLayout.vue';
 import MyTextInput from '@/Shared/MyTextInput.vue';
 import MyTextArea from '@/Shared/MyTextArea.vue';
-import MyAbortButton from '@/Shared/MyAbortButton.vue';
-import MySubmitButton from '@/Shared/MySubmitButton.vue';
-import MyDeleteButton from '@/Shared/MyDeleteButton.vue';
+import MyButton from '@/Shared/MyButton.vue';
 
 let props = defineProps({
     clubMember: Object,
@@ -52,7 +50,7 @@ const getTitle = computed(() => {
     return editMode.value ? "Mitgliedschaft bearbeiten" : "Neue Mitgliedschaft";
 });
 
-const getMySubmitButtonText = computed(() => {
+const getSubmitButtonText = computed(() => {
     return editMode.value ? "Speichern" : "Hinzufügen";
 });
 
@@ -86,12 +84,14 @@ const getMySubmitButtonText = computed(() => {
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
-                                        <MyDeleteButton v-if="editMode" :onDelete="deleteClubMember"/>
+                                        <MyButton v-if="editMode" theme="danger" @click="deleteClubMember">
+                                            Löschen
+                                        </MyButton>
                                         <div class="w-full flex justify-end">
-                                            <MyAbortButton :href="origin" />
-                                            <MySubmitButton class="ml-2" :disabled="form.processing">
-                                                {{ getMySubmitButtonText }}
-                                            </MySubmitButton>
+                                            <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
+                                            <MyButton type="submit" class="ml-2" :disabled="form.processing">
+                                                {{ getSubmitButtonText }}
+                                            </MyButton>
                                         </div>
                                     </div>
                                 </div>

@@ -5,7 +5,7 @@ import {Inertia} from "@inertiajs/inertia";
 import {PencilIcon, ChevronDoubleRightIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 import MyTextInput from "@/Shared/MyTextInput.vue";
-import MyActionLink from "@/Shared/MyActionLink.vue";
+import MyButton from "@/Shared/MyButton.vue";
 import MyPagination from "@/Shared/MyPagination.vue";
 import MyLayout from "@/Shared/MyLayout.vue";
 
@@ -25,6 +25,13 @@ let showMembers = (id) => {
             replace: true,
         });
 };
+
+let debit = () => {
+    Inertia.post('/subscriptions/debit', {
+        subscriptions: selected.value,
+        date: date.value,
+    });
+}
 
 let search = ref(props.filters.search);
 const selected = ref([]);
@@ -52,9 +59,7 @@ watch(search, throttle(function (value) {
                        class="text-gray-700 px-2 my-2 text-base border rounded-lg"
                 />
                 <div v-else class="flex">
-                    <MyActionLink v-if="anySelected" class="my-2 ml-2" href="/subscriptions/debit" method="post"
-                                :data="{ subscriptions: selected, date: date }"
-                    >Abbuchen zum:</MyActionLink>
+                    <MyButton v-if="anySelected" theme="danger" @click="debit" class="my-2 ml-2">Abbuchen zum:</MyButton>
                     <MyTextInput v-if="anySelected" class="my-2 ml-2" v-model="date" id="date" type="date" label=""/>
                 </div>
             </div>
@@ -81,7 +86,7 @@ watch(search, throttle(function (value) {
                                     <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Show Members</span></th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                         <span class="sr-only">Edit</span>
-                                        <MyActionLink v-if="props.canCreate" href="/subscriptions/create">Neu</MyActionLink>
+                                        <MyButton v-if="props.canCreate" @click="Inertia.get('/subscriptions/create')">Neu</MyButton>
                                     </th>
                                 </tr>
                                 </thead>

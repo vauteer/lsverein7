@@ -1,7 +1,6 @@
 <script setup>
 import { useForm, Head } from "@inertiajs/inertia-vue3";
 import MyTextInput from "@/Shared/MyTextInput.vue";
-import MySubmitButton from "@/Shared/MySubmitButton.vue";
 
 let form = useForm({
     email: '',
@@ -41,9 +40,9 @@ let submit = () => {
                             </div>
                         </div>
 
-                        <MySubmitButton :disabled="form.processing" class="w-full">
+                        <MyButton type="submit" :disabled="form.processing" class="w-full">
                             Anmelden
-                        </MySubmitButton>
+                        </MyButton>
                     </form>
                 </div>
             </div>

@@ -7,9 +7,7 @@ import MyLayout from "@/Shared/MyLayout.vue";
 import MyTextInput from "@/Shared/MyTextInput.vue";
 import MyTextArea from "@/Shared/MyTextArea.vue"
 import MySelect from "@/Shared/MySelect.vue";
-import MyAbortButton from "@/Shared/MyAbortButton.vue";
-import MySubmitButton from "@/Shared/MySubmitButton.vue";
-import MyActionLink from "@/Shared/MyActionLink.vue";
+import MyButton from "@/Shared/MyButton.vue";
 
 let props = defineProps({
     isMember: { type: Boolean, default: false },
@@ -88,6 +86,10 @@ let deleteEntity = () => {
     }
 };
 
+let resign = () => {
+    Inertia.put(`/members/${props.member.id}/resign`, { date: resignDate.value })
+};
+
 let editMode = ref(false);
 let resignDate = ref(props.date);
 const club = computed(() => usePage().props.value.auth.club);
@@ -96,7 +98,7 @@ const getTitle = computed(() => {
     return editMode.value ? "Mitglied bearbeiten" : "Neues Mitglied";
 });
 
-const getMySubmitButtonText = computed(() => {
+const getSubmitButtonText = computed(() => {
     return editMode.value ? "Speichern" : "Hinzufügen";
 });
 
@@ -218,12 +220,8 @@ const getMySubmitButtonText = computed(() => {
                                         </div>
                                     </div>
                                     <div class="flex justify-end mt-2" v-if="isMember">
-                                        <MyTextInput class="" v-model="resignDate"
-                                                   id="resign-date" type="date"/>
-                                        <MyActionLink :href="`/members/${member.id}/resign`" method="put"
-                                                    :data="{ date: resignDate }"
-                                                    class="bg-red-500 mx-2"
-                                        >Austritt</MyActionLink>
+                                        <MyTextInput class="" v-model="resignDate" id="resign-date" type="date"/>
+                                        <MyButton theme="danger" @click="resign" class="mx-2">Austritt</MyButton>
                                     </div>
                                     <div class="px-4 sm:px-6 lg:px-8 mt-3">
                                         <div class="flex flex-col">
@@ -480,10 +478,10 @@ const getMySubmitButtonText = computed(() => {
                             <div class="py-5">
                                 <div class="flex justify-between">
                                     <div class="w-full flex justify-end">
-                                        <MyAbortButton :href="origin" />
-                                        <MySubmitButton class="ml-2" :disabled="form.processing">
-                                            {{ getMySubmitButtonText }}
-                                        </MySubmitButton>
+                                        <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
+                                        <MyButton type="submit" class="ml-2" :disabled="form.processing">
+                                            {{ getSubmitButtonText }}
+                                        </MyButton>
                                     </div>
                                 </div>
                             </div>

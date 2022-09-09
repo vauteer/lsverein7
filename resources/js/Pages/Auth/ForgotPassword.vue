@@ -1,7 +1,7 @@
 <script setup>
 import { useForm, Head } from "@inertiajs/inertia-vue3";
 import MyTextInput from "@/Shared/MyTextInput.vue";
-import MySubmitButton from "@/Shared/MySubmitButton.vue";
+import MyButton from "@/Shared/MyButton.vue";
 
 const props = defineProps({
     status: String,
@@ -40,9 +40,9 @@ let submit = () => {
                                          label="Email"/>
                         </div>
                         <div v-if="status">{{ status }}</div>
-                        <MySubmitButton class="w-full" :disabled="form.processing">
+                        <MyButton class="w-full" type="submit" :disabled="form.processing">
                             Reset Link anfordern
-                        </MySubmitButton>
+                        </MyButton>
                     </form>
                 </div>
             </div>

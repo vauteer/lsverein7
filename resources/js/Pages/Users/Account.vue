@@ -3,8 +3,7 @@ import { onMounted, computed } from "vue";
 import { useForm, Head } from "@inertiajs/inertia-vue3";
 import MyImageUpload from "@/Shared/MyImageUpload.vue";
 import MyTextInput from "@/Shared/MyTextInput.vue";
-import MyAbortButton from "@/Shared/MyAbortButton.vue";
-import MySubmitButton from "@/Shared/MySubmitButton.vue";
+import MyButton from "@/Shared/MyButton.vue";
 import MyLayout from "@/Shared/MyLayout.vue";
 
 let props = defineProps({
@@ -83,8 +82,8 @@ function onProfileImageChanged(filename) {
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-end">
-                                        <MyAbortButton :href="origin" />
-                                        <MySubmitButton class="mx-2" :disabled="form.processing" />
+                                        <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
+                                        <MyButton type="submit" class="mx-2" :disabled="form.processing">Speichern</MyButton>
                                     </div>
 
                                 </div>

@@ -5,7 +5,6 @@ import {Inertia} from "@inertiajs/inertia";
 import {PencilIcon, GlobeAltIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 import MyLayout from "@/Shared/MyLayout.vue";
-import MyActionLink from "@/Shared/MyActionLink.vue";
 import MyPagination from "@/Shared/MyPagination.vue";
 
 let props = defineProps({
@@ -63,7 +62,7 @@ watch(search, throttle(function (value) {
                                     <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Show Members</span></th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                         <span class="sr-only">Edit</span>
-                                        <MyActionLink v-if="props.canCreate" href="/events/create">Neu</MyActionLink>
+                                        <MyButton v-if="props.canCreate" @click="Inertia.get('/events/create')">Neu</MyButton>
                                     </th>
                                 </tr>
                                 </thead>

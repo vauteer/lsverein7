@@ -6,9 +6,7 @@ import MyLayout from "@/Shared/MyLayout.vue";
 import MyTextInput from "@/Shared/MyTextInput.vue";
 import MyCheckBox from "@/Shared/MyCheckBox.vue";
 import MySelect from "@/Shared/MySelect.vue";
-import MySubmitButton from "@/Shared/MySubmitButton.vue";
-import MyDeleteButton from "@/Shared/MyDeleteButton.vue";
-import MyAbortButton from "@/Shared/MyAbortButton.vue";
+import MyButton from "@/Shared/MyButton.vue";
 import MyImageUpload from "@/Shared/MyImageUpload.vue";
 import MyConfirmation from "@/Shared/MyConfirmation.vue";
 
@@ -69,12 +67,12 @@ let submit = () => {
 };
 
 let deleteClub = () => {
-    showDeleteConfirmation.value = false;
+    showConfirmation.value = false;
     Inertia.delete(`/clubs/${props.club.id}`);
 };
 
 let editMode = ref(false);
-let showDeleteConfirmation = ref(false);
+let showConfirmation = ref(false);
 
 const getTitle = computed(() => {
     return editMode.value ? "Verein bearbeiten" : "Neuer Verein";
@@ -156,12 +154,12 @@ function back() {
                             </div>
                             <div class="py-5">
                                 <div class="flex justify-between">
-                                    <MyDeleteButton v-if="deletable" @click.prevent="showRestoreConfirmation = true" />
+                                    <MyButton v-if="deletable" @click="showConfirmation = true">Löschen</MyButton>
                                     <div class="w-full flex justify-end">
-                                        <MyAbortButton :href="origin" />
-                                        <MySubmitButton class="ml-2" :disabled="form.processing">
+                                        <MyButton :theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
+                                        <MyButton type="submit" class="ml-2" :disabled="form.processing">
                                             {{ getSubmitButtonText }}
-                                        </MySubmitButton>
+                                        </MyButton>
                                     </div>
                                 </div>
                             </div>
@@ -170,7 +168,7 @@ function back() {
                 </div>
             </div>
         </div>
-        <MyConfirmation v-if="showDeleteConfirmation" @canceled="showRestoreConfirmation = false" @confirmed="deleteClub">
+        <MyConfirmation v-if="showConfirmation" @canceled="showRestoreConfirmation = false" @confirmed="deleteClub">
             {{ `Verein '${club.name}' löschen`}}
         </MyConfirmation>
     </MyLayout>

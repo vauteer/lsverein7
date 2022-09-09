@@ -6,7 +6,7 @@ import {PencilIcon, IdentificationIcon, CloudIcon } from '@heroicons/vue/24/outl
 import {throttle} from "lodash";
 import MyLayout from "@/Shared/MyLayout.vue";
 import MyPagination from "@/Shared/MyPagination.vue";
-import MyActionLink from "@/Shared/MyActionLink.vue";
+import MyButton from "@/Shared/MyButton.vue";
 import MyTextInput from "@/Shared/MyTextInput.vue";
 import MySelect from "@/Shared/MySelect.vue";
 
@@ -95,7 +95,7 @@ watch(state, throttle(function (newValue) {
                                         </div>
                                     </th>
                                     <th scope="col" class="relative pl-3 pr-2 sm:pr-2 w-6">
-                                        <MyActionLink v-if="clubAdmin" href="/members/create">Neu</MyActionLink>
+                                        <MyButton v-if="clubAdmin" @click="Inertia.get('/members/create')">Neu</MyButton>
                                     </th>
                                 </tr>
                                 </thead>
