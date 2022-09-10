@@ -1,4 +1,5 @@
 <script setup>
+import { onMounted, ref } from 'vue';
 
 let props = defineProps({
     id: String,
@@ -22,9 +23,19 @@ let props = defineProps({
     label: String,
     modelValue: [String, Number],
     autocomplete: String,
+    autofocus: Boolean,
 });
 
 defineEmits(['update:modelValue']);
+
+const input = ref(null);
+
+onMounted(() => {
+    if (props.autofocus) {
+        input.value.focus();
+    }
+});
+
 </script>
 
 <template>
@@ -38,6 +49,7 @@ defineEmits(['update:modelValue']);
                :autocomplete="autocomplete"
                @input="$emit('update:modelValue', $event.target.value)"
                :class="{'border-red-400': error}"
+               ref="input"
         />
         <div v-if="error" class="block text-xs font-medium text-red-500 mt-1">{{ error }}</div>
     </div>

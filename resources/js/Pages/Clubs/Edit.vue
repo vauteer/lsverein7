@@ -55,7 +55,6 @@ onMounted(() => {
 
         editMode.value = true;
     }
-    document.getElementById('name').focus();
 });
 
 let submit = () => {
@@ -122,7 +121,7 @@ function back() {
                                 />
                                 <div class="sm:col-span-6 grid sm:grid-cols-6 gap-y-4">
                                     <MyTextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name" id="name"
-                                               label="Name"/>
+                                               label="Name" autofocus/>
                                     <MyTextInput class="sm:col-span-6" v-model="form.street" :error="form.errors.street" id="street"
                                                label="Straße"/>
                                     <MyTextInput class="sm:col-span-1" v-model="form.zipcode" :error="form.errors.zipcode"
@@ -156,7 +155,7 @@ function back() {
                                 <div class="flex justify-between">
                                     <MyButton v-if="deletable" @click="showConfirmation = true">Löschen</MyButton>
                                     <div class="w-full flex justify-end">
-                                        <MyButton :theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
+                                        <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
                                         <MyButton type="submit" class="ml-2" :disabled="form.processing">
                                             {{ getSubmitButtonText }}
                                         </MyButton>

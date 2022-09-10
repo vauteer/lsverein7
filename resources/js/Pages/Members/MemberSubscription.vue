@@ -32,7 +32,6 @@ onMounted(() => {
 
         editMode.value = true;
     }
-    document.getElementById('subscription').focus();
 });
 
 let submit = () => {
@@ -77,7 +76,7 @@ const getSubmitButtonText = computed(() => {
                                 <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
                                     <MySelect class="sm:col-span-6" v-model="form.subscription_id"
                                               :error="form.errors.subscription_id"
-                                              :options="props.subscriptions" id="subscription" label="Beitrag"/>
+                                              :options="props.subscriptions" id="subscription" label="Beitrag" autofocus>
                                     <MyTextArea class="sm:col-span-6" v-model="form.memo" :error="form.errors.memo"
                                                 id="memo" label="Memo"/>
                                 </div>

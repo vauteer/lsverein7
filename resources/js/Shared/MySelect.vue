@@ -1,4 +1,6 @@
 <script setup>
+import { onMounted, ref } from 'vue';
+
 let props = defineProps({
     id: String,
     error: String,
@@ -13,9 +15,19 @@ let props = defineProps({
         type: [Boolean, Function]
     },
     hideDisabled: Boolean,
+    autofocus: Boolean,
 });
 
 defineEmits(['update:modelValue']);
+
+const select = ref(null);
+
+onMounted(() => {
+    if (props.autofocus) {
+        select.value.focus();
+    }
+});
+
 </script>
 
 <template>
@@ -25,6 +37,7 @@ defineEmits(['update:modelValue']);
                 :value="modelValue"
                 :class="{'border-red-400': error, 'text-white': disabled && hideDisabled }"
                 @change="$emit('update:modelValue', $event.target.value)"
+                ref="select"
         >
             <option v-if="nullValue !== null" value="" v-text="nullValue" />
             <option v-for="option in options" :value="option.id" v-text="option.name" />

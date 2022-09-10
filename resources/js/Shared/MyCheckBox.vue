@@ -4,7 +4,7 @@ let props = defineProps({
     label: String,
     error: String,
     modelValue: {
-        type: Boolean,
+        type: [Array, Boolean],
         default: false,
     }
 });

@@ -33,7 +33,6 @@ onMounted(() => {
 
         editMode.value = true;
     }
-    document.getElementById('date').focus();
 });
 
 let submit = () => {
@@ -78,7 +77,7 @@ const getSubmitButtonText = computed(() => {
                                 <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
                                     <MyTextInput class="sm:col-span-2" v-model="form.date"
                                                :error="form.errors.date"
-                                               id="date" type="date" label="Datum"/>
+                                               id="date" type="date" label="Datum" autofocus/>
                                     <MySelect class="sm:col-span-4" v-model="form.event_id"
                                               :error="form.errors.event_id"
                                               :options="props.events" id="event" label="Ereignis"/>

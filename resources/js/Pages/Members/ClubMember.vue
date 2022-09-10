@@ -29,7 +29,6 @@ onMounted(() => {
 
         editMode.value = true;
     }
-    document.getElementById('from').focus();
 });
 
 let submit = () => {
@@ -75,7 +74,7 @@ const getSubmitButtonText = computed(() => {
                                 <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
                                     <MyTextInput class="sm:col-span-3" v-model="form.from"
                                                :error="form.errors.from"
-                                               id="from" type="date" label="Von"/>
+                                               id="from" type="date" label="Von" autofocus/>
                                     <MyTextInput class="sm:col-span-3" v-model="form.to"
                                                :error="form.errors.to"
                                                id="to" type="date" label="Bis"/>

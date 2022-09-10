@@ -27,7 +27,6 @@ onMounted(() => {
 
         editMode.value = true;
     }
-    document.getElementById('name').focus();
 });
 
 let submit = () => {
@@ -71,12 +70,11 @@ const getSubmitButtonText = computed(() => {
                             <div class="space-y-8 divide-y divide-gray-200 my-3 mx-2">
                                 <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
                                     <MyTextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name"
-                                               id="name"
-                                               label="Name"/>
+                                               id="name" label="Name" autofocus/>
                                 </div>
                                 <div class="py-5">
                                     <div class="flex justify-between">
-                                        <MyButton v-if="deletable" @click="showConfirmation = true">Löschen</MyButton>
+                                        <MyButton v-if="deletable" theme="danger" @click="showConfirmation = true">Löschen</MyButton>
                                         <div class="w-full flex justify-end">
                                             <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
                                             <MyButton type="submit" class="ml-2" :disabled="form.processing">

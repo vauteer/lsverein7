@@ -31,7 +31,6 @@ onMounted(() => {
 
         editMode.value = true;
     }
-    document.getElementById('name').focus();
 });
 
 let submit = () => {
@@ -75,8 +74,7 @@ const getSubmitButtonText = computed(() => {
                             <div class="space-y-8 divide-y divide-gray-200 my-3 mx-2">
                                 <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
                                     <MyTextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name"
-                                               id="name"
-                                               label="Name"/>
+                                               id="name" label="Name" autofocus/>
                                     <MySelect class="sm:col-span-6" v-model="form.blsv_id" :error="form.errors.blsv_id"
                                               :options="props.blsvSections" id="blsv-id" label="BLSV-Zuordnung"
                                               nullValue="(BLSV-Sparte)"
@@ -100,9 +98,9 @@ const getSubmitButtonText = computed(() => {
                     </div>
                 </div>
             </div>
+            <MyConfirmation v-if="showConfirmation" @canceled="showConfirmation = false" @confirmed="deleteSection">
+                {{ `Abteilung '${section.name}' löschen`}}
+            </MyConfirmation>
         </div>
-        <MyConfirmation v-if="showConfirmation" @canceled="showConfirmation = false" @confirmed="deleteSection">
-            {{ `Abteilung '${section.name}' löschen`}}
-        </MyConfirmation>
     </MyLayout>
 </template>

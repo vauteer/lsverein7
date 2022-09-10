@@ -5,6 +5,7 @@ import {Inertia} from "@inertiajs/inertia";
 import {PencilIcon, GlobeAltIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 import MyLayout from "@/Shared/MyLayout.vue";
+import MyButton from "@/Shared/MyButton.vue";
 import MyPagination from "@/Shared/MyPagination.vue";
 
 let props = defineProps({

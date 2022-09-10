@@ -69,7 +69,6 @@ onMounted(() => {
 
             editMode.value = true;
     }
-    document.getElementById('gender').focus();
 });
 
 let submit = () => {
@@ -126,7 +125,7 @@ const getSubmitButtonText = computed(() => {
                                  :class="[editMode ? 'sm:grid-cols-6' : 'sm:grid-cols-3']">
                                 <div class="sm:col-span-3 grid gap-y-4 gap-x-4">
                                     <MySelect class="sm:col-span-1" v-model="form.gender" :error="form.errors.gender"
-                                              :options="props.genders" id="gender" label="Geschlecht"/>
+                                              :options="props.genders" id="gender" label="Geschlecht" autofocus/>
                                     <MyTextInput class="sm:col-span-3" v-model="form.first_name"
                                                :error="form.errors.first_name"
                                                id="first_name" label="Vorname"/>

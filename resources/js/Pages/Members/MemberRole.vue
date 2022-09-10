@@ -35,7 +35,6 @@ onMounted(() => {
 
         editMode.value = true;
     }
-    document.getElementById('role').focus();
 });
 
 let submit = () => {
@@ -80,7 +79,7 @@ const getSubmitButtonText = computed(() => {
                                 <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
                                     <MySelect class="sm:col-span-6" v-model="form.role_id"
                                               :error="form.errors.role_id"
-                                              :options="props.roles" id="role" label="Funktion"/>
+                                              :options="props.roles" id="role" label="Funktion" autofocus/>
                                     <MyTextInput class="sm:col-span-3" v-model="form.from"
                                                :error="form.errors.from"
                                                id="from" type="date" label="Von"/>
