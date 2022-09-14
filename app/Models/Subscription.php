@@ -40,7 +40,7 @@ class Subscription extends Model
             ->withTimestamps();
     }
 
-    public function isInUse(): bool
+    public function isUsed(): bool
     {
         return DB::table('member_subscription')->where('subscription_id', $this->id)->count() > 0;
     }

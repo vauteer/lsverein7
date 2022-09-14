@@ -35,7 +35,7 @@ class Event extends Model
             ->withTimestamps();
     }
 
-    public function isInUse(): bool
+    public function isUsed(): bool
     {
         return DB::table('event_member')->where('event_id', $this->id)->count() > 0;
     }

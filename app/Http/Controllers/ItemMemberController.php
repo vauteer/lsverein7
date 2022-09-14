@@ -27,8 +27,7 @@ class ItemMemberController extends Controller
     {
         return [
             'origin' => route('members.edit', $member->id),
-            'items' => Item::orderBy('name')->get(['id', 'name'])
-                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
+            'items' => Item::orderBy('name')->get(['id', 'name']),
             'memberId' => $member->id,
         ];
     }

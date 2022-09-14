@@ -65,7 +65,7 @@ class UserController extends Controller
                 ->withQueryString()
             ),
 
-            'filters' => $request->only(['search']),
+            'options' => $request->only(['search']),
 
             'canCreate' => auth()->user()->hasAdminRights(),
         ]);
@@ -142,13 +142,13 @@ class UserController extends Controller
         $user = auth()->user();
 
         return inertia('Users/Account', [
+            'origin' => url()->previous(),
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'profile_image' => $user->profile_image,
             ],
-            'origin' => url()->previous(),
         ]);
     }
 

@@ -43,7 +43,7 @@ class SectionController extends Controller
                 ->withQueryString()
             ),
 
-            'filters' => $request->only(['search']),
+            'options' => $request->only(['search']),
             'canCreate' => auth()->user()->can('create', Section::class),
         ]);
     }
@@ -77,7 +77,7 @@ class SectionController extends Controller
     {
         return inertia('Sections/Edit', array_merge($this->editOptions(), [
             'section' => $section->getAttributes(),
-            'deletable' => !$section->isInUse(),
+            'deletable' => !$section->isUsed(),
         ]));
     }
 

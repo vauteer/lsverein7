@@ -11,7 +11,7 @@ import MyPagination from "@/Shared/MyPagination.vue";
 
 let props = defineProps({
     debits: Object,
-    filters: Object,
+    options: Object,
     canCreate: Boolean,
     sepaDate: String,
 });
@@ -30,7 +30,7 @@ let debit = () => {
     Inertia.post('/debits/debit', { date: date });
 }
 
-let search = ref(props.filters.search);
+let search = ref(props.options.search);
 const date = ref(props.sepaDate);
 
 watch(search, throttle(function (value) {
@@ -45,7 +45,6 @@ watch(search, throttle(function (value) {
 <template>
     <MyLayout>
         <Head title="Lastschriften"/>
-
         <div
             class="w-full max-w-2xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-2 px-4 sm:px-6 lg:px-8">
             <div class="w-full flex justify-between">

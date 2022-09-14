@@ -48,7 +48,7 @@ class SubscriptionController extends Controller
                 ->withQueryString()
             ),
 
-            'filters' => $request->only(['search']),
+            'options' => $request->only(['search']),
             'canCreate' => auth()->user()->can('create', Subscription::class),
             'sepaDate' => now()->addDays(8)->format('Y-m-d'),
         ]);
@@ -81,7 +81,7 @@ class SubscriptionController extends Controller
     {
         return inertia('Subscriptions/Edit', array_merge($this->editOptions(), [
             'subscription' => $subscription->getAttributes(),
-            'deletable' => !$subscription->isInUse(),
+            'deletable' => !$subscription->isUsed(),
         ]));
     }
 

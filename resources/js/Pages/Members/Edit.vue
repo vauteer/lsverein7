@@ -79,11 +79,11 @@ let submit = () => {
     }
 };
 
-let deleteEntity = () => {
-    if (confirm('Mitglied löschen ?')) {
-        Inertia.delete(`/members/${props.member.id}`);
-    }
-};
+// let deleteEntity = () => {
+//     if (confirm('Mitglied löschen ?')) {
+//         Inertia.delete(`/members/${props.member.id}`);
+//     }
+// };
 
 let resign = () => {
     Inertia.put(`/members/${props.member.id}/resign`, { date: resignDate.value })
@@ -93,19 +93,17 @@ let editMode = ref(false);
 let resignDate = ref(props.date);
 const club = computed(() => usePage().props.value.auth.club);
 
-const getTitle = computed(() => {
+const title = computed(() => {
     return editMode.value ? "Mitglied bearbeiten" : "Neues Mitglied";
 });
 
-const getSubmitButtonText = computed(() => {
+const submitButtonText = computed(() => {
     return editMode.value ? "Speichern" : "Hinzufügen";
 });
 
 </script>
 
 <template>
-    <Head title="Mitglieder"/>
-
     <MyLayout>
         <button
             tabindex="-1"
@@ -116,7 +114,7 @@ const getSubmitButtonText = computed(() => {
             :class="[editMode ? 'max-w-4xl' : 'max-w-xl']"
         >
             <div class="sm:px-2 lg:px-4 sm:py-2 lg:py-4">
-                <div class="font-medium text-lg text-gray-900 ml-3 mb-4">{{ getTitle }}</div>
+                <div class="font-medium text-lg text-gray-900 ml-3 mb-4">{{ title }}</div>
                 <div
                     class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg sm:px-2 lg:px-4 bg-white">
                     <form @submit.prevent="submit" class="space-y-8 divide-y divide-gray-200">
@@ -479,7 +477,7 @@ const getSubmitButtonText = computed(() => {
                                     <div class="w-full flex justify-end">
                                         <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
                                         <MyButton type="submit" class="ml-2" :disabled="form.processing">
-                                            {{ getSubmitButtonText }}
+                                            {{ submitButtonText }}
                                         </MyButton>
                                     </div>
                                 </div>

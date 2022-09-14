@@ -55,7 +55,7 @@ class ClubController extends Controller
                 ->withQueryString()
             ),
 
-            'filters' => $request->only(['search']),
+            'options' => $request->only(['search']),
             'canCreate' => auth()->user()->admin,
         ]);
     }

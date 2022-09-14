@@ -139,7 +139,6 @@ if (!function_exists('optionsFromArray')) {
            return ['id' => $key, 'name' => $value];
         });
 
-
         return $sorted ? Arr::sort($result, fn ($item) => $item['name']) : $result;
     }
 }

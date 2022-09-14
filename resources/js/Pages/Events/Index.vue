@@ -10,7 +10,7 @@ import MyPagination from "@/Shared/MyPagination.vue";
 
 let props = defineProps({
     events: Object,
-    filters: Object,
+    options: Object,
     canCreate: Boolean,
 });
 
@@ -24,7 +24,7 @@ let showMembers = (id) => {
         });
 };
 
-let search = ref(props.filters.search);
+let search = ref(props.options.search);
 
 watch(search, throttle(function (value) {
     Inertia.get('/events', {search: value}, {

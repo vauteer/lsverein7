@@ -29,10 +29,10 @@ class EventController extends Controller
         return $rules;
     }
 
-
     public function index(Request $request):Response
     {
         $request->session()->put(self::URL_KEY, url()->full());
+
         return inertia('Events/Index', [
             'events' => EventResource::collection(Event::query()
                 ->when($request->input('search'), function($query, $search) {
@@ -42,7 +42,7 @@ class EventController extends Controller
                 ->withQueryString()
             ),
 
-            'filters' => $request->only(['search']),
+            'options' => $request->only(['search']),
             'canCreate' => auth()->user()->can('create', Event::class),
         ]);
     }
@@ -75,7 +75,7 @@ class EventController extends Controller
     {
         return inertia('Events/Edit', array_merge($this->editOptions(), [
             'event' => $event->getAttributes(),
-            'deletable' => !$event->isInUse(),
+            'deletable' => !$event->isUsed(),
         ]));
     }
 

@@ -11,7 +11,7 @@ import MyLayout from "@/Shared/MyLayout.vue";
 
 let props = defineProps({
     subscriptions: Object,
-    filters: Object,
+    options: Object,
     canCreate: Boolean,
     sepaDate: String,
 });
@@ -33,7 +33,7 @@ let debit = () => {
     });
 }
 
-let search = ref(props.filters.search);
+let search = ref(props.options.search);
 const selected = ref([]);
 const date = ref(props.sepaDate);
 const partialSelection = computed(() => selected.value.length > 0 && selected.value.length < props.subscriptions.data.length)
@@ -51,7 +51,6 @@ watch(search, throttle(function (value) {
 <template>
     <MyLayout>
         <Head title="Beiträge"/>
-
         <div
             class="w-full max-w-2xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-4 px-4 sm:px-6 lg:px-8">
             <div class="flex mt-2">

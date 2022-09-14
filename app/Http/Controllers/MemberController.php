@@ -85,7 +85,7 @@ class MemberController extends Controller
                 ->withQueryString()
             ),
 
-            'searchString' => $currentSelection['search'],
+            'options' => ['search' => $currentSelection['search']],
             'filters' => optionsFromArray($currentSelection['quickFilters'], false),
             'years' => optionsFromArray($this->getAvailableYears(), false),
             'sorts' => optionsFromArray(self::SORT_METHODS, false),
@@ -100,7 +100,7 @@ class MemberController extends Controller
     {
         $currentSelection = $this->currentSelection($request);
         $query = $currentSelection['query'];
-        $leftHeadline = $currentSelection['quickFilters'][$currentSelection['filter']];
+        $leftHeadline = $currentSelection['quickFilters'][$currentSelection['filter']] . ' ' . $currentSelection['year'];
         $leftHeadline .= ' (' . $query->count() . ' Personen)';
         $rightHeadline = 'Stand: ' . formatDate($currentSelection['keyDate']);
         $pdf = new MemberPdf('P', 'mm', 'A4');
@@ -115,7 +115,7 @@ class MemberController extends Controller
     {
         $currentSelection = $this->currentSelection($request);
         $fileName = str_replace(': ', '_', $currentSelection['quickFilters'][$currentSelection['filter']]);
-        $path = storage_path("{$fileName}.csv");
+        $path = storage_path("downloads/{$fileName}.csv");
 
         $handle = fopen($path, 'w');
 
@@ -164,10 +164,8 @@ class MemberController extends Controller
     public function create(Request $request): \Inertia\Response
     {
         return inertia('Members/Edit', array_merge($this->editOptions(), [
-            'sections' => Section::orderBy('name')->get(['id', 'name'])
-                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
-            'subscriptions' => Subscription::orderBy('name')->get(['id', 'name'])
-                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
+            'sections' => Section::orderBy('name')->get(['id', 'name']),
+            'subscriptions' => Subscription::orderBy('name')->get(['id', 'name']),
         ]));
     }
 
@@ -184,9 +182,9 @@ class MemberController extends Controller
             'membershipYears' => $member->membershipYears(),
             'memberClubs' => ClubMemberResource::collection(ClubMember::where('member_id', $member->id)->get()),
             'memberSections' => MemberSectionResource::collection(MemberSection::where('member_id', $member->id)->get()),
-            'memberSubscriptions', MemberSubscriptionResource::collection(MemberSubscription::where('member_id', $member->id)->get()),
-            'memberEvents', EventMemberResource::collection(EventMember::where('member_id', $member->id)->get()),
-            'memberRoles', MemberRoleResource::collection(MemberRole::where('member_id', $member->id)->get()),
+            'memberSubscriptions' => MemberSubscriptionResource::collection(MemberSubscription::where('member_id', $member->id)->get()),
+            'memberEvents' => EventMemberResource::collection(EventMember::where('member_id', $member->id)->get()),
+            'memberRoles' => MemberRoleResource::collection(MemberRole::where('member_id', $member->id)->get()),
         ]);
     }
 
@@ -267,7 +265,7 @@ class MemberController extends Controller
             1 => 'Mitglieder',
             2 => 'Ex-Mitglieder',
             3 => 'Runde Geburtstage',
-            4 => 'Gestorben',
+            4 => 'Todesfälle',
             5 => 'Eintritte',
             6 => 'Austritte',
             7 => 'Kinder (-13 Jahre)',
@@ -282,10 +280,10 @@ class MemberController extends Controller
             $filters[13] = 'Ohne Beitrag';
         }
 
-        $sections = currentClub()->usedSections();
-        foreach ($sections as $section) {
-            $filters["hasSection_" . $section->id] = "Abteilung: " . $section->name;
-        }
+//        $sections = currentClub()->usedSections();
+//        foreach ($sections as $section) {
+//            $filters["hasSection_" . $section->id] = "Abteilung: " . $section->name;
+//        }
 
         return $filters;
     }
@@ -293,13 +291,15 @@ class MemberController extends Controller
     private function getAvailableYears()
     {
         $now = now();
-        $result[$now->year] = formatDate($now);
+//        $result[$now->year] = formatDate($now);
+        $result[$now->year] = $now->format('Y');
 
         $lastYear = $now->year - 1;
         $firstYear = $lastYear - 9;
 
         for ($i = $lastYear; $i > $firstYear; $i--) {
-            $result[$i] = "31.12.{$i}";
+//            $result[$i] = "31.12.{$i}";
+            $result[$i] = "{$i}";
         }
 
         return $result;
@@ -360,6 +360,7 @@ class MemberController extends Controller
     {
         if (preg_match('/^hasSection_(\d+)$/', $filter, $match)) {
             $query->members()->inSections($match[1]);
+            $filters[$filter] = "Sparte: " . Section::find($match[1])->name;
         }
         else if (preg_match('/^hasSubscription_(\d+)$/', $filter, $match)) {
             // subscriptions don't have a range

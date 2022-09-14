@@ -48,6 +48,7 @@ class UserNotification extends Notification implements ShouldQueue
 
         return (new MailMessage)
             ->markdown('emails.user', ['senderName' => $fromUser->name, 'clubName' => currentClub()->name])
+            ->subject('Benachrichtigung von ' . config('app.name'))
             ->line($this->headline)
             ->line($this->text)
             ->action('Login', url('/'))

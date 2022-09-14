@@ -35,7 +35,7 @@ class Item extends Model
             ->withTimestamps();
     }
 
-    public function isInUse(): bool
+    public function isUsed(): bool
     {
         return DB::table('item_member')->where('item_id', $this->id)->count() > 0;
     }

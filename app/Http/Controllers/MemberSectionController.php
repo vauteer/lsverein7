@@ -27,8 +27,7 @@ class MemberSectionController extends Controller
     {
         return [
             'origin' => route('members.edit', $member->id),
-            'sections' => Section::orderBy('name')->get(['id', 'name'])
-                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
+            'sections' => Section::orderBy('name')->get(['id', 'name']),
             'memberId' => $member->id,
         ];
     }

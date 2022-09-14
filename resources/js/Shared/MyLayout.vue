@@ -157,7 +157,7 @@ let logout = () => {
         <main>
             <div class="max-w-7xl mx-auto py-2 sm:px-6 lg:px-8">
                 <div v-if="flashSuccess" class="rounded-md bg-green-50 p-4">
-                    <div class="flex">
+                    <div class="flex justify-center">
                         <div class="flex-shrink-0">
                             <CheckCircleIcon class="h-5 w-5 text-green-400" aria-hidden="true" />
                         </div>
@@ -167,7 +167,7 @@ let logout = () => {
                     </div>
                 </div>
                 <div v-if="flashError" class="rounded-md bg-red-50 p-4">
-                    <div class="flex">
+                    <div class="flex justify-center">
                         <div class="flex-shrink-0">
                             <XCircleIcon class="h-5 w-5 text-red-400" aria-hidden="true" />
                         </div>

@@ -27,8 +27,7 @@ class MemberRoleController extends Controller
     {
         return [
             'origin' => route('members.edit', $member->id),
-            'roles' => Role::orderBy('name')->get(['id', 'name'])
-                ->map(fn ($item) => ['id' => $item->id, 'name' => $item->name]),
+            'roles' => Role::orderBy('name')->get(['id', 'name']),
             'memberId' => $member->id,
         ];
     }

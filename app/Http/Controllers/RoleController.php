@@ -30,7 +30,6 @@ class RoleController extends Controller
         return $rules;
     }
 
-
     public function index(Request $request):Response
     {
         $request->session()->put(self::URL_KEY, url()->full());
@@ -43,7 +42,7 @@ class RoleController extends Controller
                 ->withQueryString()
             ),
 
-            'filters' => $request->only(['search']),
+            'options' => $request->only(['search']),
             'canCreate' => auth()->user()->can('create', Role::class),
         ]);
     }
@@ -76,7 +75,7 @@ class RoleController extends Controller
     {
         return inertia('Roles/Edit', array_merge($this->editOptions(), [
             'role' => $role->getAttributes(),
-            'deletable' => !$role->isInUse(),
+            'deletable' => !$role->isUsed(),
         ]));
     }
 

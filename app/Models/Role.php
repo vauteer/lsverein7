@@ -36,7 +36,7 @@ class Role extends Model
             ->withTimestamps();
     }
 
-    public function isInUse(): bool
+    public function isUsed(): bool
     {
         return DB::table('member_role')->where('role_id', $this->id)->count() > 0;
     }

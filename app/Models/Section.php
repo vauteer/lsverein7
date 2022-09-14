@@ -35,7 +35,7 @@ class Section extends Model
             ->withTimeStamps();
     }
 
-    public function isInUse(): bool
+    public function isUsed(): bool
     {
         return DB::table('member_section')->where('section_id', $this->id)->count() > 0;
     }

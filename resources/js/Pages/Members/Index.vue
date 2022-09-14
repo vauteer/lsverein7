@@ -12,8 +12,8 @@ import MySelect from "@/Shared/MySelect.vue";
 
 let props = defineProps({
     members: Object,
+    options: Object,
     filters: Object,
-    searchString: String,
     clubAdmin: Boolean,
     currentFilter: String,
     years: Object,
@@ -28,7 +28,7 @@ const outputUrl = computed(() => (format) => {
 });
 
 const state = reactive({
-    search: props.searchString,
+    search: props.options.search,
     filter: String(props.currentFilter),
     year: String(props.currentYear),
     sort: String(props.currentSort),
@@ -55,15 +55,14 @@ watch(state, throttle(function (newValue) {
 <template>
     <MyLayout>
         <Head title="Mitglieder"/>
-
         <div
             class="w-full max-w-4xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-2 px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-8 py-2 mt-2">
-                <MySelect class="sm:col-span-2" v-model="state.filter" :options="props.filters" id="quick-filters" :label="`Auswahl (${members.meta.total} Personen)`" />
+                <MySelect class="sm:col-span-3" v-model="state.filter" :options="props.filters" id="quick-filters" :label="`Auswahl (${members.meta.total} Personen)`" />
                 <MyTextInput class="sm:col-span-2" v-model="state.search" id="search" label="Suchen"
                        placeholder="Suchen..."/>
-                <MySelect class="sm:col-span-2" :disabled="!yearEnabled" v-model="state.year" :options="props.years" id="years" label="Stichtag" :hideDisabled="true"/>
                 <MySelect class="sm:col-span-2" v-model="state.sort" :options="props.sorts" id="sorts" label="Sortierung"/>
+                <MySelect class="sm:col-span-1" :disabled="!yearEnabled" v-model="state.year" :options="props.years" id="years" label="Jahr" :hideDisabled="true"/>
             </div>
 
             <div class="flex">
@@ -87,10 +86,10 @@ watch(state, throttle(function (newValue) {
                                         Details
                                     </th>
                                     <th scope="col" class="px-3 py-3.5 w-6">
-                                        <div>
+                                        <div v-if="members.data.length > 0">
                                             <a :href="outputUrl('pdf')" target="_blank">PDF</a>
                                         </div>
-                                        <div>
+                                        <div v-if="members.data.length > 0">
                                             <a :href="outputUrl('csv')" target="_blank">CSV</a>
                                         </div>
                                     </th>
@@ -105,10 +104,10 @@ watch(state, throttle(function (newValue) {
                                         {{ member.id }}
                                     </td>
                                     <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm sm:pl-6">
-                                        <div class="font-bold" :class="member.isMember ? '' : 'line-through' ">
-                                            {{ member.surname }} {{ member.first_name}}
+                                        <div class="font-bold" :class="member.isMember ? '' : 'text-gray-400' ">
+                                            {{ member.surname }} {{ member.first_name}} <span v-if="member.gone">†</span>
                                         </div>
-                                        <div>{{ member.birthday }} {{ member.age }} / {{ member.membershipYears }} Jahre</div>
+                                        <div>{{ member.birthday }} {{ member.age }} <span v-if="clubAdmin">/ {{ member.membershipYears }}</span> Jahre</div>
                                     </td>
                                     <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm sm:pl-6 hidden md:table-cell">
                                         <div>{{ member.sections }} {{ member.roles }}</div>
@@ -118,9 +117,6 @@ watch(state, throttle(function (newValue) {
                                         <Link :href="`/members/${member.id}/show`">
                                             <IdentificationIcon class="h-5 w-5 text-blue-500" />
                                         </Link>
-                                        <div class="h-5">
-                                            <CloudIcon v-if="member.gone" class="h-5 w-5 text-blue-500"/>
-                                        </div>
                                     </td>
                                     <td class="px-3">
                                             <Link v-if="member.modifiable" :href="`/members/${member.id}/edit`">

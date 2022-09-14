@@ -65,19 +65,19 @@ let submit = () => {
     }
 };
 
-let deleteClub = () => {
-    showConfirmation.value = false;
+let showDeletion = ref(false);
+let deleteEntity = () => {
+    showDeletion.value = false;
     Inertia.delete(`/clubs/${props.club.id}`);
 };
 
 let editMode = ref(false);
-let showConfirmation = ref(false);
 
-const getTitle = computed(() => {
+const title = computed(() => {
     return editMode.value ? "Verein bearbeiten" : "Neuer Verein";
 });
 
-const getSubmitButtonText = computed(() => {
+const submitButtonText = computed(() => {
     return editMode.value ? "Speichern" : "Hinzufügen";
 });
 
@@ -96,7 +96,6 @@ function back() {
 </script>
 
 <template>
-    <Head title="Vereine" />
     <MyLayout>
         <button
             tabindex="-1"
@@ -104,7 +103,7 @@ function back() {
         ></button>
         <div class="relative z-30 w-full max-w-3xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-2">
             <div class="sm:px-2 lg:px-4 sm:py-2 lg:py-4">
-                <div class="font-medium text-lg text-gray-900 ml-3 mb-4">{{ getTitle }}</div>
+                <div class="font-medium text-lg text-gray-900 ml-3 mb-4">{{ title }}</div>
 
                 <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg sm:px-2 lg:px-4 bg-white">
                     <form  @submit.prevent="submit" class="space-y-8 divide-y divide-gray-200">
@@ -153,11 +152,11 @@ function back() {
                             </div>
                             <div class="py-5">
                                 <div class="flex justify-between">
-                                    <MyButton v-if="deletable" @click="showConfirmation = true">Löschen</MyButton>
+                                    <MyButton v-if="deletable" @click="showDeletion = true">Löschen</MyButton>
                                     <div class="w-full flex justify-end">
                                         <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
                                         <MyButton type="submit" class="ml-2" :disabled="form.processing">
-                                            {{ getSubmitButtonText }}
+                                            {{ submitButtonText }}
                                         </MyButton>
                                     </div>
                                 </div>
@@ -167,7 +166,7 @@ function back() {
                 </div>
             </div>
         </div>
-        <MyConfirmation v-if="showConfirmation" @canceled="showRestoreConfirmation = false" @confirmed="deleteClub">
+        <MyConfirmation v-if="showDeletion" @canceled="showRestoreConfirmation = false" @confirmed="deleteEntity">
             {{ `Verein '${club.name}' löschen`}}
         </MyConfirmation>
     </MyLayout>

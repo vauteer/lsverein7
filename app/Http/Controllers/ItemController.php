@@ -41,7 +41,7 @@ class ItemController extends Controller
                 ->withQueryString()
             ),
 
-            'filters' => $request->only(['search']),
+            'options' => $request->only(['search']),
             'canCreate' => auth()->user()->can('create', Item::class),
         ]);
     }
@@ -72,7 +72,7 @@ class ItemController extends Controller
     {
         return inertia('Items/Edit', array_merge($this->editOptions(), [
             'item' => $item->getAttributes(),
-            'deletable' => !$item->isInUse(),
+            'deletable' => !$item->isUsed(),
         ]));
     }
 

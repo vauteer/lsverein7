@@ -19,6 +19,7 @@ defineEmits(['update:modelValue']);
                    type="checkbox"
                    :checked="modelValue"
                    @change="$emit('update:modelValue', $event.target.checked)"
+                   :class="{'border-red-400': error}"
             />
             <label class="block text-sm font-medium text-gray-700 ml-2" :for="id">{{ label }}</label>
         </div>
