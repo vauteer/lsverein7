@@ -93,6 +93,7 @@ class MemberController extends Controller
             'currentFilter' => strval($currentSelection['filter']),
             'currentSort' => $currentSelection['sort'],
             'clubAdmin' => auth()->user()->hasClubRole(ClubRole::Admin),
+            'exportFormats' => Member::EXPORT_FORMATS,
         ]);
     }
 
@@ -114,8 +115,9 @@ class MemberController extends Controller
     public function outputCsv(Request $request): \Illuminate\Http\Response
     {
         $currentSelection = $this->currentSelection($request);
-        $fileName = str_replace(': ', '_', $currentSelection['quickFilters'][$currentSelection['filter']]);
-        $path = storage_path("downloads/{$fileName}.csv");
+        $filename = str_replace(': ', '_', $currentSelection['quickFilters'][$currentSelection['filter']]) . '.csv';
+        $clubId = currentClubId();
+        $path = storage_path("downloads/{$clubId}_" . $filename);
 
         $handle = fopen($path, 'w');
 
@@ -148,8 +150,20 @@ class MemberController extends Controller
         return response($content)
             ->header('content-type', 'text/comma-separated-values')
             ->header('content-length', strlen($content))
-            ->header('content-disposition', 'attachment; filename="' . $fileName . '.csv"');
+            ->header('content-disposition', 'attachment; filename="' . $filename);
+    }
 
+    public function outputVcard(Request $request)
+    {
+        $currentSelection = $this->currentSelection($request);
+        $members = $currentSelection['query']->get();
+        $filename = str_replace(': ', '_', $currentSelection['quickFilters'][$currentSelection['filter']]) . '.vcf';
+        $content = view('vcards', ['members' => $members])->render();
+
+        return response($content)
+            ->header('content-type', 'text/vcard')
+            ->header('content-length', strlen($content))
+            ->header('content-disposition', 'attachment; filename="' . $filename);
     }
 
     private function editOptions(): array

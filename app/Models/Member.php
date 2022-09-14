@@ -16,6 +16,12 @@ class Member extends Model
 {
     use HasFactory;
 
+    const EXPORT_FORMATS = [
+        ['id' => 'pdf', 'name' => 'PDF'],
+        ['id' => 'vcf', 'name' => 'vCard'],
+        ['id' => 'csv', 'name' => 'CSV'],
+    ];
+
     protected $guarded = [];
 
     protected $casts = [
