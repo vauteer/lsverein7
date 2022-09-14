@@ -14,7 +14,7 @@ if (!function_exists('isCli')) {
 }
 
 if (!function_exists('currentClubId')) {
-    function currentClubId(): int
+    function currentClubId(): ?int
     {
         return isCli() ? 1 : auth()->user()->club_id;
     }
