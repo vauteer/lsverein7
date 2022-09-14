@@ -32,7 +32,7 @@ class MemberRole extends Pivot
 
     public function range(): string
     {
-        return getRange($this->from, $this->to);
+        return getRange($this->from, $this->to, 'm.Y');
     }
 
 }

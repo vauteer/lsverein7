@@ -152,7 +152,7 @@ function back() {
                             </div>
                             <div class="py-5">
                                 <div class="flex justify-between">
-                                    <MyButton v-if="deletable" @click="showDeletion = true">Löschen</MyButton>
+                                    <MyButton v-if="deletable" theme="danger" @click="showDeletion = true">Löschen</MyButton>
                                     <div class="w-full flex justify-end">
                                         <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
                                         <MyButton type="submit" class="ml-2" :disabled="form.processing">

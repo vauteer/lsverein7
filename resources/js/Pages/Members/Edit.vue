@@ -185,19 +185,16 @@ const submitButtonText = computed(() => {
                                                                     class="py-2 pl-4 pr-3 text-left text-base font-semibold text-gray-900">
                                                                     Mitgliedschaft(en)
                                                                 </th>
-                                                                <th scope="col"
-                                                                    class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
-                                                                    <Link
-                                                                        class="rounded-md border border-transparent bg-indigo-600 px-4 py-1 my-1 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                                                                        :href="`/members/${props.member.id}/club/create`" as="button" type="button">
+                                                                <th scope="col" class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
+                                                                    <MyButton class="py-1" @click="Inertia.get(`/members/${props.member.id}/club/create`)">
                                                                         Neu
-                                                                    </Link>
+                                                                    </MyButton>
                                                                 </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody class="divide-y divide-gray-200 bg-white">
                                                             <tr v-for="membership in memberClubs.data">
-                                                                <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
+                                                                <td class="py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
                                                                     {{ membership.range }}
                                                                 </td>
                                                                 <td class="px-3">
@@ -236,22 +233,19 @@ const submitButtonText = computed(() => {
                                                                 <th scope="col">
 
                                                                 </th>
-                                                                <th scope="col"
-                                                                    class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
-                                                                    <Link
-                                                                        class="rounded-md border border-transparent bg-indigo-600 px-4 py-1 my-1 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                                                                        :href="`/members/${props.member.id}/section/create`" as="button" type="button">
+                                                                <th scope="col" class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
+                                                                    <MyButton class="py-1" @click="Inertia.get(`/members/${props.member.id}/section/create`)">
                                                                         Neu
-                                                                    </Link>
+                                                                    </MyButton>
                                                                 </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody class="divide-y divide-gray-200 bg-white">
                                                             <tr v-for="memberSection in memberSections.data">
-                                                                <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
+                                                                <td class="py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
                                                                     {{ memberSection.name }}
                                                                 </td>
-                                                                <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                                                                <td class="px-3 py-2 text-sm text-gray-500">
                                                                     {{ memberSection.range }}
                                                                 </td>
                                                                 <td class="px-3">
@@ -286,22 +280,19 @@ const submitButtonText = computed(() => {
                                                                 <th scope="col">
 
                                                                 </th>
-                                                                <th scope="col"
-                                                                    class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
-                                                                    <Link
-                                                                        class="rounded-md border border-transparent bg-indigo-600 px-4 py-1 my-1 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                                                                        :href="`/members/${props.member.id}/subscription/create`" as="button" type="button">
+                                                                <th scope="col" class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
+                                                                    <MyButton class="py-1" @click="Inertia.get(`/members/${props.member.id}/subscription/create`)">
                                                                         Neu
-                                                                    </Link>
+                                                                    </MyButton>
                                                                 </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody class="divide-y divide-gray-200 bg-white">
                                                             <tr v-for="subscription in memberSubscriptions.data">
-                                                                <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
+                                                                <td class="py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
                                                                     {{ subscription.name }}
                                                                 </td>
-                                                                <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                                                                <td class="px-3 py-2 text-sm text-gray-500">
                                                                     {{ subscription.memo }}
                                                                 </td>
                                                                 <td class="px-3">
@@ -336,22 +327,19 @@ const submitButtonText = computed(() => {
                                                                 <th scope="col">
 
                                                                 </th>
-                                                                <th scope="col"
-                                                                    class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
-                                                                    <Link
-                                                                        class="rounded-md border border-transparent bg-indigo-600 px-4 py-1 my-1 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                                                                        :href="`/members/${props.member.id}/event/create`" as="button" type="button">
+                                                                <th scope="col" class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
+                                                                    <MyButton class="py-1" @click="Inertia.get(`/members/${props.member.id}/event/create`)">
                                                                         Neu
-                                                                    </Link>
+                                                                    </MyButton>
                                                                 </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody class="divide-y divide-gray-200 bg-white">
                                                             <tr v-for="event in memberEvents.data">
-                                                                <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
+                                                                <td class="py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
                                                                     {{ event.name }}
                                                                 </td>
-                                                                <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                                                                <td class="px-3 py-2 text-sm text-gray-500">
                                                                     {{ event.date }}
                                                                 </td>
                                                                 <td class="px-3">
@@ -386,22 +374,21 @@ const submitButtonText = computed(() => {
                                                                 <th scope="col">
 
                                                                 </th>
-                                                                <th scope="col"
-                                                                    class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
-                                                                    <Link
-                                                                        class="rounded-md border border-transparent bg-indigo-600 px-4 py-1 my-1 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                                                                        :href="`/members/${props.member.id}/role/create`" as="button" type="button">
+                                                                <th scope="col" class="w-5 py-0 pl-3 pr-1 sm:pr-2">
+                                                                    <MyButton class="py-1"
+                                                                        @click="Inertia.get(`/members/${props.member.id}/role/create`)"
+                                                                    >
                                                                         Neu
-                                                                    </Link>
+                                                                    </MyButton>
                                                                 </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody class="divide-y divide-gray-200 bg-white">
                                                             <tr v-for="role in memberRoles.data">
-                                                                <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
+                                                                <td class="py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
                                                                     {{ role.name }}
                                                                 </td>
-                                                                <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                                                                <td class="px-3 py-2 text-sm text-gray-500">
                                                                     {{ role.range }}
                                                                 </td>
                                                                 <td class="px-3">
@@ -438,20 +425,18 @@ const submitButtonText = computed(() => {
                                                                 </th>
                                                                 <th scope="col"
                                                                     class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
-                                                                    <Link
-                                                                        class="rounded-md border border-transparent bg-indigo-600 px-4 py-1 my-1 text-sm font-medium text-white shadow-sm enabled:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                                                                        :href="`/members/${props.member.id}/item/create`" as="button" type="button">
+                                                                    <MyButton class="py-1" @click="Inertia.get(`/members/${props.member.id}/item/create`)">
                                                                         Neu
-                                                                    </Link>
+                                                                    </MyButton>
                                                                 </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody class="divide-y divide-gray-200 bg-white">
                                                             <tr v-for="item in memberItems.data">
-                                                                <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
+                                                                <td class="py-2 pl-4 pr-3 text-sm font-medium text-gray-900">
                                                                     {{ item.name }}
                                                                 </td>
-                                                                <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                                                                <td class="px-3 py-2 text-sm text-gray-500">
                                                                     {{ item.range }}
                                                                 </td>
                                                                 <td class="px-3">

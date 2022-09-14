@@ -35,13 +35,13 @@ if (!function_exists('currentUser')) {
 }
 
 if (!function_exists('getRange')) {
-    function getRange(string $from, ?string $to): string
+    function getRange(string $from, ?string $to, $format = 'd.m.Y'): string
     {
         $from = new Carbon($from);
-        $range = formatDate($from) . '-';
+        $range = formatDate($from, $format) . '-';
         if ($to !== null) {
             $to = new Carbon($to);
-            $range .= formatDate($to);
+            $range .= formatDate($to, $format);
         }
 
         return $range;
@@ -62,7 +62,7 @@ if (!function_exists('inRange')) {
 }
 
 if (!function_exists('formatDate')) {
-    function formatDate(Carbon|string|null $date): string
+    function formatDate(Carbon|string|null $date, string $format = 'd.m.Y'): string
     {
         if ($date === null)
             return '';
@@ -70,7 +70,7 @@ if (!function_exists('formatDate')) {
         if (is_string($date))
             $date = new Carbon($date);
 
-        return $date->format('d.m.Y');
+        return $date->format($format);
     }
 }
 
