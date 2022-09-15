@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\memberSection;
+use App\Models\MemberSection;
 use App\Models\Member;
 use App\Models\Section;
 use Illuminate\Http\RedirectResponse;
