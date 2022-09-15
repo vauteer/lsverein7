@@ -10,10 +10,13 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use function PHPUnit\Framework\isFalse;
 
 class Backup
 {
     const DATE_FORMAT = 'Y_m_d_H_i_s';
+    private const TABLES = ['members', 'clubs', 'club_member', 'club_user', 'event_member', 'item_member',
+        'member_role', 'member_section', 'debits', 'users', 'roles', 'sections', 'events', 'items', 'subscriptions'];
 
     public static function create(): string|array
     {
@@ -163,11 +166,18 @@ class Backup
 
     public static function isDirty()
     {
-        $latestDate = self::latestDate();
-        if ($latestDate === null)
+        $latestBackup = self::latestDate();
+
+        if ($latestBackup === null)
             return true;
 
-        return self::latestDBUpdate() > $latestDate;
+        foreach (self::TABLES as $table) {
+            $latestUpdate = DB::table($table)->max('updated_at');
+            if ($latestUpdate !== null && $latestUpdate > $latestBackup)
+                return true;
+        }
+
+        return false;
     }
 
     public static function latestDBUpdate()

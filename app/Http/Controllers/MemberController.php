@@ -60,6 +60,7 @@ class MemberController extends Controller
             'account_owner' => 'nullable|string|required_if:payment_method,k',
             'iban' => ['nullable', 'required_if:payment_method,k', new Iban()],
             'bic' => 'nullable|string|required_if:payment_method,k',
+            'memo' => 'nullable|string',
         ];
 
         return $rules;
