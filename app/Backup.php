@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\Fixture;
+use App\Models\Member;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
@@ -166,11 +167,13 @@ class Backup
         if ($latestDate === null)
             return true;
 
-        $changes = User::where('updated_at', '>', $latestDate)->count();
-//        if ($changes === 0)
-//            $changes = DB::table('team_tournament')->where('updated_at', '>', $latestDate)->count();
-
-        return $changes > 0;
+        return self::latestDBUpdate() > $latestDate;
     }
 
+    private static function latestDBUpdate()
+    {
+        $db = env('DB_DATABASE');
+        return DB::scalar("SELECT MAX(UPDATE_TIME) AS last_update FROM information_schema.tables " .
+            "WHERE TABLE_SCHEMA='$db' GROUP BY TABLE_SCHEMA;");
+    }
 }

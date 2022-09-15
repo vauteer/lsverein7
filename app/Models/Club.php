@@ -79,7 +79,9 @@ class Club extends Model
 
     public function logoURL(): string
     {
-        return $this->logo ? asset('storage/logo/' . $this->logo) : asset('images/no_logo.png');
+        return ($this->logo && file_exists(self::logoPath($this->logo))) ?
+            asset('storage/logo/' . $this->logo)
+            : asset('images/no_logo.png');
     }
 
     public static function removeOrphanLogos():int {

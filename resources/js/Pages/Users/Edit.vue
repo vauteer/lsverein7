@@ -89,7 +89,7 @@ const submitButtonText = computed(() => {
                                         Löschen
                                     </MyButton>
                                     <div class="w-full flex justify-end">
-                                        <MyButton theme="abort" @click="Inertia.get(origin)">Löschen</MyButton>
+                                        <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
                                         <MyButton type="submit" class="ml-2" :disabled="form.processing">
                                             {{ submitButtonText }}
                                         </MyButton>
