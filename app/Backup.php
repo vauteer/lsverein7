@@ -170,7 +170,7 @@ class Backup
         return self::latestDBUpdate() > $latestDate;
     }
 
-    private static function latestDBUpdate()
+    public static function latestDBUpdate()
     {
         $db = env('DB_DATABASE');
         return DB::scalar("SELECT MAX(UPDATE_TIME) AS last_update FROM information_schema.tables " .
