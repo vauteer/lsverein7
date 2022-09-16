@@ -6,6 +6,13 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { Bars3Icon, XMarkIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/outline'
 import { usePage } from "@inertiajs/inertia-vue3";
 
+let props = defineProps({
+    showMenu: {
+        type: Boolean,
+        default: true,
+    }
+});
+
 const user = computed(() => usePage().props.value.auth.user);
 const club = computed(() => usePage().props.value.auth.club);
 const flashSuccess = computed(() => usePage().props.value.flash.success);
@@ -30,7 +37,7 @@ let logout = () => {
 
 <template>
     <div class="min-h-full">
-        <Disclosure as="nav" class="bg-gray-800" v-slot="{ open }">
+        <Disclosure v-if="showMenu" as="nav" class="bg-gray-800" v-slot="{ open }">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex items-center">

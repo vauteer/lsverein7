@@ -15,6 +15,7 @@ let props = defineProps({
     club: Object,
     deletable: Boolean,
     displayStyles: Object,
+    showMenu: Boolean,
 });
 
 let form = useForm({
@@ -96,7 +97,7 @@ function back() {
 </script>
 
 <template>
-    <MyLayout>
+    <MyLayout :showMenu="false">
         <button
             tabindex="-1"
             class="hidden md:block fixed z-20 inset-0 h-full w-full bg-black opacity-50 cursor-default"

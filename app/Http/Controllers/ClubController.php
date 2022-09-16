@@ -70,7 +70,9 @@ class ClubController extends Controller
 
     public function create(Request $request): Response
     {
-        return inertia('Clubs/Edit', $this->editOptions());
+        return inertia('Clubs/Edit', array_merge($this->editOptions(), [
+            'showMenu' => Club::count() > 0,
+        ]));
     }
 
     public function store(Request $request): \Illuminate\Http\RedirectResponse
@@ -82,7 +84,7 @@ class ClubController extends Controller
         $creator = auth()->user();
         $club->users()
             ->attach($creator->id, [
-                'admin' => true,
+                'role' => 256,
             ]);
 
         // For the case there was no club before
@@ -90,7 +92,7 @@ class ClubController extends Controller
             $creator->update(['club_id' => $club->id]);
         }
 
-        return redirect(session(self::URL_KEY))
+        return redirect(session(self::URL_KEY, 'clubs')) // URL_KEY is not set if creating the first club
             ->with('success', 'Verein hinzugefügt');
     }
 

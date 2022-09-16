@@ -52,7 +52,7 @@ class SectionController extends Controller
     {
         return [
             'origin' => session(self::URL_KEY),
-            'blsvSections' => optionsFromArray(Section::BLSV_SECTIONS),
+            'blsvSections' => optionsFromArray(Section::BLSV_SECTIONS, true),
         ];
     }
 

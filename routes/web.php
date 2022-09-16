@@ -79,7 +79,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
         ->can('restore', Backup::class);
 
     Route::get('/clubs', [ClubController::class, 'index'])->name('clubs')->can('viewAny', Club::class);
-    Route::get('/clubs/create', [ClubController::class, 'create'])->can('create', Club::class);
+    Route::get('/clubs/create', [ClubController::class, 'create'])->name('clubs.create')->can('create', Club::class);
     Route::post('/clubs', [ClubController::class, 'store'])->can('create', Club::class);
     Route::get('/clubs/{club}/edit', [ClubController::class, 'edit'])->can('update', 'club');
     Route::put('/clubs/{club}', [ClubController::class, 'update'])->can('update', 'club');

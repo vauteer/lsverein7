@@ -10,6 +10,7 @@ use App\Http\Resources\ClubMemberResource;
 use App\Http\Resources\MemberRoleResource;
 use App\Http\Resources\MemberSectionResource;
 use App\Http\Resources\MemberSubscriptionResource;
+use App\Models\Club;
 use App\Models\ClubMember;
 use App\Models\Event;
 use App\Models\EventMember;
@@ -28,6 +29,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
+use Inertia\Response;
+use Inertia\ResponseFactory;
 
 class MemberController extends Controller
 {
@@ -75,8 +79,12 @@ class MemberController extends Controller
         ];
     }
 
-    public function index(Request $request): \Inertia\Response
+    public function index(Request $request): Redirector|Response|ResponseFactory|RedirectResponse
     {
+        // new Installation ? We need a club !
+        if (Club::count() == 0)
+            return redirect(route('clubs.create'));
+
         $request->session()->put(self::URL_KEY, url()->full());
         $currentSelection = $this->currentSelection($request);
 
@@ -176,7 +184,7 @@ class MemberController extends Controller
         ];
     }
 
-    public function create(Request $request): \Inertia\Response
+    public function create(Request $request): Response
     {
         return inertia('Members/Edit', array_merge($this->editOptions(), [
             'sections' => Section::orderBy('name')->get(['id', 'name']),
@@ -184,7 +192,7 @@ class MemberController extends Controller
         ]));
     }
 
-    public function show(Request $request, Member $member):\Inertia\Response
+    public function show(Request $request, Member $member): Response
     {
         return inertia('Members/Show', [
             'member' => $member->getAttributes(),
@@ -229,7 +237,7 @@ class MemberController extends Controller
             ->with('success', 'Mitglied hinzugefügt');
     }
 
-    public function edit(Request $request, Member $member):\Inertia\Response
+    public function edit(Request $request, Member $member): Response
     {
         return inertia('Members/Edit', array_merge($this->editOptions(), [
             'member' => $member->getAttributes(),
