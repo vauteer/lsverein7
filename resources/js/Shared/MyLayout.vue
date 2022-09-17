@@ -6,13 +6,6 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { Bars3Icon, XMarkIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/outline'
 import { usePage } from "@inertiajs/inertia-vue3";
 
-let props = defineProps({
-    showMenu: {
-        type: Boolean,
-        default: true,
-    }
-});
-
 const user = computed(() => usePage().props.value.auth.user);
 const club = computed(() => usePage().props.value.auth.club);
 const flashSuccess = computed(() => usePage().props.value.flash.success);
@@ -37,7 +30,7 @@ let logout = () => {
 
 <template>
     <div class="min-h-full">
-        <Disclosure v-if="showMenu" as="nav" class="bg-gray-800" v-slot="{ open }">
+        <Disclosure as="nav" class="bg-gray-800" v-slot="{ open }">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex items-center">
@@ -49,7 +42,7 @@ let logout = () => {
                             <div class="text-white text-xl ml-12">LS-Verein<span class="text-sm"> by</span></div>
                             <img class="h-10 -mt-3" src="/logo.png" alt="Workflow" />
                         </div>
-                        <div class="hidden md:block">
+                        <div v-if="club" class="hidden md:block">
                             <div class="ml-10 flex items-baseline space-x-4">
                                 <div v-for="item in getNavigation" :key="item.name" >
                                     <Link v-if="item.visible" :href="route(item.route)"

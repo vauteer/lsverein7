@@ -15,7 +15,6 @@ let props = defineProps({
     club: Object,
     deletable: Boolean,
     displayStyles: Object,
-    showMenu: Boolean,
 });
 
 let form = useForm({
@@ -97,7 +96,7 @@ function back() {
 </script>
 
 <template>
-    <MyLayout :showMenu="false">
+    <MyLayout>
         <button
             tabindex="-1"
             class="hidden md:block fixed z-20 inset-0 h-full w-full bg-black opacity-50 cursor-default"
@@ -155,7 +154,8 @@ function back() {
                                 <div class="flex justify-between">
                                     <MyButton v-if="deletable" theme="danger" @click="showDeletion = true">Löschen</MyButton>
                                     <div class="w-full flex justify-end">
-                                        <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
+
+                                        <MyButton v-if="origin" theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
                                         <MyButton type="submit" class="ml-2" :disabled="form.processing">
                                             {{ submitButtonText }}
                                         </MyButton>

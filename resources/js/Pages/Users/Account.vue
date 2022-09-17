@@ -1,6 +1,7 @@
 <script setup>
 import {onMounted, computed} from "vue";
 import {useForm, Head} from "@inertiajs/inertia-vue3";
+import {Inertia} from "@inertiajs/inertia";
 import MyImageUpload from "@/Shared/MyImageUpload.vue";
 import MyTextInput from "@/Shared/MyTextInput.vue";
 import MyButton from "@/Shared/MyButton.vue";

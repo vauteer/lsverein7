@@ -63,16 +63,14 @@ class ClubController extends Controller
     private function editOptions(): array
     {
         return [
-            'origin' => session(self::URL_KEY),
+            'origin' => session(self::URL_KEY, '/backups'), // for the case it's a new installation and we have no clubs
             'displayStyles' => optionsFromArray(Club::displayStyles(), false),
         ];
     }
 
     public function create(Request $request): Response
     {
-        return inertia('Clubs/Edit', array_merge($this->editOptions(), [
-            'showMenu' => Club::count() > 0,
-        ]));
+        return inertia('Clubs/Edit', $this->editOptions());
     }
 
     public function store(Request $request): \Illuminate\Http\RedirectResponse
