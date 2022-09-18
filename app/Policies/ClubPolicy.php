@@ -12,7 +12,7 @@ class ClubPolicy
 
     public function viewAny(User $user)
     {
-        return $user->admin;
+        return $user->hasAdminRights();
     }
 
     public function create(User $user)

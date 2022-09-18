@@ -36,20 +36,30 @@ class MemberFactory extends Factory
         ];
     }
 
+    public function club($clubId)
+    {
+        return $this->state(function (array $attributes) use ($clubId) {
+            return [
+                'club_id' => $clubId,
+            ];
+        });
+    }
+
     public function configure()
     {
         return $this->afterCreating(function (Member $member) {
+            $clubId = $member->club_id;
             $from = new Carbon(fake()->dateTimeBetween("-{$member->age} years", 'now'));
             $to = new Carbon(fake()->dateTimeBetween("-{$member->age} years", 'now'));
             if ($to < $from)
                 $to = null;
 
-            $member->memberships()->attach(1, [
+            $member->memberships()->attach($clubId, [
                 'from' => $from,
                 'to' => $to,
             ]);
 
-            $section = Section::inRandomOrder()->first();
+            $section = Section::withoutGlobalScopes()->where('club_id', $clubId)->inRandomOrder()->first();
             if ($section) {
                 $member->sections()->attach($section->id, [
                     'from' => $from,

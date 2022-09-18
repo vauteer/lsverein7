@@ -18,8 +18,9 @@ class SectionResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'blsv_id' => $this->blsv_id,
+            'isUsed' => $this->isUsed(),
 
-            'modifiable' => auth()->user()->can('update', $this->resource),
+            'modifiable' => $request->user()->can('update', $this->resource),
         ];
     }
 }

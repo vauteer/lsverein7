@@ -68,6 +68,16 @@ class User extends Authenticatable
         return $this->hasMany(Tracing::class);
     }
 
+    public function scopeHasClub($query, ?int $clubId = null)
+    {
+        if ($clubId === null)
+            $clubId = currentClubId();
+
+        $where = 'id in (select user_id from club_user where club_id = ?)';
+
+        $query->whereRaw($where, [$clubId]);
+    }
+
     public function hasAdminRights(?int $clubId = null)
     {
         return $this->clubRole($clubId) >= ClubRole::Admin->value;

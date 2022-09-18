@@ -66,13 +66,16 @@ let logout = () => {
                                 </div>
                                 <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
                                     <MenuItems class="z-50 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                        <MenuItem disabled>
+                                            <span class="block px-4 py-2 text-sm text-gray-700 opacity-75">{{ user.name }}</span>
+                                        </MenuItem>
                                         <MenuItem v-if="user.clubAdmin" v-slot="{ active }">
                                             <Link :href="route('users')"
                                                   :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
                                                 Benutzer
                                             </Link>
                                         </MenuItem>
-                                        <MenuItem v-if="user.admin" v-slot="{ active }">
+                                        <MenuItem v-if="user.clubAdmin" v-slot="{ active }">
                                             <Link :href="route('clubs')"
                                                   :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
                                                 Vereine

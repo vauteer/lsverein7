@@ -56,8 +56,9 @@ class UserController extends Controller
     public function index(Request $request): Response
     {
         $request->session()->put(self::URL_KEY, url()->full());
+
         return inertia('Users/Index', [
-            'users' => UserResource::collection(User::query()
+            'users' => UserResource::collection(User::hasClub()
                 ->when($request->input('search'), function($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
                 })
@@ -94,6 +95,7 @@ class UserController extends Controller
         $user = User::create(array_merge($attributes, [
             'password' => Hash::make($password),
             'club_id' => currentClubId(),
+            'created_by' => $request->user()->id,
         ]));
 
         $user->clubs()->attach(currentClubId(), [

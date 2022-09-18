@@ -22,7 +22,7 @@ class EventMemberResource extends JsonResource
             'date' => formatDate($this->date),
             'memo' => $this->memo,
 
-            'modifiable' => auth()->user()->can('update', $this->member),
+            'modifiable' => $request->user()->can('update', $this->member),
         ];
     }
 }

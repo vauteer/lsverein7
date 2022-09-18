@@ -1,6 +1,6 @@
 <script setup>
-import {ref, watch} from "vue";
-import {Head, Link} from '@inertiajs/inertia-vue3';
+import {computed, ref, watch} from "vue";
+import {Head, Link, usePage} from '@inertiajs/inertia-vue3';
 import {Inertia} from "@inertiajs/inertia";
 import {PencilIcon, CheckIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
@@ -13,6 +13,8 @@ let props = defineProps({
     options: Object,
     canCreate: Boolean,
 });
+
+const club = computed(() => usePage().props.value.auth.club);
 
 let search = ref(props.options.search);
 
@@ -56,7 +58,7 @@ watch(search, throttle(function (value) {
                                         class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
                                         Name
                                     </th>
-                                    <th scope="col" class="px-3 py-3.5 w-6">BLSV</th>
+                                    <th v-if="club.blsv" scope="col" class="px-3 py-3.5 w-6">BLSV</th>
                                     <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Show Members</span></th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                         <span class="sr-only">Edit</span>
@@ -72,11 +74,13 @@ watch(search, throttle(function (value) {
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                                         <div class="font-bold">{{ section.name }}</div>
                                     </td>
-                                    <td class="px-3">
+                                    <td v-if="club.blsv" class="px-3">
                                         <CheckIcon v-if="section.blsv_id !== null" class="h-5 w-5"/>
                                     </td>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
-                                        <a @click="showMembers(section.id)" as="button" class="cursor-pointer text-blue-500">
+                                        <a v-if="section.isUsed" as="button" class="cursor-pointer text-blue-500"
+                                           @click="showMembers(section.id)"
+                                        >
                                             Aktuell
                                         </a>
                                     </td>

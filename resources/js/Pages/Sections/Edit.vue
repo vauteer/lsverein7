@@ -26,9 +26,9 @@ let editMode = ref(false);
 onMounted(() => {
     if (props.section !== undefined) {
         form.name = props.section.name;
-        form.blsv_id = String(props.section.blsv_id),
+        form.blsv_id = String(props.section.blsv_id);
 
-            editMode.value = true;
+        editMode.value = true;
     }
 });
 
@@ -74,8 +74,8 @@ const submitButtonText = computed(() => {
                             <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
                                 <MyTextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name"
                                              id="name" label="Name" autofocus/>
-                                <MySelect class="sm:col-span-6" v-model="form.blsv_id" :error="form.errors.blsv_id"
-                                          :options="props.blsvSections" id="blsv-id" label="BLSV-Zuordnung"
+                                <MySelect v-if="blsvSections" class="sm:col-span-6" v-model="form.blsv_id" :error="form.errors.blsv_id"
+                                          :options="blsvSections" id="blsv-id" label="BLSV-Zuordnung"
                                           nullValue="(BLSV-Sparte)"
                                 />
                             </div>

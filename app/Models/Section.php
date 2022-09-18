@@ -37,7 +37,7 @@ class Section extends Model
 
     public function isUsed(): bool
     {
-        return DB::table('member_section')->where('section_id', $this->id)->count() > 0;
+        return $this->members()->count() > 0;
     }
 
     public const BLSV_SECTIONS = [

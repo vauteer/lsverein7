@@ -20,7 +20,7 @@ class MemberSubscriptionResource extends JsonResource
             'name' => $this->subscription->__toString(),
             'memo' => $this->memo,
 
-            'modifiable' => auth()->user()->can('update', $this->member),
+            'modifiable' => $request->user()->can('update', $this->member),
         ];
     }
 }

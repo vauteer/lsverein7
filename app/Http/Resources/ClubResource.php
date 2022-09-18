@@ -21,7 +21,7 @@ class ClubResource extends JsonResource
             'zipcode' => $this->zipcode,
             'city' => $this->city,
 
-            'modifiable' => auth()->user()->can('update', $this->resource),
+            'modifiable' => $request->user()->can('update', $this->resource),
         ];
     }
 }

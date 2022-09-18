@@ -21,7 +21,7 @@ class SubscriptionResource extends JsonResource
             'transfer_text' => $this->transfer_text,
             'memo' => $this->memo,
 
-            'modifiable' => auth()->user()->can('update', $this->resource),
+            'modifiable' => $request->user()->can('update', $this->resource),
         ];
     }
 }

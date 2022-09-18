@@ -21,7 +21,7 @@ class DebitResource extends JsonResource
             'transfer_text' => $this->transfer_text,
             'due_at' => formatDate($this->due_at),
 
-            'modifiable' => auth()->user()->can('update', $this->resource),
+            'modifiable' => $request->user()->can('update', $this->resource),
         ];
     }
 }

@@ -31,7 +31,7 @@ class MemberResource extends JsonResource
             'sections' => $this->currentSections(),
             'lastEvent' => $this->lastEvent(),
 
-            'modifiable' => auth()->user()->can('update', $this->resource),
+            'modifiable' => $request->user()->can('update', $this->resource),
         ];
     }
 }

@@ -16,6 +16,7 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
+//        dd($this, $request->user());
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -23,7 +24,7 @@ class UserResource extends JsonResource
             'role' => ClubRole::from($this->clubRole(currentClubId()))->name,
             'lastLogin' => $this->lastLogin()?->format('d.m.Y H:i'),
 
-            'modifiable' => Auth::user()->admin,
+            'modifiable' => $request->user()->can('update', $this->resource),
         ];
     }
 }
