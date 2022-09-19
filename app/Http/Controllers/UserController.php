@@ -6,6 +6,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Notifications\UserNotification;
 use App\Notifications\NewUser;
+use App\Rules\UniqueUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,7 @@ class UserController extends Controller
             'email' => [
                 'required',
                 'email',
-                Rule::unique('users')->ignore($id)
+                new UniqueUser($id)
             ],
         ];
     }
@@ -88,21 +89,32 @@ class UserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $attributes = $request->validate($this->validationRules(-1));
+        $role = $request->validate(['role' => 'required|int'])['role'];
 
-        $password = Str::random(8);
-        Log::info("Created User {$attributes['name']} with Password {$password}");
+        $user = User::where('email', $attributes['email'])->first();
+        if ($user)
+        {
+            $user->clubs()->attach(currentClubId(), [
+                'role' => $role,
+            ]);
+        }
+        else {
+            $password = Str::random(8);
+            Log::info("Created User {$attributes['name']} with Password {$password}");
 
-        $user = User::create(array_merge($attributes, [
-            'password' => Hash::make($password),
-            'club_id' => currentClubId(),
-            'created_by' => $request->user()->id,
-        ]));
+            $user = User::create(array_merge($attributes, [
+                'password' => Hash::make($password),
+                'club_id' => currentClubId(),
+                'created_by' => $request->user()->id,
+            ]));
 
-        $user->clubs()->attach(currentClubId(), [
-            'role' => $request->get('role')
-        ]);
+            $user->clubs()->attach(currentClubId(), [
+                'role' => $role,
+            ]);
 
-        $user->notify(new UserNotification("Für Sie wurde ein Zugang erstellt.", "Ihr Passwort lautet: {$password}"));
+            $user->notify(new UserNotification("Für Sie wurde ein Zugang erstellt.", "Ihr Passwort lautet: {$password}"));
+
+        }
 
         return redirect(session(self::URL_KEY))
             ->with('success', "{$user->name} wurde hinzugefügt.");
@@ -125,7 +137,9 @@ class UserController extends Controller
     {
         $attributes = $request->validate($this->validationRules($user->id));
         $user->update($attributes);
-        $user->clubs()->sync([currentClubId() => ['role' => $request->input('role')]]);
+        $user->clubs()->updateExistingPivot(currentClubId(), [
+            'role' => $request->input('role'),
+        ]);
 
         return redirect(session(self::URL_KEY))
             ->with('success', "{$user->name} wurde geändert.");
@@ -133,7 +147,14 @@ class UserController extends Controller
 
     public function destroy(Request $request, User $user): RedirectResponse
     {
-        $user->delete();
+        if ($user->clubs()->count() >= 2) {
+            $user->clubs()->detach(currentClubId());
+            $user->club_id = $user->clubs()->first()->id;
+            $user->save();
+        }
+        else {
+            $user->delete();
+        }
 
         return redirect(session(self::URL_KEY))
             ->with('success', 'Benutzer wurde gelöscht.');;

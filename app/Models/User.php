@@ -95,7 +95,7 @@ class User extends Authenticatable
 
     public function clubRole(?int $clubId = null)
     {
-        $clubId = $clubId ?? $this->club_id;
+        $clubId = $clubId ?? currentClubId();
 
         if (!isset($this->clubRoles[$clubId]))
         {

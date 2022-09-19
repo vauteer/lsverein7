@@ -36,6 +36,12 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request)
     {
         $user = Auth::user();
+
+        if ($user && $user->club_id === null) {
+            $user->club_id = $user->clubs()->first()->id;
+            $user->save();
+        }
+
         $club = $user?->club;
         $locale = 'de';
 
