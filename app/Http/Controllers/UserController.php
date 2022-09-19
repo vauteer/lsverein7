@@ -149,8 +149,7 @@ class UserController extends Controller
     {
         if ($user->clubs()->count() >= 2) {
             $user->clubs()->detach(currentClubId());
-            $user->club_id = $user->clubs()->first()->id;
-            $user->save();
+            $user->update(['club_id' => $user->clubs()->first()->id]);
         }
         else {
             $user->delete();
