@@ -32,7 +32,7 @@ let submit = () => {
     form.put(route('account.update'));
 };
 
-const getProfileImageUrl = computed(() => {
+const profileUrl = computed(() => {
     return props.user?.profile_image ? '/storage/profile/' + props.user.profile_image : null;
 })
 
@@ -60,7 +60,7 @@ function onProfileImageChanged(filename) {
                                     label="Profilbild"
                                     class="sm:col-span-2"
                                     id="profile-image"
-                                    :image-url="getProfileImageUrl"
+                                    :image-url="profileUrl"
                                     location="profile"
                                     resize-height="150"
                                     v-on:change="onProfileImageChanged"
