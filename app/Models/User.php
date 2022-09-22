@@ -116,14 +116,18 @@ class User extends Authenticatable
     public function profileURL(): string
     {
         if ($this->profile_image) {
-            return asset('storage/profile/' . $this->profile_image);
+            $path = public_path('storage/profile/' . $this->profile_image);
+            if (file_exists($path)) {
+                return asset('storage/profile/' . $this->profile_image);
+            }
+            else {
+                $this->update(['profile_image' => null]);
+            }
         }
-        else
-        {
-            return "https://www.gravatar.com/avatar/" .
-                md5(strtolower(trim($this->email))) .
-                "?d=mp&s=40";
-        }
+
+        return "https://www.gravatar.com/avatar/" .
+            md5(strtolower(trim($this->email))) .
+            "?d=mp&s=40";
     }
 
     public static function profilePath(string $stub = ''): string
