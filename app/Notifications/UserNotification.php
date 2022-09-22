@@ -53,9 +53,10 @@ class UserNotification extends Notification implements ShouldQueue
             ->line($this->headline)
             ->line($this->text)
             ->action('Login', url('/'))
-            ->line(__('thank_you_for_using_our_application'))
+            ->line(__('thank_you_for_using_our_application'));
+        // send to default address from .env
 //            ->replyTo($fromUser->email, $fromUser->name)
-            ->from($fromUser->email, $fromUser->name);
+//            ->from(env($fromUser->email, $fromUser->name);
     }
 
     /**
