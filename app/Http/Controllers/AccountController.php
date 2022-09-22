@@ -10,8 +10,10 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Response;
 
-class UserAccountController extends Controller
+class AccountController extends Controller
 {
+    protected const URL_KEY = 'lastAccountUrl';
+
     private function rules($id): array
     {
         return [
@@ -35,10 +37,13 @@ class UserAccountController extends Controller
 
     public function edit(Request $request): Response
     {
+        $origin = url()->previous();
+        session()->put(self::URL_KEY, $origin);
+
         $user = auth()->user();
 
         return inertia('Users/Account', [
-            'origin' => url()->previous(),
+            'origin' => $origin,
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -65,7 +70,7 @@ class UserAccountController extends Controller
 
         User::removeOrphanProfileImages();
 
-        return redirect()->route('members')
+        return redirect(session(self::URL_KEY))
             ->with('success', "Das Konto wurde geändert.");
     }
 

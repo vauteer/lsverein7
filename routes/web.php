@@ -16,7 +16,7 @@ use App\Http\Controllers\MemberSubscriptionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SubscriptionController;
-use App\Http\Controllers\UserAccountController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\UserController;
 use App\Models\Club;
 use App\Models\Debit;
@@ -51,8 +51,8 @@ Route::get('/test', function (\Illuminate\Http\Request $request) {
 });
 
 Route::middleware(['auth', 'verified'])->group(function() {
-    Route::get('/account', [UserAccountController::class, 'edit'])->name('account.edit');
-    Route::put('/account', [UserAccountController::class, 'update'])->name('account.update');
+    Route::get('/account', [AccountController::class, 'edit'])->name('account.edit');
+    Route::put('/account', [AccountController::class, 'update'])->name('account.update');
 
     Route::get('/users', [UserController::class, 'index'])
         ->can('viewAny', User::class)
