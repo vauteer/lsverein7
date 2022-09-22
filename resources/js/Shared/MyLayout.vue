@@ -88,7 +88,7 @@ let logout = () => {
                                             </Link>
                                         </MenuItem>
                                         <MenuItem v-slot="{ active }">
-                                            <Link href="/users/account"
+                                            <Link :href="route('account.edit')"
                                                   :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
                                                 Konto
                                             </Link>
@@ -144,7 +144,7 @@ let logout = () => {
                                           class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
                             Backups
                         </DisclosureButton>
-                        <DisclosureButton as="a" href="/users/account"
+                        <DisclosureButton as="a" :href="route('account.edit')"
                                           class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
                             Konto
                         </DisclosureButton>

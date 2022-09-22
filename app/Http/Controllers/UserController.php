@@ -5,16 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Notifications\UserNotification;
-use App\Notifications\NewUser;
 use App\Rules\UniqueUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Inertia\Response;
 
 class UserController extends Controller
@@ -30,27 +26,6 @@ class UserController extends Controller
                 'email',
                 new UniqueUser($id)
             ],
-        ];
-    }
-
-    private function accountRules($id): array
-    {
-        return [
-            'name' => 'required|string',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users')->ignore($id)
-            ],
-            'profile_image' => 'nullable|string|max:100',
-        ];
-    }
-
-    private function passwordRules(): array
-    {
-        return [
-            'current_password' => ['nullable', 'string', 'required_with:password', 'current_password'],
-            'password' => ['nullable', 'string', 'confirmed', Password::min(8)],
         ];
     }
 
@@ -156,45 +131,8 @@ class UserController extends Controller
         }
 
         return redirect(session(self::URL_KEY))
-            ->with('success', 'Benutzer wurde gelöscht.');;
+            ->with('success', 'Benutzer wurde gelöscht.');
     }
-
-    public function editAccount(Request $request): Response
-    {
-        $user = auth()->user();
-
-        return inertia('Users/Account', [
-            'origin' => url()->previous(),
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'profile_image' => $user->profile_image,
-            ],
-        ]);
-    }
-
-    public function updateAccount(Request $request): RedirectResponse
-    {
-        $user = auth()->user();
-        $attributes = $request->validate($this->accountRules($user->id));
-        $passwordAttributes = $request->validate($this->passwordRules());
-
-        if ($passwordAttributes['password'] !== null) {
-            //Log::info($passwordAttributes['password']);
-            $attributes = array_merge($attributes, [
-                'password' => Hash::make($passwordAttributes['password']),
-            ]);
-        }
-
-        $user->update($attributes);
-
-        User::removeOrphanProfileImages();
-
-        return redirect()->route('members')
-            ->with('success', "Das Konto wurde geändert.");
-    }
-
 
     public function loginAs(Request $request, User $user): RedirectResponse
     {

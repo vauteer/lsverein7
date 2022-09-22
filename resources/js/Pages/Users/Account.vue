@@ -29,7 +29,7 @@ onMounted(() => {
 });
 
 let submit = () => {
-    form.put('/users/account');
+    form.put(route('account.update'));
 };
 
 const getProfileImageUrl = computed(() => {
