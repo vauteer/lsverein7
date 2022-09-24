@@ -106,7 +106,7 @@ class MemberController extends Controller
         ]);
     }
 
-    public function outputPdf(Request $request): \Illuminate\Http\Response
+    public function exportPdf(Request $request): \Illuminate\Http\Response
     {
         $currentSelection = $this->currentSelection($request);
         $query = $currentSelection['query'];
@@ -121,7 +121,7 @@ class MemberController extends Controller
             ->header('Content-Type', 'application/pdf; name="MyFile.pdf"');
     }
 
-    public function outputCsv(Request $request): \Illuminate\Http\Response
+    public function exportCsv(Request $request): \Illuminate\Http\Response
     {
         $currentSelection = $this->currentSelection($request);
         $filename = str_replace(': ', '_', $currentSelection['quickFilters'][$currentSelection['filter']]) . '.csv';
@@ -162,7 +162,7 @@ class MemberController extends Controller
             ->header('content-disposition', 'attachment; filename="' . $filename);
     }
 
-    public function outputVcard(Request $request)
+    public function exportVcard(Request $request)
     {
         $currentSelection = $this->currentSelection($request);
         $members = $currentSelection['query']->get();

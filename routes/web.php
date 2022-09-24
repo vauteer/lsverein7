@@ -144,9 +144,9 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::put('/members/{member}', [MemberController::class, 'update'])->can('update', 'member');
     Route::delete('/members/{member}', [MemberController::class, 'destroy'])->can('delete', 'member');
     Route::put('/members/{member}/resign', [MemberController::class, 'resign'])->can('delete', 'member');
-    Route::get('/members/pdf', [MemberController::class, 'outputPdf'])->name('members.pdf')->can('viewAny', Member::class);
-    Route::get('/members/csv', [MemberController::class, 'outputCsv'])->name('members.csv')->can('viewAny', Member::class);
-    Route::get('/members/vcf', [MemberController::class, 'outputVcard'])->name('members.vcf')->can('viewAny', Member::class);
+    Route::get('/members/pdf', [MemberController::class, 'exportPdf'])->name('members.pdf')->can('viewAny', Member::class);
+    Route::get('/members/csv', [MemberController::class, 'exportCsv'])->name('members.csv')->can('viewAny', Member::class);
+    Route::get('/members/vcf', [MemberController::class, 'exportVcard'])->name('members.vcf')->can('viewAny', Member::class);
 
     Route::get('/members/{member}/club/create', [ClubMemberController::class, 'create'])->can('create', Member::class);
     Route::post('/members/{member}/club', [ClubMemberController::class, 'store'])->can('create', Member::class);
