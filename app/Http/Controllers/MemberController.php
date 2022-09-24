@@ -125,10 +125,8 @@ class MemberController extends Controller
     {
         $currentSelection = $this->currentSelection($request);
         $filename = str_replace(': ', '_', $currentSelection['quickFilters'][$currentSelection['filter']]) . '.csv';
-        $clubId = currentClubId();
-        $path = storage_path("downloads/{$clubId}_" . $filename);
 
-        $handle = fopen($path, 'w');
+        $handle = fopen('php://memory', 'r+');
 
         $header = ['ID', 'Vorname', 'Nachname', 'Strasse', 'Plz', 'Ort', 'Alter', 'Geschlecht', 'MGJahre', 'Ehrung'];
 
@@ -152,9 +150,9 @@ class MemberController extends Controller
             fputcsv($handle, $fields);
         }
 
-        fclose($handle);
+        rewind($handle);
 
-        $content = file_get_contents($path);
+        $content = stream_get_contents($handle);
 
         return response($content)
             ->header('content-type', 'text/comma-separated-values')
