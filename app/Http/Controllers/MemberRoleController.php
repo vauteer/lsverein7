@@ -11,7 +11,7 @@ use Inertia\Response;
 
 class MemberRoleController extends Controller
 {
-    protected function validationRules(): array
+    protected function rules(): array
     {
         $rules = [
             'role_id' => 'exists:App\Models\Role,id',
@@ -31,14 +31,14 @@ class MemberRoleController extends Controller
             'memberId' => $member->id,
         ];
     }
-    public function create(Request $request, Member $member): Response
+    public function create(Member $member): Response
     {
         return inertia('Members/MemberRole', $this->editOptions($member));
     }
 
     public function store(Request $request, Member $member): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules());
+        $attributes = $request->validate($this->rules());
 
         $member->roles()->attach([currentClubId() => $attributes]);
 
@@ -46,7 +46,7 @@ class MemberRoleController extends Controller
             ->with('success', 'Funktion hinzugefügt');
     }
 
-    public function edit(Request $request, Member $member, memberRole $memberRole):Response
+    public function edit(Member $member, memberRole $memberRole):Response
     {
         return inertia('Members/MemberRole', array_merge($this->editOptions($member), [
             'memberRole' => $memberRole->getAttributes(),
@@ -56,7 +56,7 @@ class MemberRoleController extends Controller
 
     public function update(Request $request, Member $member, memberRole $memberRole): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules());
+        $attributes = $request->validate($this->rules());
 
         $memberRole->update($attributes);
 
@@ -64,7 +64,7 @@ class MemberRoleController extends Controller
             ->with('success', 'Funktion geändert');
     }
 
-    public function destroy(Request $request, Member $member, memberRole $memberRole): RedirectResponse
+    public function destroy(Member $member, memberRole $memberRole): RedirectResponse
     {
         $memberRole->delete();
 

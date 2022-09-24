@@ -14,7 +14,7 @@ use Inertia\Response;
 
 class ClubMemberController extends Controller
 {
-    protected function validationRules(): array
+    protected function rules(): array
     {
         $rules = [
             'from' => 'required|date',
@@ -25,7 +25,6 @@ class ClubMemberController extends Controller
         return $rules;
     }
 
-
     private function editOptions(Member $member): array
     {
         return [
@@ -34,14 +33,14 @@ class ClubMemberController extends Controller
         ];
     }
 
-    public function create(Request $request, Member $member): Response
+    public function create(Member $member): Response
     {
         return inertia('Members/ClubMember', $this->editOptions($member));
     }
 
     public function store(Request $request, Member $member): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules());
+        $attributes = $request->validate($this->rules());
 
         $member->memberships()->attach([currentClubId() => $attributes]);
 
@@ -49,7 +48,7 @@ class ClubMemberController extends Controller
             ->with('success', 'Mitgliedschaft hinzugefügt');
     }
 
-    public function edit(Request $request, Member $member, ClubMember $clubMember):Response
+    public function edit(Member $member, ClubMember $clubMember):Response
     {
         return inertia('Members/ClubMember', array_merge($this->editOptions($member), [
                 'clubMember' => $clubMember->getAttributes(),
@@ -58,7 +57,7 @@ class ClubMemberController extends Controller
 
     public function update(Request $request, Member $member, ClubMember $clubMember): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules());
+        $attributes = $request->validate($this->rules());
 
         $clubMember->update($attributes);
 
@@ -66,13 +65,12 @@ class ClubMemberController extends Controller
             ->with('success', 'Mitgliedschaft geändert');
     }
 
-    public function destroy(Request $request, Member $member, ClubMember $clubMember): RedirectResponse
+    public function destroy(Member $member, ClubMember $clubMember): RedirectResponse
     {
         $clubMember->delete();
 
         return redirect()->route('members.edit', $member->id)
             ->with('success', 'Mitgliedschaft gelöscht');
     }
-
 
 }

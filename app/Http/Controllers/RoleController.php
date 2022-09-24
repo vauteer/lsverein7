@@ -14,7 +14,7 @@ class RoleController extends Controller
 {
     protected const URL_KEY = 'lastRolesUrl';
 
-    protected function validationRules($id): array
+    protected function rules($id): array
     {
         $rules = [
             'name' => [
@@ -32,7 +32,8 @@ class RoleController extends Controller
 
     public function index(Request $request):Response
     {
-        $request->session()->put(self::URL_KEY, url()->full());
+        session([self::URL_KEY => url()->full()]);
+
         return inertia('Roles/Index', [
             'roles' => RoleResource::collection(Role::query()
                 ->when($request->input('search'), function($query, $search) {
@@ -54,14 +55,14 @@ class RoleController extends Controller
         ];
     }
 
-    public function create(Request $request): Response
+    public function create(): Response
     {
         return inertia('Roles/Edit', $this->editOptions());
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules(-1));
+        $attributes = $request->validate($this->rules(-1));
 
         Role::create(array_merge($attributes, [
             'club_id' => currentClubId(),
@@ -71,7 +72,7 @@ class RoleController extends Controller
             ->with('success', 'Funktion hinzugefügt');
     }
 
-    public function edit(Request $request, Role $role):Response
+    public function edit(Role $role):Response
     {
         return inertia('Roles/Edit', array_merge($this->editOptions(), [
             'role' => $role->getAttributes(),
@@ -81,7 +82,7 @@ class RoleController extends Controller
 
     public function update(Request $request, Role $role): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules($role->id));
+        $attributes = $request->validate($this->rules($role->id));
 
         $role->update($attributes);
 
@@ -89,7 +90,7 @@ class RoleController extends Controller
             ->with('success', 'Funktion geändert');
     }
 
-    public function destroy(Request $request, Role $role): RedirectResponse
+    public function destroy(Role $role): RedirectResponse
     {
         $role->delete();
 

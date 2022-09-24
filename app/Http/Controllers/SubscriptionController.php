@@ -16,7 +16,7 @@ class SubscriptionController extends Controller
 {
     protected const URL_KEY = 'lastSubscriptionsUrl';
 
-    protected function validationRules($id): array
+    protected function rules($id): array
     {
         $rules = [
             'name' => [
@@ -34,10 +34,10 @@ class SubscriptionController extends Controller
         return $rules;
     }
 
-
     public function index(Request $request):Response
     {
-        $request->session()->put(self::URL_KEY, url()->full());
+        session([self::URL_KEY => url()->full()]);
+
         return inertia('Subscriptions/Index', [
             'subscriptions' => SubscriptionResource::collection(Subscription::query()
                 ->when($request->input('search'), function($query, $search) {
@@ -62,14 +62,14 @@ class SubscriptionController extends Controller
         ];
     }
 
-    public function create(Request $request): Response
+    public function create(): Response
     {
         return inertia('Subscriptions/Edit', $this->editOptions());
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules(-1));
+        $attributes = $request->validate($this->rules(-1));
 
         Subscription::create(array_merge($attributes, ['club_id' => currentClubId()]));
 
@@ -77,7 +77,7 @@ class SubscriptionController extends Controller
             ->with('success', 'Funktion hinzugefügt');
     }
 
-    public function edit(Request $request, Subscription $subscription):Response
+    public function edit(Subscription $subscription):Response
     {
         return inertia('Subscriptions/Edit', array_merge($this->editOptions(), [
             'subscription' => $subscription->getAttributes(),
@@ -87,7 +87,7 @@ class SubscriptionController extends Controller
 
     public function update(Request $request, Subscription $subscription): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules($subscription->id));
+        $attributes = $request->validate($this->rules($subscription->id));
 
         $subscription->update($attributes);
 
@@ -95,7 +95,7 @@ class SubscriptionController extends Controller
             ->with('success', 'Beitrag geändert');
     }
 
-    public function destroy(Request $request, Subscription $subscription): RedirectResponse
+    public function destroy(Subscription $subscription): RedirectResponse
     {
         $subscription->delete();
 

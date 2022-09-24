@@ -11,7 +11,7 @@ use Inertia\Response;
 
 class MemberSectionController extends Controller
 {
-    protected function validationRules(): array
+    protected function rules(): array
     {
         $rules = [
             'section_id' => 'exists:App\Models\Section,id',
@@ -31,14 +31,15 @@ class MemberSectionController extends Controller
             'memberId' => $member->id,
         ];
     }
-    public function create(Request $request, Member $member): Response
+
+    public function create(Member $member): Response
     {
         return inertia('Members/MemberSection', $this->editOptions($member));
     }
 
     public function store(Request $request, Member $member): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules());
+        $attributes = $request->validate($this->rules());
 
         $member->sections()->attach([currentClubId() => $attributes]);
 
@@ -46,7 +47,7 @@ class MemberSectionController extends Controller
             ->with('success', 'Sparten-Mitgliedschaft hinzugefügt');
     }
 
-    public function edit(Request $request, Member $member, memberSection $memberSection):Response
+    public function edit(Member $member, memberSection $memberSection):Response
     {
         return inertia('Members/MemberSection', array_merge($this->editOptions($member), [
             'memberSection' => $memberSection->getAttributes(),
@@ -55,7 +56,7 @@ class MemberSectionController extends Controller
 
     public function update(Request $request, Member $member, memberSection $memberSection): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules());
+        $attributes = $request->validate($this->rules());
 
         $memberSection->update($attributes);
 
@@ -63,7 +64,7 @@ class MemberSectionController extends Controller
             ->with('success', 'Sparten-Mitgliedschaft geändert');
     }
 
-    public function destroy(Request $request, Member $member, memberSection $memberSection): RedirectResponse
+    public function destroy(Member $member, memberSection $memberSection): RedirectResponse
     {
         $memberSection->delete();
 

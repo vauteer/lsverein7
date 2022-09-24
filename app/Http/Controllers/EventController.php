@@ -13,7 +13,7 @@ class EventController extends Controller
 {
     protected const URL_KEY = 'lastEventsUrl';
 
-    protected function validationRules($id): array
+    protected function rules($id): array
     {
         $rules = [
             'name' => [
@@ -31,7 +31,7 @@ class EventController extends Controller
 
     public function index(Request $request):Response
     {
-        $request->session()->put(self::URL_KEY, url()->full());
+        session([self::URL_KEY => url()->full()]);
 
         return inertia('Events/Index', [
             'events' => EventResource::collection(Event::query()
@@ -54,14 +54,14 @@ class EventController extends Controller
         ];
     }
 
-    public function create(Request $request): Response
+    public function create(): Response
     {
         return inertia('Events/Edit', $this->editOptions());
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules(-1));
+        $attributes = $request->validate($this->rules(-1));
 
         Event::create(array_merge($attributes, [
             'club_id' => currentClubId(),
@@ -71,7 +71,7 @@ class EventController extends Controller
             ->with('success', 'Ereignis hinzugefügt');
     }
 
-    public function edit(Request $request, Event $event):Response
+    public function edit(Event $event):Response
     {
         return inertia('Events/Edit', array_merge($this->editOptions(), [
             'event' => $event->getAttributes(),
@@ -81,7 +81,7 @@ class EventController extends Controller
 
     public function update(Request $request, Event $event): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules($event->id));
+        $attributes = $request->validate($this->rules($event->id));
 
         $event->update($attributes);
 
@@ -89,7 +89,7 @@ class EventController extends Controller
             ->with('success', 'Ereignis geändert');
     }
 
-    public function destroy(Request $request, Event $event): RedirectResponse
+    public function destroy(Event $event): RedirectResponse
     {
         $event->delete();
 

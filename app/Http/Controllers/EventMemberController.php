@@ -11,7 +11,7 @@ use Inertia\Response;
 
 class EventMemberController extends Controller
 {
-    protected function validationRules(): array
+    protected function rules(): array
     {
         $rules = [
             'event_id' => 'exists:App\Models\Event,id',
@@ -31,14 +31,14 @@ class EventMemberController extends Controller
         ];
     }
 
-    public function create(Request $request, Member $member): Response
+    public function create(Member $member): Response
     {
         return inertia('Members/EventMember', $this->editOptions($member));
     }
 
     public function store(Request $request, Member $member): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules());
+        $attributes = $request->validate($this->rules());
 
         $member->events()->attach([currentClubId() => $attributes]);
 
@@ -46,7 +46,7 @@ class EventMemberController extends Controller
             ->with('success', 'Ereignis hinzugefügt');
     }
 
-    public function edit(Request $request, Member $member, EventMember $eventMember):Response
+    public function edit(Member $member, EventMember $eventMember):Response
     {
         return inertia('Members/EventMember',array_merge($this->editOptions($member), [
             'eventMember' => $eventMember->getAttributes(),
@@ -55,7 +55,7 @@ class EventMemberController extends Controller
 
     public function update(Request $request, Member $member, Eventmember $eventMember): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules());
+        $attributes = $request->validate($this->rules());
 
         $eventMember->update($attributes);
 
@@ -63,7 +63,7 @@ class EventMemberController extends Controller
             ->with('success', 'Ereignis geändert');
     }
 
-    public function destroy(Request $request, Member $member, EventMember $eventMember): RedirectResponse
+    public function destroy(Member $member, EventMember $eventMember): RedirectResponse
     {
         $eventMember->delete();
 

@@ -14,7 +14,7 @@ class SectionController extends Controller
 {
     protected const URL_KEY = 'lastSectionsUrl';
 
-    protected function validationRules($id): array
+    protected function rules($id): array
     {
         $rules = [
             'name' => [
@@ -33,7 +33,8 @@ class SectionController extends Controller
 
     public function index(Request $request):Response
     {
-        $request->session()->put(self::URL_KEY, url()->full());
+        session([self::URL_KEY => url()->full()]);
+
         return inertia('Sections/Index', [
             'sections' => SectionResource::collection(Section::query()
                 ->when($request->input('search'), function($query, $search) {
@@ -56,14 +57,14 @@ class SectionController extends Controller
         ];
     }
 
-    public function create(Request $request): Response
+    public function create(): Response
     {
         return inertia('Sections/Edit', $this->editOptions());
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules(-1));
+        $attributes = $request->validate($this->rules(-1));
 
         Section::create(array_merge($attributes, [
             'club_id' => currentClubId(),
@@ -73,7 +74,7 @@ class SectionController extends Controller
             ->with('success', 'Abteilung hinzugefügt');
     }
 
-    public function edit(Request $request, Section $section):Response
+    public function edit(Section $section):Response
     {
         return inertia('Sections/Edit', array_merge($this->editOptions(), [
             'section' => $section->getAttributes(),
@@ -83,7 +84,7 @@ class SectionController extends Controller
 
     public function update(Request $request, Section $section): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules($section->id));
+        $attributes = $request->validate($this->rules($section->id));
 
         $section->update($attributes);
 
@@ -91,7 +92,7 @@ class SectionController extends Controller
             ->with('success', 'Abteilung geändert');
     }
 
-    public function destroy(Request $request, Section $section): RedirectResponse
+    public function destroy(Section $section): RedirectResponse
     {
         $section->delete();
 

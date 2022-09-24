@@ -46,7 +46,7 @@ class MemberController extends Controller
         6 => "Id"
     ];
 
-    protected function validationRules(): array
+    protected function rules(): array
     {
         $rules = [
             'surname' => 'required|string',
@@ -70,7 +70,7 @@ class MemberController extends Controller
         return $rules;
     }
 
-    protected function entryValidationRules(): array
+    protected function entryRules(): array
     {
         return [
             'entry_date' => 'required|date',
@@ -85,7 +85,7 @@ class MemberController extends Controller
         if (Club::count() == 0)
             return redirect(route('clubs.create'));
 
-        $request->session()->put(self::URL_KEY, url()->full());
+        session([self::URL_KEY => url()->full()]);
         $currentSelection = $this->currentSelection($request);
 
         return inertia('Members/Index', [
@@ -96,7 +96,7 @@ class MemberController extends Controller
 
             'options' => ['search' => $currentSelection['search']],
             'filters' => optionsFromArray($currentSelection['quickFilters'], false),
-            'years' => optionsFromArray($this->getAvailableYears(), false),
+            'years' => optionsFromArray($this->availableYears(), false),
             'sorts' => optionsFromArray(self::SORT_METHODS, false),
             'currentYear' => $currentSelection['keyDate']->year,
             'currentFilter' => strval($currentSelection['filter']),
@@ -182,7 +182,7 @@ class MemberController extends Controller
         ];
     }
 
-    public function create(Request $request): Response
+    public function create(): Response
     {
         return inertia('Members/Edit', array_merge($this->editOptions(), [
             'sections' => Section::orderBy('name')->get(['id', 'name']),
@@ -190,7 +190,7 @@ class MemberController extends Controller
         ]));
     }
 
-    public function show(Request $request, Member $member): Response
+    public function show(Member $member): Response
     {
         return inertia('Members/Show', [
             'member' => $member->getAttributes(),
@@ -211,8 +211,8 @@ class MemberController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules(-1));
-        $entryData = $request->validate($this->entryValidationRules());
+        $attributes = $request->validate($this->rules(-1));
+        $entryData = $request->validate($this->entryRules());
         $attributes['iban'] = normalizeIban($attributes['iban']);
 
         $member = Member::create(array_merge($attributes, ['club_id' => currentClubId()]));
@@ -235,7 +235,7 @@ class MemberController extends Controller
             ->with('success', 'Mitglied hinzugefügt');
     }
 
-    public function edit(Request $request, Member $member): Response
+    public function edit(Member $member): Response
     {
         return inertia('Members/Edit', array_merge($this->editOptions(), [
             'member' => $member->getAttributes(),
@@ -252,7 +252,7 @@ class MemberController extends Controller
 
     public function update(Request $request, Member $member): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules($member->id));
+        $attributes = $request->validate($this->rules($member->id));
         $attributes['iban'] = normalizeIban($attributes['iban']);
 
         $member->update($attributes);
@@ -261,7 +261,7 @@ class MemberController extends Controller
             ->with('success', 'Mitglied geändert');
     }
 
-    public function destroy(Request $request, Member $member): RedirectResponse
+    public function destroy(Member $member): RedirectResponse
     {
         $member->delete();
 
@@ -309,7 +309,7 @@ class MemberController extends Controller
         return $filters;
     }
 
-    private function getAvailableYears()
+    private function availableYears(): array
     {
         $now = now();
 //        $result[$now->year] = formatDate($now);
@@ -357,7 +357,7 @@ class MemberController extends Controller
         return $result;
     }
 
-    public function applyQuickFilter(string $filter, Builder $query)
+    public function applyQuickFilter(string $filter, Builder $query): Builder
     {
         return match(intval($filter)) {
             0 => $query,

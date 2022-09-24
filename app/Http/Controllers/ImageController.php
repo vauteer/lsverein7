@@ -10,7 +10,7 @@ use Intervention\Image\Facades\Image;
 class ImageController extends Controller
 {
     // For Picture Upload. Logo, Profile, etc.
-    public function store(Request $request, String $location): JsonResponse
+    public function store(String $location): JsonResponse
     {
         Log::info('ImageController Store');
         $data = request()->validate([

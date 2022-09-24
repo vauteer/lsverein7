@@ -16,7 +16,7 @@ class DebitController extends Controller
 {
     protected const URL_KEY = 'lastDebitsUrl';
 
-    protected function validationRules($id): array
+    protected function rules($id): array
     {
         $rules = [
             'member_id' => 'required|exists:members,id',
@@ -28,10 +28,9 @@ class DebitController extends Controller
         return $rules;
     }
 
-
     public function index(Request $request):Response
     {
-        $request->session()->put(self::URL_KEY, url()->full());
+        session([self::URL_KEY => url()->full()]);
         return inertia('Debits/Index', [
             'debits' => DebitResource::collection(Debit::query()
                 ->when($request->input('search'), function($query, $search) {
@@ -62,14 +61,14 @@ class DebitController extends Controller
         ];
     }
 
-    public function create(Request $request): Response
+    public function create(): Response
     {
         return inertia('Debits/Edit', $this->editOptions());
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules(-1));
+        $attributes = $request->validate($this->rules(-1));
 
         Debit::create($attributes);
 
@@ -77,7 +76,7 @@ class DebitController extends Controller
             ->with('success', 'Lastschrift hinzugefügt');
     }
 
-    public function edit(Request $request, Debit $debit):Response
+    public function edit(Debit $debit):Response
     {
         return inertia('Debits/Edit', array_merge($this->editOptions(), [
             'debit' => $debit->getAttributes(),
@@ -86,7 +85,7 @@ class DebitController extends Controller
 
     public function update(Request $request, Debit $debit): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules($debit->id));
+        $attributes = $request->validate($this->rules($debit->id));
 
         $debit->update($attributes);
 
@@ -94,7 +93,7 @@ class DebitController extends Controller
             ->with('success', 'Lastschrift geändert');
     }
 
-    public function destroy(Request $request, Debit $debit): RedirectResponse
+    public function destroy(Debit $debit): RedirectResponse
     {
         $debit->delete();
 

@@ -16,7 +16,7 @@ class ClubController extends Controller
 {
     protected const URL_KEY = 'lastClubsUrl';
 
-    protected function validationRules($id): array
+    protected function rules($id): array
     {
         $rules = [
             'name' => [
@@ -45,7 +45,8 @@ class ClubController extends Controller
 
     public function index(Request $request): Response
     {
-        $request->session()->put(self::URL_KEY, url()->full());
+        session()->put(self::URL_KEY, url()->full());
+
         return inertia('Clubs/Index', [
             'clubs' => ClubResource::collection(auth()->user()->clubs()->wherePivot('role', ClubRole::Admin)
                 ->when($request->input('search'), function($query, $search) {
@@ -68,14 +69,14 @@ class ClubController extends Controller
         ];
     }
 
-    public function create(Request $request): Response
+    public function create(): Response
     {
         return inertia('Clubs/Edit', $this->editOptions());
     }
 
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules(-1));
+        $attributes = $request->validate($this->rules(-1));
         $attributes['iban'] = normalizeIban($attributes['iban']);
 
         $club = Club::create($attributes);
@@ -94,7 +95,7 @@ class ClubController extends Controller
             ->with('success', 'Verein hinzugefügt');
     }
 
-    public function edit(Request $request, Club $club):Response
+    public function edit(Club $club):Response
     {
         return inertia('Clubs/Edit', array_merge($this->editOptions(), [
             'club' => $club->getAttributes(),
@@ -104,7 +105,7 @@ class ClubController extends Controller
 
     public function update(Request $request, Club $club): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules($club->id));
+        $attributes = $request->validate($this->rules($club->id));
         $attributes['iban'] = normalizeIban($attributes['iban']);
         $club->update($attributes);
 
@@ -114,7 +115,7 @@ class ClubController extends Controller
             ->with('success', 'Verein geändert');
     }
 
-    public function destroy(Request $request, Club $club): RedirectResponse
+    public function destroy(Club $club): RedirectResponse
     {
         $club->delete();
 
@@ -122,7 +123,7 @@ class ClubController extends Controller
             ->with('success', 'Verein gelöscht');
     }
 
-    public function change(Request $request, Club $club): RedirectResponse
+    public function change(Club $club): RedirectResponse
     {
         $user = Auth::user();
 
@@ -134,7 +135,7 @@ class ClubController extends Controller
         abort(403);
     }
 
-    public function blsvStatistic(Request $request, Club $club): Response
+    public function blsvStatistic(Club $club): Response
     {
         return inertia('Clubs/BLSVStat', [
             'origin' => session(self::URL_KEY),
@@ -142,7 +143,7 @@ class ClubController extends Controller
         ]);
     }
 
-    public function downloads(Request $request, string $filename)
+    public function downloads(string $filename)
     {
         $path = storage_path('downloads/' . currentClubId() . '_' . $filename);
         if (!file_exists($path))

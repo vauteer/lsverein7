@@ -11,7 +11,7 @@ use Inertia\Response;
 
 class ItemMemberController extends Controller
 {
-    protected function validationRules(): array
+    protected function rules(): array
     {
         $rules = [
             'item_id' => 'exists:App\Models\Item,id',
@@ -32,14 +32,14 @@ class ItemMemberController extends Controller
         ];
     }
 
-    public function create(Request $request, Member $member): Response
+    public function create(Member $member): Response
     {
         return inertia('Members/ItemMember', $this->editOptions($member));
     }
 
     public function store(Request $request, Member $member): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules());
+        $attributes = $request->validate($this->rules());
 
         $member->items()->attach([currentClubId() => $attributes]);
 
@@ -47,7 +47,7 @@ class ItemMemberController extends Controller
             ->with('success', 'Funktion hinzugefügt');
     }
 
-    public function edit(Request $request, Member $member, ItemMember $itemMember):Response
+    public function edit(Member $member, ItemMember $itemMember):Response
     {
         return inertia('Members/ItemMember', array_merge($this->editOptions($member), [
             'itemMember' => $itemMember->getAttributes(),
@@ -56,7 +56,7 @@ class ItemMemberController extends Controller
 
     public function update(Request $request, Member $member, ItemMember $itemMember): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules());
+        $attributes = $request->validate($this->rules());
 
         $itemMember->update($attributes);
 
@@ -64,7 +64,7 @@ class ItemMemberController extends Controller
             ->with('success', 'Funktion geändert');
     }
 
-    public function destroy(Request $request, Member $member, ItemMember $itemMember): RedirectResponse
+    public function destroy(Member $member, ItemMember $itemMember): RedirectResponse
     {
         $itemMember->delete();
 

@@ -11,7 +11,7 @@ use Inertia\Response;
 
 class MemberSubscriptionController extends Controller
 {
-    protected function validationRules(): array
+    protected function rules(): array
     {
         $rules = [
             'subscription_id' => 'exists:App\Models\Subscription,id',
@@ -30,14 +30,14 @@ class MemberSubscriptionController extends Controller
         ];
     }
 
-    public function create(Request $request, Member $member): Response
+    public function create(Member $member): Response
     {
         return inertia('Members/MemberSubscription', $this->editOptions($member));
     }
 
     public function store(Request $request, Member $member): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules());
+        $attributes = $request->validate($this->rules());
 
         $member->subscriptions()->attach([currentClubId() => $attributes]);
 
@@ -45,7 +45,7 @@ class MemberSubscriptionController extends Controller
             ->with('success', 'Beitrag hinzugefügt');
     }
 
-    public function edit(Request $request, Member $member, memberSubscription $memberSubscription):Response
+    public function edit(Member $member, memberSubscription $memberSubscription):Response
     {
         return inertia('Members/MemberSubscription', array_merge($this->editOptions($member), [
             'memberSubscription' => $memberSubscription->getAttributes(),
@@ -54,7 +54,7 @@ class MemberSubscriptionController extends Controller
 
     public function update(Request $request, Member $member, memberSubscription $memberSubscription): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules());
+        $attributes = $request->validate($this->rules());
 
         $memberSubscription->update($attributes);
 
@@ -62,7 +62,7 @@ class MemberSubscriptionController extends Controller
             ->with('success', 'Beitrag geändert');
     }
 
-    public function destroy(Request $request, Member $member, memberSubscription $memberSubscription): RedirectResponse
+    public function destroy(Member $member, memberSubscription $memberSubscription): RedirectResponse
     {
         $memberSubscription->delete();
 

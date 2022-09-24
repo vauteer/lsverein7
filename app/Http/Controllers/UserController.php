@@ -17,7 +17,7 @@ class UserController extends Controller
 {
     protected const URL_KEY = 'lastUsersUrl';
 
-    public function validationRules($id): array
+    public function rules($id): array
     {
         return [
             'name' => 'required|string',
@@ -31,7 +31,7 @@ class UserController extends Controller
 
     public function index(Request $request): Response
     {
-        $request->session()->put(self::URL_KEY, url()->full());
+        session([self::URL_KEY => url()->full()]);
 
         return inertia('Users/Index', [
             'users' => UserResource::collection(User::hasClub()
@@ -56,14 +56,14 @@ class UserController extends Controller
         ];
     }
 
-    public function create(Request $request): Response
+    public function create(): Response
     {
         return inertia('Users/Edit', $this->editOptions());
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules(-1));
+        $attributes = $request->validate($this->rules(-1));
         $role = $request->validate(['role' => 'required|int'])['role'];
 
         $user = User::where('email', $attributes['email'])->first();
@@ -95,7 +95,7 @@ class UserController extends Controller
             ->with('success', "{$user->name} wurde hinzugefügt.");
     }
 
-    public function edit(Request $request, User $user): Response
+    public function edit(User $user): Response
     {
         return inertia('Users/Edit', array_merge($this->editOptions(), [
             'user' => [
@@ -110,7 +110,7 @@ class UserController extends Controller
 
     public function update(Request $request, User $user): RedirectResponse
     {
-        $attributes = $request->validate($this->validationRules($user->id));
+        $attributes = $request->validate($this->rules($user->id));
         $user->update($attributes);
         $user->clubs()->updateExistingPivot(currentClubId(), [
             'role' => $request->input('role'),
@@ -120,7 +120,7 @@ class UserController extends Controller
             ->with('success', "{$user->name} wurde geändert.");
     }
 
-    public function destroy(Request $request, User $user): RedirectResponse
+    public function destroy(User $user): RedirectResponse
     {
         if ($user->clubs()->count() >= 2) {
             $user->clubs()->detach(currentClubId());
@@ -134,10 +134,11 @@ class UserController extends Controller
             ->with('success', 'Benutzer wurde gelöscht.');
     }
 
-    public function loginAs(Request $request, User $user): RedirectResponse
+    public function loginAs(User $user): RedirectResponse
     {
         auth()->login($user);
 
         return redirect()->route('members');
     }
+
 }
