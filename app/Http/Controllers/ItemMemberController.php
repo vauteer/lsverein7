@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ItemMemberRequest;
 use App\Models\Member;
 use App\Models\ItemMember;
 use App\Models\Item;
@@ -11,18 +12,6 @@ use Inertia\Response;
 
 class ItemMemberController extends Controller
 {
-    protected function rules(): array
-    {
-        $rules = [
-            'item_id' => 'exists:App\Models\Item,id',
-            'from' => 'required|date',
-            'to' => 'nullable|date|after:from',
-            'memo' => 'nullable|string',
-        ];
-
-        return $rules;
-    }
-
     private function editOptions(Member $member): array
     {
         return [
@@ -37,9 +26,9 @@ class ItemMemberController extends Controller
         return inertia('Members/ItemMember', $this->editOptions($member));
     }
 
-    public function store(Request $request, Member $member): RedirectResponse
+    public function store(ItemMemberRequest $request, Member $member): RedirectResponse
     {
-        $attributes = $request->validate($this->rules());
+        $attributes = $request->validated();
 
         $member->items()->attach([currentClubId() => $attributes]);
 
@@ -54,9 +43,9 @@ class ItemMemberController extends Controller
         ]));
     }
 
-    public function update(Request $request, Member $member, ItemMember $itemMember): RedirectResponse
+    public function update(ItemMemberRequest $request, Member $member, ItemMember $itemMember): RedirectResponse
     {
-        $attributes = $request->validate($this->rules());
+        $attributes = $request->validated();
 
         $itemMember->update($attributes);
 

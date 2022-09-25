@@ -2,34 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SectionRequest;
 use App\Http\Resources\SectionResource;
 use App\Models\Section;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use Inertia\Response;
 
 class SectionController extends Controller
 {
     protected const URL_KEY = 'lastSectionsUrl';
-
-    protected function rules($id): array
-    {
-        $rules = [
-            'name' => [
-                'required',
-                'string',
-                Rule::unique('sections')
-                    ->where(fn ($query) => $query->where('club_id', currentClubId()))
-                    ->ignore($id),
-            ],
-            'blsv_id' => 'nullable|integer',
-        ];
-
-        return $rules;
-    }
-
 
     public function index(Request $request):Response
     {
@@ -62,9 +44,9 @@ class SectionController extends Controller
         return inertia('Sections/Edit', $this->editOptions());
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(SectionRequest $request): RedirectResponse
     {
-        $attributes = $request->validate($this->rules(-1));
+        $attributes = $request->validated();
 
         Section::create(array_merge($attributes, [
             'club_id' => currentClubId(),
@@ -82,9 +64,9 @@ class SectionController extends Controller
         ]));
     }
 
-    public function update(Request $request, Section $section): RedirectResponse
+    public function update(SectionRequest $request, Section $section): RedirectResponse
     {
-        $attributes = $request->validate($this->rules($section->id));
+        $attributes = $request->validated();
 
         $section->update($attributes);
 

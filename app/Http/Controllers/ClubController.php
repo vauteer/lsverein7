@@ -3,45 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\ClubRole;
+use App\Http\Requests\ClubRequest;
 use App\Http\Resources\ClubResource;
 use App\Models\Club;
-use App\Rules\Iban;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 use Inertia\Response;
 
 class ClubController extends Controller
 {
     protected const URL_KEY = 'lastClubsUrl';
-
-    protected function rules($id): array
-    {
-        $rules = [
-            'name' => [
-                'required',
-                'string',
-                Rule::unique('clubs')->ignore($id),
-            ],
-            'street' => 'required|string',
-            'zipcode' => 'required|string',
-            'city' => 'required|string',
-            'bank' => 'required|string',
-            'account_owner' => 'required|string',
-            'iban' => ['required', new Iban()],
-            'bic' => 'required|string',
-            'sepa' => 'nullable|string',
-            'sepa_date' => 'nullable|date',
-            'logo' => 'nullable|string',
-            'display' => 'required|int',
-            'blsv_member' => 'boolean',
-            'use_items' => 'boolean',
-            'honor_years' => 'nullable|regex:/^\d{1,2}(,\d{1,2})*$/'
-        ];
-
-        return $rules;
-    }
 
     public function index(Request $request): Response
     {
@@ -74,9 +46,9 @@ class ClubController extends Controller
         return inertia('Clubs/Edit', $this->editOptions());
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(ClubRequest $request): RedirectResponse
     {
-        $attributes = $request->validate($this->rules(-1));
+        $attributes = $request->validated();
         $attributes['iban'] = normalizeIban($attributes['iban']);
 
         $club = Club::create($attributes);
@@ -103,9 +75,9 @@ class ClubController extends Controller
         ]));
     }
 
-    public function update(Request $request, Club $club): RedirectResponse
+    public function update(ClubRequest $request, Club $club): RedirectResponse
     {
-        $attributes = $request->validate($this->rules($club->id));
+        $attributes = $request->validated();
         $attributes['iban'] = normalizeIban($attributes['iban']);
         $club->update($attributes);
 

@@ -2,37 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SubscriptionRequest;
 use App\Http\Resources\SubscriptionResource;
-use App\Models\Member;
 use App\Models\Subscription;
-use App\Pdf\SepaPdf;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Response;
 
 class SubscriptionController extends Controller
 {
     protected const URL_KEY = 'lastSubscriptionsUrl';
-
-    protected function rules($id): array
-    {
-        $rules = [
-            'name' => [
-                'required',
-                'string',
-                Rule::unique('subscriptions')
-                    ->where(fn ($query) => $query->where('club_id', currentClubId()))
-                    ->ignore($id),
-            ],
-            'amount' => 'numeric|min:0',
-            'transfer_text' => 'required|string',
-            'memo' => 'nullable|string',
-        ];
-
-        return $rules;
-    }
 
     public function index(Request $request):Response
     {
@@ -67,9 +47,9 @@ class SubscriptionController extends Controller
         return inertia('Subscriptions/Edit', $this->editOptions());
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(SubscriptionRequest $request): RedirectResponse
     {
-        $attributes = $request->validate($this->rules(-1));
+        $attributes = $request->validated();
 
         Subscription::create(array_merge($attributes, ['club_id' => currentClubId()]));
 
@@ -85,9 +65,9 @@ class SubscriptionController extends Controller
         ]));
     }
 
-    public function update(Request $request, Subscription $subscription): RedirectResponse
+    public function update(SubscriptionRequest $request, Subscription $subscription): RedirectResponse
     {
-        $attributes = $request->validate($this->rules($subscription->id));
+        $attributes = $request->validated();
 
         $subscription->update($attributes);
 

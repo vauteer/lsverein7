@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Notifications\UserNotification;
@@ -16,18 +17,6 @@ use Inertia\Response;
 class UserController extends Controller
 {
     protected const URL_KEY = 'lastUsersUrl';
-
-    public function rules($id): array
-    {
-        return [
-            'name' => 'required|string',
-            'email' => [
-                'required',
-                'email',
-                new UniqueUser($id)
-            ],
-        ];
-    }
 
     public function index(Request $request): Response
     {
@@ -61,9 +50,9 @@ class UserController extends Controller
         return inertia('Users/Edit', $this->editOptions());
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(UserRequest $request): RedirectResponse
     {
-        $attributes = $request->validate($this->rules(-1));
+        $attributes = $request->validated();
         $role = $request->validate(['role' => 'required|int'])['role'];
 
         $user = User::where('email', $attributes['email'])->first();
@@ -108,9 +97,9 @@ class UserController extends Controller
         ]));
     }
 
-    public function update(Request $request, User $user): RedirectResponse
+    public function update(UserRequest $request, User $user): RedirectResponse
     {
-        $attributes = $request->validate($this->rules($user->id));
+        $attributes = $request->validated();
         $user->update($attributes);
         $user->clubs()->updateExistingPivot(currentClubId(), [
             'role' => $request->input('role'),

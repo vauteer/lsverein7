@@ -2,30 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AccountRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Response;
 
 class AccountController extends Controller
 {
     protected const URL_KEY = 'lastAccountUrl';
-
-    private function rules($id): array
-    {
-        return [
-            'name' => 'required|string',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users')->ignore($id)
-            ],
-            'profile_image' => 'nullable|string|max:100',
-        ];
-    }
 
     private function passwordRules(): array
     {
@@ -53,10 +39,10 @@ class AccountController extends Controller
         ]);
     }
 
-    public function update(Request $request): RedirectResponse
+    public function update(AccountRequest $request): RedirectResponse
     {
         $user = auth()->user();
-        $attributes = $request->validate($this->rules($user->id));
+        $attributes = $request->validated();
         $passwordAttributes = $request->validate($this->passwordRules());
 
         if ($passwordAttributes['password'] !== null) {

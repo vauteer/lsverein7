@@ -2,33 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RoleRequest;
 use App\Http\Resources\RoleResource;
 use App\Models\Role;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use Inertia\Response;
 
 class RoleController extends Controller
 {
     protected const URL_KEY = 'lastRolesUrl';
-
-    protected function rules($id): array
-    {
-        $rules = [
-            'name' => [
-                'required',
-                'string',
-                Rule::unique('roles')
-                    ->where(fn ($query) => $query->where('club_id', currentClubId()))
-                    ->ignore($id),
-            ],
-            'global' => 'boolean',
-        ];
-
-        return $rules;
-    }
 
     public function index(Request $request):Response
     {
@@ -60,9 +43,9 @@ class RoleController extends Controller
         return inertia('Roles/Edit', $this->editOptions());
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(RoleRequest $request): RedirectResponse
     {
-        $attributes = $request->validate($this->rules(-1));
+        $attributes = $request->validated();
 
         Role::create(array_merge($attributes, [
             'club_id' => currentClubId(),
@@ -80,9 +63,9 @@ class RoleController extends Controller
         ]));
     }
 
-    public function update(Request $request, Role $role): RedirectResponse
+    public function update(RoleRequest $request, Role $role): RedirectResponse
     {
-        $attributes = $request->validate($this->rules($role->id));
+        $attributes = $request->validated();
 
         $role->update($attributes);
 

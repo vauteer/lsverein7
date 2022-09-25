@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MemberRoleRequest;
+use App\Http\Resources\MemberRoleResource;
 use App\Models\Member;
 use App\Models\MemberRole;
 use App\Models\Role;
@@ -11,18 +13,6 @@ use Inertia\Response;
 
 class MemberRoleController extends Controller
 {
-    protected function rules(): array
-    {
-        $rules = [
-            'role_id' => 'exists:App\Models\Role,id',
-            'from' => 'required|date',
-            'to' => 'nullable|date|after:from',
-            'memo' => 'nullable|string',
-        ];
-
-        return $rules;
-    }
-
     private function editOptions(Member $member): array
     {
         return [
@@ -36,9 +26,9 @@ class MemberRoleController extends Controller
         return inertia('Members/MemberRole', $this->editOptions($member));
     }
 
-    public function store(Request $request, Member $member): RedirectResponse
+    public function store(MemberRoleRequest $request, Member $member): RedirectResponse
     {
-        $attributes = $request->validate($this->rules());
+        $attributes = $request->validated();
 
         $member->roles()->attach([currentClubId() => $attributes]);
 
@@ -54,9 +44,9 @@ class MemberRoleController extends Controller
         ]));
     }
 
-    public function update(Request $request, Member $member, memberRole $memberRole): RedirectResponse
+    public function update(MemberRoleRequest $request, Member $member, memberRole $memberRole): RedirectResponse
     {
-        $attributes = $request->validate($this->rules());
+        $attributes = $request->validated();
 
         $memberRole->update($attributes);
 

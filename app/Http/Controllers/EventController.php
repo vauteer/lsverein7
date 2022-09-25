@@ -2,32 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EventRequest;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Response;
 
 class EventController extends Controller
 {
     protected const URL_KEY = 'lastEventsUrl';
-
-    protected function rules($id): array
-    {
-        $rules = [
-            'name' => [
-                'required',
-                'string',
-                Rule::unique('events')
-                    ->where(fn ($query) => $query->where('club_id', currentClubId()))
-                    ->ignore($id),
-            ],
-            'global' => 'boolean',
-        ];
-
-        return $rules;
-    }
 
     public function index(Request $request):Response
     {
@@ -59,9 +43,9 @@ class EventController extends Controller
         return inertia('Events/Edit', $this->editOptions());
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(EventRequest $request): RedirectResponse
     {
-        $attributes = $request->validate($this->rules(-1));
+        $attributes = $request->validated();
 
         Event::create(array_merge($attributes, [
             'club_id' => currentClubId(),
@@ -79,9 +63,9 @@ class EventController extends Controller
         ]));
     }
 
-    public function update(Request $request, Event $event): RedirectResponse
+    public function update(EventRequest $request, Event $event): RedirectResponse
     {
-        $attributes = $request->validate($this->rules($event->id));
+        $attributes = $request->validated();
 
         $event->update($attributes);
 

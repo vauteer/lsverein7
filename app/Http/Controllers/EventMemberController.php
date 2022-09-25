@@ -2,26 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EventMemberRequest;
 use App\Models\Member;
 use App\Models\Eventmember;
 use App\Models\Event;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Response;
 
 class EventMemberController extends Controller
 {
-    protected function rules(): array
-    {
-        $rules = [
-            'event_id' => 'exists:App\Models\Event,id',
-            'date' => 'required|date',
-            'memo' => 'nullable|string',
-        ];
-
-        return $rules;
-    }
-
     private function editOptions(Member $member): array
     {
         return [
@@ -36,9 +25,9 @@ class EventMemberController extends Controller
         return inertia('Members/EventMember', $this->editOptions($member));
     }
 
-    public function store(Request $request, Member $member): RedirectResponse
+    public function store(EventMemberRequest $request, Member $member): RedirectResponse
     {
-        $attributes = $request->validate($this->rules());
+        $attributes = $request->validated();
 
         $member->events()->attach([currentClubId() => $attributes]);
 
@@ -53,9 +42,9 @@ class EventMemberController extends Controller
         ]));
     }
 
-    public function update(Request $request, Member $member, Eventmember $eventMember): RedirectResponse
+    public function update(EventMemberRequest $request, Member $member, Eventmember $eventMember): RedirectResponse
     {
-        $attributes = $request->validate($this->rules());
+        $attributes = $request->validated();
 
         $eventMember->update($attributes);
 

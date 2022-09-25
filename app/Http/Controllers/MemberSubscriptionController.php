@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MemberSubscriptionRequest;
 use App\Models\Member;
 use App\Models\MemberSubscription;
 use App\Models\Subscription;
@@ -11,16 +12,6 @@ use Inertia\Response;
 
 class MemberSubscriptionController extends Controller
 {
-    protected function rules(): array
-    {
-        $rules = [
-            'subscription_id' => 'exists:App\Models\Subscription,id',
-            'memo' => 'nullable|string',
-        ];
-
-        return $rules;
-    }
-
     public function editOptions(Member $member): array
     {
         return [
@@ -35,9 +26,9 @@ class MemberSubscriptionController extends Controller
         return inertia('Members/MemberSubscription', $this->editOptions($member));
     }
 
-    public function store(Request $request, Member $member): RedirectResponse
+    public function store(MemberSubscriptionRequest $request, Member $member): RedirectResponse
     {
-        $attributes = $request->validate($this->rules());
+        $attributes = $request->validated();
 
         $member->subscriptions()->attach([currentClubId() => $attributes]);
 
@@ -52,9 +43,9 @@ class MemberSubscriptionController extends Controller
         ]));
     }
 
-    public function update(Request $request, Member $member, memberSubscription $memberSubscription): RedirectResponse
+    public function update(MemberSubscriptionRequest $request, Member $member, memberSubscription $memberSubscription): RedirectResponse
     {
-        $attributes = $request->validate($this->rules());
+        $attributes = $request->validated();
 
         $memberSubscription->update($attributes);
 

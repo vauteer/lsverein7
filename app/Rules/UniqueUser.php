@@ -7,9 +7,9 @@ use Illuminate\Contracts\Validation\InvokableRule;
 
 class UniqueUser implements InvokableRule
 {
-    private int $ignoreId;
+    private ?int $ignoreId;
 
-    public function __construct($ignoreId)
+    public function __construct(?int $ignoreId)
     {
         $this->ignoreId = $ignoreId;
     }

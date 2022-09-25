@@ -90,7 +90,7 @@ const submitButtonText = computed(() => {
             </div>
         </div>
         <MyConfirmation v-if="showDelete" @canceled="showDelete=false" @confirmed="deleteEntity">
-            {{ `Funktion '${item.name}' löschen` }}
+            {{ `'${item.name}' löschen` }}
         </MyConfirmation>
     </MyLayout>
 </template>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\ClubRole;
+use App\Http\Requests\MemberRequest;
 use App\Http\Resources\EventMemberResource;
 use App\Http\Resources\ItemMemberResource;
 use App\Http\Resources\MemberResource;
@@ -24,7 +25,6 @@ use App\Models\Role;
 use App\Models\Section;
 use App\Models\Subscription;
 use App\Pdf\MemberPdf;
-use App\Rules\Iban;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -45,30 +45,6 @@ class MemberController extends Controller
         5 => "Bank",
         6 => "Id"
     ];
-
-    protected function rules(): array
-    {
-        $rules = [
-            'surname' => 'required|string',
-            'first_name' => 'required|string',
-            'gender' => 'required',
-            'birthday' => 'required|date',
-            'death_day' => 'nullable|date',
-            'street' => 'string',
-            'zipcode' => 'string',
-            'city' => 'string',
-            'email' => 'nullable|email',
-            'phone' => 'nullable|string',
-            'payment_method' => 'required',
-            'bank' => 'nullable|string|required_if:payment_method,k',
-            'account_owner' => 'nullable|string|required_if:payment_method,k',
-            'iban' => ['nullable', 'required_if:payment_method,k', new Iban()],
-            'bic' => 'nullable|string|required_if:payment_method,k',
-            'memo' => 'nullable|string',
-        ];
-
-        return $rules;
-    }
 
     protected function entryRules(): array
     {
@@ -104,73 +80,6 @@ class MemberController extends Controller
             'clubAdmin' => auth()->user()->hasClubRole(ClubRole::Admin),
             'exportFormats' => Member::EXPORT_FORMATS,
         ]);
-    }
-
-    public function exportPdf(Request $request): \Illuminate\Http\Response
-    {
-        $currentSelection = $this->currentSelection($request);
-        $query = $currentSelection['query'];
-        $leftHeadline = $currentSelection['quickFilters'][$currentSelection['filter']] . ' ' . $currentSelection['year'];
-        $leftHeadline .= ' (' . $query->count() . ' Personen)';
-        $rightHeadline = 'Stand: ' . formatDate($currentSelection['keyDate']);
-        $pdf = new MemberPdf('P', 'mm', 'A4');
-
-        $content = $pdf->getOutput($query->get(), currentClub()->name, $leftHeadline, $rightHeadline);
-
-        return response($content)
-            ->header('Content-Type', 'application/pdf; name="MyFile.pdf"');
-    }
-
-    public function exportCsv(Request $request): \Illuminate\Http\Response
-    {
-        $currentSelection = $this->currentSelection($request);
-        $filename = str_replace(': ', '_', $currentSelection['quickFilters'][$currentSelection['filter']]) . '.csv';
-
-        $handle = fopen('php://memory', 'r+');
-
-        $header = ['ID', 'Vorname', 'Nachname', 'Strasse', 'Plz', 'Ort', 'Alter', 'Geschlecht', 'MGJahre', 'Ehrung'];
-
-        // commas in data will be handled from fputcsv !
-        fputcsv($handle, $header);
-        $members = $currentSelection['query']->get();
-
-        foreach ($members as $member)
-        {
-            $fields = array(
-                $member->id,
-                mb_convert_encoding($member->first_name, 'ISO-8859-1', 'UTF-8'),
-                mb_convert_encoding($member->surname, 'ISO-8859-1', 'UTF-8'),
-                mb_convert_encoding($member->street, 'ISO-8859-1', 'UTF-8'),
-                $member->zipcode,
-                mb_convert_encoding($member->city, 'ISO-8859-1', 'UTF-8'),
-                $member->age, $member->gender->value,
-                $member->membershipYears(), $member->dueHonor(),
-            );
-
-            fputcsv($handle, $fields);
-        }
-
-        rewind($handle);
-
-        $content = stream_get_contents($handle);
-
-        return response($content)
-            ->header('content-type', 'text/comma-separated-values')
-            ->header('content-length', strlen($content))
-            ->header('content-disposition', 'attachment; filename="' . $filename);
-    }
-
-    public function exportVcard(Request $request)
-    {
-        $currentSelection = $this->currentSelection($request);
-        $members = $currentSelection['query']->get();
-        $filename = str_replace(': ', '_', $currentSelection['quickFilters'][$currentSelection['filter']]) . '.vcf';
-        $content = view('vcards', ['members' => $members])->render();
-
-        return response($content)
-            ->header('content-type', 'text/vcard')
-            ->header('content-length', strlen($content))
-            ->header('content-disposition', 'attachment; filename="' . $filename);
     }
 
     private function editOptions(): array
@@ -209,15 +118,15 @@ class MemberController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(MemberRequest $request): RedirectResponse
     {
-        $attributes = $request->validate($this->rules(-1));
+        $attributes = $request->validated();
         $entryData = $request->validate($this->entryRules());
         $attributes['iban'] = normalizeIban($attributes['iban']);
 
         $member = Member::create(array_merge($attributes, ['club_id' => currentClubId()]));
 
-        $member->clubs()->attach([$member->club_id => [
+        $member->memberships()->attach([$member->club_id => [
             'from' => $entryData['entry_date']
         ]]);
         $member->sections()->attach([$entryData['section'] => [
@@ -250,9 +159,9 @@ class MemberController extends Controller
         ]));
     }
 
-    public function update(Request $request, Member $member): RedirectResponse
+    public function update(MemberRequest $request, Member $member): RedirectResponse
     {
-        $attributes = $request->validate($this->rules($member->id));
+        $attributes = $request->validated();
         $attributes['iban'] = normalizeIban($attributes['iban']);
 
         $member->update($attributes);
@@ -443,4 +352,72 @@ class MemberController extends Controller
                 break;
         }
     }
+
+    public function exportPdf(Request $request): \Illuminate\Http\Response
+    {
+        $currentSelection = $this->currentSelection($request);
+        $query = $currentSelection['query'];
+        $leftHeadline = $currentSelection['quickFilters'][$currentSelection['filter']] . ' ' . $currentSelection['year'];
+        $leftHeadline .= ' (' . $query->count() . ' Personen)';
+        $rightHeadline = 'Stand: ' . formatDate($currentSelection['keyDate']);
+        $pdf = new MemberPdf('P', 'mm', 'A4');
+
+        $content = $pdf->getOutput($query->get(), currentClub()->name, $leftHeadline, $rightHeadline);
+
+        return response($content)
+            ->header('Content-Type', 'application/pdf; name="MyFile.pdf"');
+    }
+
+    public function exportCsv(Request $request): \Illuminate\Http\Response
+    {
+        $currentSelection = $this->currentSelection($request);
+        $filename = str_replace(': ', '_', $currentSelection['quickFilters'][$currentSelection['filter']]) . '.csv';
+
+        $handle = fopen('php://memory', 'r+');
+
+        $header = ['ID', 'Vorname', 'Nachname', 'Strasse', 'Plz', 'Ort', 'Alter', 'Geschlecht', 'MGJahre', 'Ehrung'];
+
+        // commas in data will be handled from fputcsv !
+        fputcsv($handle, $header);
+        $members = $currentSelection['query']->get();
+
+        foreach ($members as $member)
+        {
+            $fields = array(
+                $member->id,
+                mb_convert_encoding($member->first_name, 'ISO-8859-1', 'UTF-8'),
+                mb_convert_encoding($member->surname, 'ISO-8859-1', 'UTF-8'),
+                mb_convert_encoding($member->street, 'ISO-8859-1', 'UTF-8'),
+                $member->zipcode,
+                mb_convert_encoding($member->city, 'ISO-8859-1', 'UTF-8'),
+                $member->age, $member->gender->value,
+                $member->membershipYears(), $member->dueHonor(),
+            );
+
+            fputcsv($handle, $fields);
+        }
+
+        rewind($handle);
+
+        $content = stream_get_contents($handle);
+
+        return response($content)
+            ->header('content-type', 'text/comma-separated-values')
+            ->header('content-length', strlen($content))
+            ->header('content-disposition', 'attachment; filename="' . $filename);
+    }
+
+    public function exportVcard(Request $request)
+    {
+        $currentSelection = $this->currentSelection($request);
+        $members = $currentSelection['query']->get();
+        $filename = str_replace(': ', '_', $currentSelection['quickFilters'][$currentSelection['filter']]) . '.vcf';
+        $content = view('vcards', ['members' => $members])->render();
+
+        return response($content)
+            ->header('content-type', 'text/vcard')
+            ->header('content-length', strlen($content))
+            ->header('content-disposition', 'attachment; filename="' . $filename);
+    }
+
 }

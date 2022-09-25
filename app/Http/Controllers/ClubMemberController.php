@@ -2,29 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SectionResource;
+use App\Http\Requests\ClubMemberRequest;
 use App\Models\ClubMember;
 use App\Models\Member;
-use App\Models\Section;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use Inertia\Response;
 
 class ClubMemberController extends Controller
 {
-    protected function rules(): array
-    {
-        $rules = [
-            'from' => 'required|date',
-            'to' => 'nullable|date|after:from',
-            'memo' => 'nullable|string',
-        ];
-
-        return $rules;
-    }
-
     private function editOptions(Member $member): array
     {
         return [
@@ -38,9 +23,9 @@ class ClubMemberController extends Controller
         return inertia('Members/ClubMember', $this->editOptions($member));
     }
 
-    public function store(Request $request, Member $member): RedirectResponse
+    public function store(ClubMemberRequest $request, Member $member): RedirectResponse
     {
-        $attributes = $request->validate($this->rules());
+        $attributes = $request->validated();
 
         $member->memberships()->attach([currentClubId() => $attributes]);
 
@@ -55,9 +40,9 @@ class ClubMemberController extends Controller
             ]));
     }
 
-    public function update(Request $request, Member $member, ClubMember $clubMember): RedirectResponse
+    public function update(ClubMemberRequest $request, Member $member, ClubMember $clubMember): RedirectResponse
     {
-        $attributes = $request->validate($this->rules());
+        $attributes = $request->validated();
 
         $clubMember->update($attributes);
 

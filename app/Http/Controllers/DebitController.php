@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DebitRequest;
 use App\Http\Resources\DebitResource;
 use App\Models\Debit;
 use App\Models\Member;
@@ -9,24 +10,11 @@ use App\Models\Subscription;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Response;
 
 class DebitController extends Controller
 {
     protected const URL_KEY = 'lastDebitsUrl';
-
-    protected function rules($id): array
-    {
-        $rules = [
-            'member_id' => 'required|exists:members,id',
-            'amount' => 'numeric|min:0',
-            'transfer_text' => 'required|string',
-            'due_at' => 'required|date'
-        ];
-
-        return $rules;
-    }
 
     public function index(Request $request):Response
     {
@@ -66,9 +54,9 @@ class DebitController extends Controller
         return inertia('Debits/Edit', $this->editOptions());
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(DebitRequest $request): RedirectResponse
     {
-        $attributes = $request->validate($this->rules(-1));
+        $attributes = $request->validated();
 
         Debit::create($attributes);
 
@@ -83,9 +71,9 @@ class DebitController extends Controller
         ]));
     }
 
-    public function update(Request $request, Debit $debit): RedirectResponse
+    public function update(DebitRequest $request, Debit $debit): RedirectResponse
     {
-        $attributes = $request->validate($this->rules($debit->id));
+        $attributes = $request->validated();
 
         $debit->update($attributes);
 

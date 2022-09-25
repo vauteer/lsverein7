@@ -2,31 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ItemRequest;
 use App\Http\Resources\ItemResource;
 use App\Models\Item;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Response;
 
 class ItemController extends Controller
 {
     protected const URL_KEY = 'lastItemsUrl';
-
-    protected function rules($id): array
-    {
-        $rules = [
-            'name' => [
-                'required',
-                'string',
-                Rule::unique('items')
-                    ->where(fn ($query) => $query->where('club_id', currentClubId()))
-                    ->ignore($id),
-            ],
-        ];
-
-        return $rules;
-    }
 
     public function index(Request $request):Response
     {
@@ -58,9 +43,9 @@ class ItemController extends Controller
         return inertia('Items/Edit', $this->editOptions());
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(ItemRequest $request): RedirectResponse
     {
-        $attributes = $request->validate($this->rules(-1));
+        $attributes = $request->validated();
 
         Item::create(array_merge($attributes, ['club_id' => currentClubId()]));
 
@@ -76,9 +61,9 @@ class ItemController extends Controller
         ]));
     }
 
-    public function update(Request $request, Item $item): RedirectResponse
+    public function update(ItemRequest $request, Item $item): RedirectResponse
     {
-        $attributes = $request->validate($this->rules($item->id));
+        $attributes = $request->validated();
 
         $item->update($attributes);
 
