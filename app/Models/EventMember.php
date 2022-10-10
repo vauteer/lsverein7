@@ -12,6 +12,7 @@ class EventMember extends Pivot
     use HasFactory;
 
     protected $table = "event_member";
+    public $incrementing = true;
 
     protected $guarded = [];
 

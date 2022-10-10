@@ -12,6 +12,7 @@ class ClubMember extends Pivot
     use HasFactory;
 
     protected $table = "club_member";
+    public $incrementing = true;
 
     protected $guarded = [];
 

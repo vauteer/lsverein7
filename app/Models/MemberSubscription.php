@@ -12,6 +12,7 @@ class MemberSubscription extends Pivot
     use HasFactory;
 
     protected $table = "member_subscription";
+    public $incrementing = true;
 
     protected $guarded = [];
 

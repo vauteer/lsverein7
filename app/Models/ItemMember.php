@@ -11,6 +11,7 @@ class ItemMember extends Pivot
     use HasFactory;
 
     protected $table = "item_member";
+    public $incrementing = true;
 
     protected $guarded = [];
 

@@ -12,6 +12,7 @@ class MemberSection extends Pivot
     use HasFactory;
 
     protected $table = "member_section";
+    public $incrementing = true;
 
     protected $guarded = [];
 

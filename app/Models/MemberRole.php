@@ -12,6 +12,7 @@ class MemberRole extends Pivot
     use HasFactory;
 
     protected $table = "member_role";
+    public $incrementing = true;
 
     protected $guarded = [];
 
