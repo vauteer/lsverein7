@@ -50,9 +50,7 @@ let yearEnabled = computed(() => {
     return !state.filter.startsWith('subscription_')
 });
 
-watch(state, throttle(function (newValue) {
-    refresh();
-}, 300));
+watch(state, throttle(() => refresh(), 300));
 
 watch(exportFormat, (newValue) => {
     console.log(newValue);
