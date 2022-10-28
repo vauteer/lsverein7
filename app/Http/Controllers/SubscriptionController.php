@@ -12,11 +12,9 @@ use Inertia\Response;
 
 class SubscriptionController extends Controller
 {
-    protected const URL_KEY = 'lastSubscriptionsUrl';
-
     public function index(Request $request):Response
     {
-        session([self::URL_KEY => url()->full()]);
+        $this->setLastUrl();
 
         return inertia('Subscriptions/Index', [
             'subscriptions' => SubscriptionResource::collection(Subscription::query()
@@ -37,7 +35,7 @@ class SubscriptionController extends Controller
     private function editOptions(): array
     {
         return [
-            'origin' => session(self::URL_KEY),
+            'origin' => $this->getLastUrl(),
             'varDescription' => Subscription::VAR_DESCRIPTION,
         ];
     }
@@ -53,7 +51,7 @@ class SubscriptionController extends Controller
 
         Subscription::create(array_merge($attributes, ['club_id' => currentClubId()]));
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Funktion hinzugefügt');
     }
 
@@ -71,7 +69,7 @@ class SubscriptionController extends Controller
 
         $subscription->update($attributes);
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Beitrag geändert');
     }
 
@@ -79,7 +77,7 @@ class SubscriptionController extends Controller
     {
         $subscription->delete();
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Beitrag gelöscht');
     }
 
@@ -90,7 +88,7 @@ class SubscriptionController extends Controller
 
         return inertia('Subscriptions/Debit',
             array_merge(Subscription::debit($subscriptions, $executionDate), [
-            'origin' => session(self::URL_KEY),
+            'origin' => $this->getLastUrl(),
         ]));
     }
 }

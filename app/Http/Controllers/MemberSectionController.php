@@ -7,7 +7,6 @@ use App\Models\MemberSection;
 use App\Models\Member;
 use App\Models\Section;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Response;
 
 class MemberSectionController extends Controller

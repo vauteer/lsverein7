@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MemberRoleRequest;
-use App\Http\Resources\MemberRoleResource;
 use App\Models\Member;
 use App\Models\MemberRole;
 use App\Models\Role;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Response;
 
 class MemberRoleController extends Controller

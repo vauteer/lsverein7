@@ -11,11 +11,9 @@ use Inertia\Response;
 
 class SectionController extends Controller
 {
-    protected const URL_KEY = 'lastSectionsUrl';
-
     public function index(Request $request):Response
     {
-        session([self::URL_KEY => url()->full()]);
+        $this->setLastUrl();
 
         return inertia('Sections/Index', [
             'sections' => SectionResource::collection(Section::query()
@@ -34,7 +32,7 @@ class SectionController extends Controller
     private function editOptions(): array
     {
         return [
-            'origin' => session(self::URL_KEY),
+            'origin' => $this->getLastUrl(),
             'blsvSections' => currentClub()->blsvMember ? optionsFromArray(Section::BLSV_SECTIONS, true) : null,
         ];
     }
@@ -52,7 +50,7 @@ class SectionController extends Controller
             'club_id' => currentClubId(),
         ]));
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Abteilung hinzugefügt');
     }
 
@@ -70,7 +68,7 @@ class SectionController extends Controller
 
         $section->update($attributes);
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Abteilung geändert');
     }
 
@@ -78,7 +76,7 @@ class SectionController extends Controller
     {
         $section->delete();
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Abteilung gelöscht');
     }
 

@@ -11,11 +11,9 @@ use Inertia\Response;
 
 class EventController extends Controller
 {
-    protected const URL_KEY = 'lastEventsUrl';
-
     public function index(Request $request):Response
     {
-        session([self::URL_KEY => url()->full()]);
+        $this->setLastUrl();
 
         return inertia('Events/Index', [
             'events' => EventResource::collection(Event::query()
@@ -34,7 +32,7 @@ class EventController extends Controller
     private function editOptions(): array
     {
         return [
-            'origin' => session(self::URL_KEY),
+            'origin' => $this->getLastUrl(),
         ];
     }
 
@@ -51,7 +49,7 @@ class EventController extends Controller
             'club_id' => currentClubId(),
         ]));
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Ereignis hinzugefügt');
     }
 
@@ -69,7 +67,7 @@ class EventController extends Controller
 
         $event->update($attributes);
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Ereignis geändert');
     }
 
@@ -77,7 +75,7 @@ class EventController extends Controller
     {
         $event->delete();
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Ereignis gelöscht');
     }
 

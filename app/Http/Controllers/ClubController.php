@@ -13,11 +13,9 @@ use Inertia\Response;
 
 class ClubController extends Controller
 {
-    protected const URL_KEY = 'lastClubsUrl';
-
     public function index(Request $request): Response
     {
-        session()->put(self::URL_KEY, url()->full());
+        $this->setLastUrl();
 
         return inertia('Clubs/Index', [
             'clubs' => ClubResource::collection(auth()->user()->clubs()->wherePivot('role', ClubRole::Admin)
@@ -36,7 +34,7 @@ class ClubController extends Controller
     private function editOptions(): array
     {
         return [
-            'origin' => session(self::URL_KEY, '/backups'), // for the case it's a new installation and we have no clubs
+            'origin' => $this->getLastUrl('/backups'), // for the case it's a new installation and we have no clubs
             'displayStyles' => optionsFromArray(Club::displayStyles(), false),
         ];
     }
@@ -63,7 +61,7 @@ class ClubController extends Controller
             $creator->update(['club_id' => $club->id]);
         }
 
-        return redirect(session(self::URL_KEY, 'clubs')) // URL_KEY is not set if creating the first club
+        return redirect($this->getLastUrl('clubs')) // URL_KEY is not set if creating the first club
             ->with('success', 'Verein hinzugefügt');
     }
 
@@ -83,7 +81,7 @@ class ClubController extends Controller
 
         Club::removeOrphanLogos();
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Verein geändert');
     }
 
@@ -91,7 +89,7 @@ class ClubController extends Controller
     {
         $club->delete();
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Verein gelöscht');
     }
 
@@ -100,7 +98,7 @@ class ClubController extends Controller
         $user = Auth::user();
 
         if ($user->switchClub($club->id)) {
-            return redirect(session(self::URL_KEY))
+            return redirect($this->getLastUrl())
                 ->with('success', 'Aktuellen Verein gewechselt');
         }
 
@@ -110,7 +108,7 @@ class ClubController extends Controller
     public function blsvStatistic(Club $club): Response
     {
         return inertia('Clubs/BLSVStat', [
-            'origin' => session(self::URL_KEY),
+            'origin' => $this->getLastUrl(),
             'downloads' => $club->getBLSVStatistic(),
         ]);
     }

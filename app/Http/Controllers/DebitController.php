@@ -14,11 +14,10 @@ use Inertia\Response;
 
 class DebitController extends Controller
 {
-    protected const URL_KEY = 'lastDebitsUrl';
-
     public function index(Request $request):Response
     {
-        session([self::URL_KEY => url()->full()]);
+        $this->setLastUrl();
+
         return inertia('Debits/Index', [
             'debits' => DebitResource::collection(Debit::query()
                 ->when($request->input('search'), function($query, $search) {
@@ -37,7 +36,7 @@ class DebitController extends Controller
     private function editOptions(): array
     {
         return [
-            'origin' => session(self::URL_KEY),
+            'origin' => $this->getLastUrl(),
             'members' => Member::members()->hasAccount()->orderBy('surname')->orderBy('first_name')
                 ->get(['id', 'surname', 'first_name', 'iban'])
                 ->map(fn ($item) => [
@@ -60,7 +59,7 @@ class DebitController extends Controller
 
         Debit::create($attributes);
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Lastschrift hinzugefügt');
     }
 
@@ -77,7 +76,7 @@ class DebitController extends Controller
 
         $debit->update($attributes);
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Lastschrift geändert');
     }
 
@@ -85,7 +84,7 @@ class DebitController extends Controller
     {
         $debit->delete();
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Lastschrift gelöscht');
     }
 
@@ -95,7 +94,7 @@ class DebitController extends Controller
 
         return inertia('Subscriptions/Debit',
             array_merge(Debit::debit($executionDate), [
-                'origin' => session(self::URL_KEY),
+                'origin' => $this->getLastUrl(),
             ]));
     }
 

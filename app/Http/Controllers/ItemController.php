@@ -11,11 +11,9 @@ use Inertia\Response;
 
 class ItemController extends Controller
 {
-    protected const URL_KEY = 'lastItemsUrl';
-
     public function index(Request $request):Response
     {
-        session([self::URL_KEY => url()->full()]);
+        $this->setLastUrl();
 
         return inertia('Items/Index', [
             'items' => ItemResource::collection(Item::query()
@@ -34,7 +32,7 @@ class ItemController extends Controller
     private function editOptions(): array
     {
         return [
-            'origin' => session(self::URL_KEY),
+            'origin' => $this->getLastUrl(),
         ];
     }
 
@@ -49,7 +47,7 @@ class ItemController extends Controller
 
         Item::create(array_merge($attributes, ['club_id' => currentClubId()]));
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Ereignis hinzugefügt');
     }
 
@@ -67,7 +65,7 @@ class ItemController extends Controller
 
         $item->update($attributes);
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Ereignis geändert');
     }
 
@@ -75,7 +73,7 @@ class ItemController extends Controller
     {
         $item->delete();
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Ereignis gelöscht');
     }
 

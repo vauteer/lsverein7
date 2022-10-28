@@ -7,7 +7,6 @@ use App\Models\Member;
 use App\Models\MemberSubscription;
 use App\Models\Subscription;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Response;
 
 class MemberSubscriptionController extends Controller

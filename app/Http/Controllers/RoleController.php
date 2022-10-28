@@ -11,11 +11,9 @@ use Inertia\Response;
 
 class RoleController extends Controller
 {
-    protected const URL_KEY = 'lastRolesUrl';
-
     public function index(Request $request):Response
     {
-        session([self::URL_KEY => url()->full()]);
+        $this->setLastUrl();
 
         return inertia('Roles/Index', [
             'roles' => RoleResource::collection(Role::query()
@@ -34,7 +32,7 @@ class RoleController extends Controller
     public function editOptions(): array
     {
         return [
-            'origin' => session(self::URL_KEY),
+            'origin' => $this->getLastUrl(),
         ];
     }
 
@@ -51,7 +49,7 @@ class RoleController extends Controller
             'club_id' => currentClubId(),
         ]));
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Funktion hinzugefügt');
     }
 
@@ -69,7 +67,7 @@ class RoleController extends Controller
 
         $role->update($attributes);
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Funktion geändert');
     }
 
@@ -77,7 +75,7 @@ class RoleController extends Controller
     {
         $role->delete();
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Funktion gelöscht');
     }
 

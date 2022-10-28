@@ -6,7 +6,6 @@ use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Notifications\UserNotification;
-use App\Rules\UniqueUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,11 +15,9 @@ use Inertia\Response;
 
 class UserController extends Controller
 {
-    protected const URL_KEY = 'lastUsersUrl';
-
     public function index(Request $request): Response
     {
-        session([self::URL_KEY => url()->full()]);
+        $this->setLastUrl();
 
         return inertia('Users/Index', [
             'users' => UserResource::collection(User::hasClub()
@@ -40,7 +37,7 @@ class UserController extends Controller
     private function editOptions(): array
     {
         return [
-            'origin' => session(self::URL_KEY),
+            'origin' => $this->getLastUrl(),
             'roles' => optionsFromArray(User::availableRoles(), false),
         ];
     }
@@ -80,7 +77,7 @@ class UserController extends Controller
 
         }
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', "{$user->name} wurde hinzugefügt.");
     }
 
@@ -105,7 +102,7 @@ class UserController extends Controller
             'role' => $request->input('role'),
         ]);
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', "{$user->name} wurde geändert.");
     }
 
@@ -119,7 +116,7 @@ class UserController extends Controller
             $user->delete();
         }
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Benutzer wurde gelöscht.');
     }
 

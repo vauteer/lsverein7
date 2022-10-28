@@ -35,8 +35,6 @@ use Inertia\ResponseFactory;
 
 class MemberController extends Controller
 {
-    protected const URL_KEY = 'lastMembersUrl';
-
     protected const SORT_METHODS = [
         1 => "Name",
         2 => "Adresse",
@@ -61,7 +59,7 @@ class MemberController extends Controller
         if (Club::count() == 0)
             return redirect(route('clubs.create'));
 
-        session([self::URL_KEY => url()->full()]);
+        $this->setLastUrl();
         $currentSelection = $this->currentSelection($request);
 
         return inertia('Members/Index', [
@@ -85,7 +83,7 @@ class MemberController extends Controller
     private function editOptions(): array
     {
         return [
-            'origin' => session(self::URL_KEY),
+            'origin' => $this->getLastUrl(),
             'genders' => optionsFromArray(Member::availableGenders(), false),
             'paymentMethods' => optionsFromArray(Member::availablePaymentMethods(), false),
         ];
@@ -103,7 +101,7 @@ class MemberController extends Controller
     {
         return inertia('Members/Show', [
             'member' => $member->getAttributes(),
-            'origin' => session(self::URL_KEY),
+            'origin' => $this->getLastUrl(),
             'advanced' => auth()->user()->hasAdvancedRights(),
             'birthday' => formatDate($member->birthday),
             'death_day' => formatDate($member->death_day),
@@ -140,7 +138,7 @@ class MemberController extends Controller
             ]]);
         }
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Mitglied hinzugefügt');
     }
 
@@ -166,7 +164,7 @@ class MemberController extends Controller
 
         $member->update($attributes);
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Mitglied geändert');
     }
 
@@ -174,7 +172,7 @@ class MemberController extends Controller
     {
         $member->delete();
 
-        return redirect(session(self::URL_KEY))
+        return redirect($this->getLastUrl())
             ->with('success', 'Mitglied gelöscht');
     }
 
