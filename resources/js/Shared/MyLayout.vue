@@ -69,26 +69,26 @@ let logout = () => {
                                         <MenuItem disabled>
                                             <span class="block px-4 py-2 text-sm text-gray-700 opacity-75">{{ user.name }}</span>
                                         </MenuItem>
-                                        <MenuItem v-if="user.clubAdmin" v-slot="{ active }">
-                                            <Link :href="route('users')"
+                                        <MenuItem v-if="user.clubAdmin" v-slot="{ active, close }">
+                                            <Link :href="route('users')" preserve-state @click="close"
                                                   :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
                                                 Benutzer
                                             </Link>
                                         </MenuItem>
-                                        <MenuItem v-if="user.clubAdmin" v-slot="{ active }">
-                                            <Link :href="route('clubs')"
+                                        <MenuItem v-if="user.clubAdmin" v-slot="{ active, close }">
+                                            <Link :href="route('clubs')" preserve-state @click="close"
                                                   :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
                                                 Vereine
                                             </Link>
                                         </MenuItem>
-                                        <MenuItem v-if="user.admin" v-slot="{ active }">
-                                            <Link :href="route('backups')"
+                                        <MenuItem v-if="user.admin" v-slot="{ active, close }">
+                                            <Link :href="route('backups')" preserve-state @click="close"
                                                   :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
                                                 Backups
                                             </Link>
                                         </MenuItem>
-                                        <MenuItem v-slot="{ active }">
-                                            <Link :href="route('account.edit')"
+                                        <MenuItem v-slot="{ active, close }">
+                                            <Link :href="route('account.edit')" preserve-state @click="close"
                                                   :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
                                                 Mein Konto
                                             </Link>
