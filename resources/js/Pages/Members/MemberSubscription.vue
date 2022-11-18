@@ -74,6 +74,7 @@ const submitButtonText = computed(() => {
                                       :options="props.subscriptions" id="subscription" label="Beitrag" autofocus/>
                             <MyTextArea class="sm:col-span-6" v-model="form.memo" :error="form.errors.memo"
                                         id="memo" label="Memo"/>
+                            {{ form.subscription_id }}
                         </div>
                         <div class="py-5">
                             <div class="flex justify-between">
