@@ -46,7 +46,7 @@ class MemberSubscriptionController extends Controller
     public function update(MemberSubscriptionRequest $request, Member $member, memberSubscription $memberSubscription): RedirectResponse
     {
         $attributes = $request->validated();
-        Log::info("MSC.update" . $attributes);
+        Log::info("MSC.update: ", $attributes);
 
         $memberSubscription->update($attributes);
 
