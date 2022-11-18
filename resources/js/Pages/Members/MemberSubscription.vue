@@ -16,8 +16,6 @@ let props = defineProps({
 
 let form = useForm({
     subscription_id: null,
-    from: null,
-    to: null,
     memo: null,
 });
 
