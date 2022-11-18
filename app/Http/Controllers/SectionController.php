@@ -33,7 +33,7 @@ class SectionController extends Controller
     {
         return [
             'origin' => $this->getLastUrl(),
-            'blsvSections' => currentClub()->blsvMember ? optionsFromArray(Section::BLSV_SECTIONS, true) : null,
+            'blsvSections' => currentClub()->blsv_member ? optionsFromArray(Section::BLSV_SECTIONS, true) : null,
         ];
     }
 

@@ -39,7 +39,7 @@ onMounted(() => {
                 @change="$emit('update:modelValue', $event.target.value)"
                 ref="select"
         >
-            <option v-if="nullValue !== null" value="" v-text="nullValue" />
+            <option value="" v-text="nullValue" :disabled="nullValue === null" />
             <option v-for="option in options" :value="option.id" v-text="option.name" />
         </select>
         <div v-if="error" class="block text-xs font-medium text-red-500 mt-1">{{ error }}</div>
