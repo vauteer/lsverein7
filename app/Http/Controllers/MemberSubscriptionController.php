@@ -7,6 +7,7 @@ use App\Models\Member;
 use App\Models\MemberSubscription;
 use App\Models\Subscription;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Inertia\Response;
 
 class MemberSubscriptionController extends Controller
@@ -45,6 +46,7 @@ class MemberSubscriptionController extends Controller
     public function update(MemberSubscriptionRequest $request, Member $member, memberSubscription $memberSubscription): RedirectResponse
     {
         $attributes = $request->validated();
+        Log::info("MSC.update" . $attributes);
 
         $memberSubscription->update($attributes);
 
