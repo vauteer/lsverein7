@@ -2,16 +2,16 @@
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-vue3";
-import MySelect from '@/Shared/MySelect.vue';
 import MyTextArea from '@/Shared/MyTextArea.vue';
 import MyButton from '@/Shared/MyButton.vue';
 import MyConfirmation from "@/Shared/MyConfirmation.vue";
+import MyListbox from "@/Shared/MyListbox.vue";
 
 let props = defineProps({
     origin: String,
     memberSubscription: Object,
     memberId: Number,
-    subscriptions: Object,
+    subscriptions: Array,
 });
 
 let form = useForm({
@@ -19,20 +19,17 @@ let form = useForm({
     memo: null,
 });
 
-let editMode = ref(false);
 let showDeletion = ref(false);
 
 onMounted(() => {
     if (props.memberSubscription !== undefined) {
-        form.subscription_id = String(props.memberSubscription.subscription_id)
+        form.subscription_id = props.memberSubscription.subscription_id;
         form.memo = props.memberSubscription.memo;
-
-        editMode.value = true;
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/members/${props.memberId}/subscription/${props.memberSubscription.id}/`);
     } else {
         form.post(`/members/${props.memberId}/subscription`);
@@ -44,13 +41,9 @@ let deleteMemberSubscription = () => {
     Inertia.delete(`/members/${props.memberId}/subscription/${props.memberSubscription.id}`);
 };
 
-const title = computed(() => {
-    return editMode.value ? "Beitrag bearbeiten" : "Neuer Beitrag";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
+const editMode = computed(() => props.memberSubscription !== undefined);
+const title = computed(() => editMode.value ? "Beitrag bearbeiten" : "Neuer Beitrag");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 </script>
 
@@ -69,7 +62,7 @@ const submitButtonText = computed(() => {
                 <form @submit.prevent="submit" class="space-y-8 divide-y divide-gray-200">
                     <div class="space-y-8 divide-y divide-gray-200 my-3 mx-2">
                         <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
-                            <MySelect class="sm:col-span-6" v-model="form.subscription_id"
+                            <MyListbox class="sm:col-span-6" v-model="form.subscription_id"
                                       :error="form.errors.subscription_id"
                                       :options="props.subscriptions" id="subscription" label="Beitrag" autofocus/>
                             <MyTextArea class="sm:col-span-6" v-model="form.memo" :error="form.errors.memo"

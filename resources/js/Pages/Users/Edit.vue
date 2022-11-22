@@ -4,36 +4,32 @@ import {Inertia} from "@inertiajs/inertia";
 import {useForm, Head} from "@inertiajs/inertia-vue3";
 import MyTextInput from '@/Shared/MyTextInput.vue';
 import MyButton from '@/Shared/MyButton.vue';
-import MySelect from '@/Shared/MySelect.vue';
+import MyListbox from "@/Shared/MyListbox.vue";
 import MyConfirmation from "@/Shared/MyConfirmation.vue";
 
 let props = defineProps({
     origin: String,
     user: Object,
     deletable: Boolean,
-    roles: Object,
+    roles: Array,
 });
 
 let form = useForm({
     name: '',
     email: '',
-    role: '1',
+    role: null,
 });
-
-let editMode = ref(false);
 
 onMounted(() => {
     if (props.user !== undefined) {
         form.name = props.user.name;
         form.email = props.user.email;
-        form.role = String(props.user.role);
-
-        editMode.value = true;
+        form.role = props.user.role;
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/users/${props.user.id}`);
     } else {
         form.post('/users');
@@ -46,13 +42,9 @@ let deleteEntity = () => {
     Inertia.delete(`/users/${props.user.id}`);
 };
 
-const title = computed(() => {
-    return editMode.value ? "Benutzer bearbeiten" : "Neuer Benutzer";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
+const editMode = props.user !== undefined;
+const title = computed(() => editMode.value ? "Benutzer bearbeiten" : "Neuer Benutzer");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 </script>
 
@@ -78,7 +70,7 @@ const submitButtonText = computed(() => {
                             <MyTextInput class="sm:col-span-6" v-model="form.email" :error="form.errors.email"
                                          id="email"
                                          label="Email"/>
-                            <MySelect class="sm:col-span-6" v-model="form.role" :error="form.errors.role"
+                            <MyListbox class="sm:col-span-6" v-model="form.role" :error="form.errors.role"
                                       :options="props.roles" id="role" label="Rolle"/>
                         </div>
                         <div class="py-5">

@@ -17,18 +17,18 @@ let form = useForm({
 });
 
 const user = computed(() => usePage().props.value.auth.user);
-let editMode = ref(false);
+const editMode = computed(() => props.item !== undefined);
+const title = computed(() => editMode.value ? "Inventar bearbeiten" : "Neues Inventar");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 onMounted(() => {
     if (props.item !== undefined) {
         form.name = props.item.name;
-
-        editMode.value = true;
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/items/${props.item.id}`);
     } else {
         form.post('/items');
@@ -40,14 +40,6 @@ let deleteEntity = () => {
     showDelete.value = false;
     Inertia.delete(`/items/${props.item.id}`);
 };
-
-const title = computed(() => {
-    return editMode.value ? "Inventar bearbeiten" : "Neues Inventar";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
 
 </script>
 

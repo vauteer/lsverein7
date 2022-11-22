@@ -2,9 +2,9 @@
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-vue3";
-import MySelect from '@/Shared/MySelect.vue';
 import MyTextInput from '@/Shared/MyTextInput.vue';
 import MyTextArea from '@/Shared/MyTextArea.vue';
+import MyListbox from '@/Shared/MyListbox.vue';
 import MyButton from '@/Shared/MyButton.vue';
 import MyConfirmation from "@/Shared/MyConfirmation.vue";
 
@@ -12,7 +12,7 @@ let props = defineProps({
     origin: String,
     memberSection: Object,
     memberId: Number,
-    sections: Object,
+    sections: Array,
 });
 
 let form = useForm({
@@ -23,21 +23,18 @@ let form = useForm({
 });
 
 let showDeletion = ref(false);
-let editMode = ref(false);
 
 onMounted(() => {
     if (props.memberSection !== undefined) {
-        form.section_id = String(props.memberSection.section_id)
+        form.section_id = props.memberSection.section_id;
         form.from = props.memberSection.from;
         form.to = props.memberSection.to;
         form.memo = props.memberSection.memo;
-
-        editMode.value = true;
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/members/${props.memberId}/section/${props.memberSection.id}/`);
     } else {
         form.post(`/members/${props.memberId}/section`);
@@ -49,13 +46,9 @@ let deleteMemberSection = () => {
     Inertia.delete(`/members/${props.memberId}/section/${props.memberSection.id}`);
 };
 
-const title = computed(() => {
-    return editMode.value ? "Spartenzugehörigkeit bearbeiten" : "Neue Spartenzugehörigkeit";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
+const editMode = computed(() => props.memberSection !== undefined);
+const title = computed(() => editMode.value ? "Spartenzugehörigkeit bearbeiten" : "Neue Spartenzugehörigkeit");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 </script>
 
@@ -74,7 +67,7 @@ const submitButtonText = computed(() => {
                 <form @submit.prevent="submit" class="space-y-8 divide-y divide-gray-200">
                     <div class="space-y-8 divide-y divide-gray-200 my-3 mx-2">
                         <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
-                            <MySelect class="sm:col-span-6" v-model="form.section_id"
+                            <MyListbox class="sm:col-span-6" v-model="form.section_id"
                                       :error="form.errors.section_id"
                                       :options="props.sections" id="section" label="Sparte" autofocus/>
                             <MyTextInput class="sm:col-span-3" v-model="form.from"

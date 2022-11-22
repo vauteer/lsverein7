@@ -2,10 +2,10 @@
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm, Link, Head, usePage} from "@inertiajs/inertia-vue3";
-import {PencilIcon, LockClosedIcon} from '@heroicons/vue/24/outline';
+import {PencilIcon} from '@heroicons/vue/24/outline';
 import MyTextInput from "@/Shared/MyTextInput.vue";
 import MyTextArea from "@/Shared/MyTextArea.vue"
-import MySelect from "@/Shared/MySelect.vue";
+import MyListbox from "@/Shared/MyListbox.vue";
 import MyButton from "@/Shared/MyButton.vue";
 
 let props = defineProps({
@@ -13,10 +13,10 @@ let props = defineProps({
     date: String,
     origin: String,
     member: Object,
-    genders: Object,
-    paymentMethods: Object,
-    sections: Object,
-    subscriptions: Object,
+    genders: Array,
+    paymentMethods: Array,
+    sections: Array,
+    subscriptions: Array,
     memberClubs: Object,
     memberSections: Object,
     memberSubscriptions: Object,
@@ -64,41 +64,27 @@ onMounted(() => {
             form.account_owner = props.member.account_owner,
             form.iban = props.member.iban,
             form.bic = props.member.bic,
-            form.memo = props.member.memo,
-
-            editMode.value = true;
+            form.memo = props.member.memo
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/members/${props.member.id}`);
     } else {
         form.post('/members');
     }
 };
 
-// let deleteEntity = () => {
-//     if (confirm('Mitglied löschen ?')) {
-//         Inertia.delete(`/members/${props.member.id}`);
-//     }
-// };
-
 let resign = () => {
     Inertia.put(`/members/${props.member.id}/resign`, { date: resignDate.value })
 };
 
-let editMode = ref(false);
 let resignDate = ref(props.date);
 const club = computed(() => usePage().props.value.auth.club);
-
-const title = computed(() => {
-    return editMode.value ? "Mitglied bearbeiten" : "Neues Mitglied";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
+const editMode = computed(() => props.member !== undefined);
+const title = computed(() => editMode.value ? "Mitglied bearbeiten" : "Neues Mitglied");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 </script>
 
@@ -120,7 +106,7 @@ const submitButtonText = computed(() => {
                         <div class="grid grid-cols-1 gap-y-4 gap-x-4"
                              :class="[editMode ? 'sm:grid-cols-6' : 'sm:grid-cols-3']">
                             <div class="sm:col-span-3 grid gap-y-4 gap-x-4">
-                                <MySelect class="sm:col-span-1" v-model="form.gender" :error="form.errors.gender"
+                                <MyListbox class="sm:col-span-1" v-model="form.gender" :error="form.errors.gender"
                                           :options="props.genders" id="gender" label="Geschlecht" autofocus/>
                                 <MyTextInput class="sm:col-span-3" v-model="form.first_name"
                                            :error="form.errors.first_name"
@@ -147,14 +133,14 @@ const submitButtonText = computed(() => {
                                 <MyTextInput v-if="!editMode" class="sm:col-span-1" v-model="form.entry_date"
                                            :error="form.errors.entry_date"
                                            id="entry-date" type="date" label="Eintritt"/>
-                                <MySelect v-if="!editMode" class="sm:col-span-2" v-model="form.section"
+                                <MyListbox v-if="!editMode" class="sm:col-span-2" v-model="form.section"
                                           :error="form.errors.section"
                                           :options="props.sections" id="section" label="Abteilung"/>
-                                <MySelect v-if="!editMode" class="sm:col-span-2" v-model="form.subscription"
+                                <MyListbox v-if="!editMode" class="sm:col-span-2" v-model="form.subscription"
                                           :error="form.errors.subscription"
                                           :options="props.subscriptions" id="subscription" label="Beitrag"
-                                          null-value="( Ohne )"/>
-                                <MySelect class="sm:col-span-1" v-model="form.payment_method"
+                                          nullValue="( Ohne )"/>
+                                <MyListbox class="sm:col-span-1" v-model="form.payment_method"
                                           :error="form.errors.payment_method"
                                           :options="props.paymentMethods" id="payment-method" label="Zahlweise"/>
                                 <MyTextInput class="sm:col-span-3" v-model="form.bank" :error="form.errors.bank"

@@ -73,7 +73,7 @@ class MemberController extends Controller
             'years' => optionsFromArray($this->availableYears(), false),
             'sorts' => optionsFromArray(self::SORT_METHODS, false),
             'currentYear' => $currentSelection['keyDate']->year,
-            'currentFilter' => strval($currentSelection['filter']),
+            'currentFilter' => $currentSelection['filter'],
             'currentSort' => $currentSelection['sort'],
             'clubAdmin' => auth()->user()->hasClubRole(ClubRole::Admin),
             'exportFormats' => Member::EXPORT_FORMATS,
@@ -92,8 +92,8 @@ class MemberController extends Controller
     public function create(): Response
     {
         return inertia('Members/Edit', array_merge($this->editOptions(), [
-            'sections' => Section::orderBy('name')->get(['id', 'name']),
-            'subscriptions' => Subscription::orderBy('name')->get(['id', 'name']),
+            'sections' => Section::orderBy('name')->get(['id', 'name'])->toArray(),
+            'subscriptions' => Subscription::orderBy('name')->get(['id', 'name'])->toArray(),
         ]));
     }
 
@@ -235,10 +235,10 @@ class MemberController extends Controller
 
     private function currentSelection(Request $request): array
     {
-        $result['filter'] = $request->has('filter') ? $request->input('filter') : '1';
-        $result['search'] = $request->has('search') ? $request->input('search') : '';
-        $result['sort'] = $request->has('sort') ? intval($request->input('sort')) : 1;
-        $result['year'] = $request->has('year') ? intval($request->input('year')) : now()->year;
+        $result['filter'] = $request->input('filter', "1");
+        $result['search'] = $request->input('search', '');
+        $result['sort'] = intval($request->input('sort', 1));
+        $result['year'] = intval($request->input('year', now()->year));
         $result['keyDate'] = Carbon::create($result['year'], 12, 31, 23, 59, 59)->min(now());
         Member::$_keyDate = $result['keyDate'];
 

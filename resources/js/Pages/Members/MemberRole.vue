@@ -2,7 +2,7 @@
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-vue3";
-import MySelect from '@/Shared/MySelect.vue';
+import MyListbox from '@/Shared/MyListbox.vue';
 import MyTextInput from '@/Shared/MyTextInput.vue';
 import MyTextArea from '@/Shared/MyTextArea.vue';
 import MyButton from '@/Shared/MyButton.vue';
@@ -12,7 +12,7 @@ let props = defineProps({
     origin: String,
     memberRole: Object,
     memberId: Number,
-    roles: Object,
+    roles: Array,
 });
 
 let form = useForm({
@@ -23,21 +23,18 @@ let form = useForm({
 });
 
 let showDeletion = ref(false);
-let editMode = ref(false);
 
 onMounted(() => {
     if (props.memberRole !== undefined) {
-        form.role_id = String(props.memberRole.role_id)
+        form.role_id = props.memberRole.role_id;
         form.from = props.memberRole.from;
         form.to = props.memberRole.to;
         form.memo = props.memberRole.memo;
-
-        editMode.value = true;
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/members/${props.memberId}/role/${props.memberRole.id}/`);
     } else {
         form.post(`/members/${props.memberId}/role`);
@@ -49,13 +46,9 @@ let deleteMemberRole = () => {
     Inertia.delete(`/members/${props.memberId}/role/${props.memberRole.id}`);
 };
 
-const title = computed(() => {
-    return editMode.value ? "Funktion bearbeiten" : "Neue Funktion";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
+const editMode = computed(() => props.memberRole !== undefined);
+const title = computed(() => editMode.value ? "Funktion bearbeiten" : "Neue Funktion");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 </script>
 
@@ -74,7 +67,7 @@ const submitButtonText = computed(() => {
                 <form @submit.prevent="submit" class="space-y-8 divide-y divide-gray-200">
                     <div class="space-y-8 divide-y divide-gray-200 my-3 mx-2">
                         <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
-                            <MySelect class="sm:col-span-6" v-model="form.role_id"
+                            <MyListbox class="sm:col-span-6" v-model="form.role_id"
                                       :error="form.errors.role_id"
                                       :options="props.roles" id="role" label="Funktion" autofocus/>
                             <MyTextInput class="sm:col-span-3" v-model="form.from"

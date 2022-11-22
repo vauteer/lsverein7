@@ -18,20 +18,17 @@ let form = useForm({
     memo: null,
 });
 
-let editMode = ref(false);
 
 onMounted(() => {
     if (props.clubMember !== undefined) {
         form.from = props.clubMember.from;
         form.to = props.clubMember.to;
         form.memo = props.clubMember.memo;
-
-        editMode.value = true;
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/members/${props.memberId}/club/${props.clubMember.id}/`);
     } else {
         form.post(`/members/${props.memberId}/club`);
@@ -44,13 +41,9 @@ let deleteClubMember = () => {
     }
 };
 
-const title = computed(() => {
-    return editMode.value ? "Mitgliedschaft bearbeiten" : "Neue Mitgliedschaft";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
+const editMode = computed(() => props.clubMember !== undefined);
+const title = computed(() => editMode.value ? "Mitgliedschaft bearbeiten" : "Neue Mitgliedschaft");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 </script>
 

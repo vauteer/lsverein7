@@ -17,18 +17,15 @@ let form = useForm({
 });
 
 const user = computed(() => usePage().props.value.auth.user);
-let editMode = ref(false);
 
 onMounted(() => {
     if (props.role !== undefined) {
         form.name = props.role.name;
-
-        editMode.value = true;
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/roles/${props.role.id}`);
     } else {
         form.post('/roles');
@@ -41,13 +38,9 @@ let deleteEntity = () => {
     Inertia.delete(`/roles/${props.role.id}`);
 };
 
-const title = computed(() => {
-    return editMode.value ? "Funktion bearbeiten" : "Neue Funktion";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
+const editMode = computed(() => props.role !== undefined);
+const title = computed(() => editMode.value ? "Funktion bearbeiten" : "Neue Funktion");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 </script>
 

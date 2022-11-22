@@ -2,7 +2,7 @@
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-vue3";
-import MySelect from '@/Shared/MySelect.vue';
+import MyListbox from '@/Shared/MyListbox.vue';
 import MyTextInput from '@/Shared/MyTextInput.vue';
 import MyButton from '@/Shared/MyButton.vue';
 import MyConfirmation from "@/Shared/MyConfirmation.vue";
@@ -10,7 +10,7 @@ import MyConfirmation from "@/Shared/MyConfirmation.vue";
 let props = defineProps({
     origin: String,
     debit: Object,
-    members: Object,
+    members: Array,
     today: String,
     varDescription: String,
     deletable: Boolean,
@@ -23,16 +23,12 @@ let form = useForm({
     due_at: props.today,
 });
 
-let editMode = ref(false);
-
 onMounted(() => {
     if (props.debit !== undefined) {
-        form.member_id = String(props.debit.member_id);
+        form.member_id = props.debit.member_id;
         form.amount = props.debit.amount;
         form.transfer_text = props.debit.transfer_text;
         form.due_at = props.debit.due_at;
-
-        editMode.value = true;
     }
 });
 
@@ -50,13 +46,9 @@ let deleteEntity = () => {
     Inertia.delete(`/debits/${props.debit.id}`);
 };
 
-const title = computed(() => {
-    return editMode.value ? "Lastschrift bearbeiten" : "Neue Lastschrift";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
+const editMode = computed(() => props.debit !== undefined);
+const title = computed(() => editMode.value ? "Lastschrift bearbeiten" : "Neue Lastschrift");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 </script>
 
@@ -75,7 +67,7 @@ const submitButtonText = computed(() => {
                 <form @submit.prevent="submit" class="space-y-8 divide-y divide-gray-200">
                     <div class="space-y-8 divide-y divide-gray-200 my-3 mx-2">
                         <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
-                            <MySelect class="sm:col-span-4" v-model="form.member_id"
+                            <MyListbox class="sm:col-span-4" v-model="form.member_id"
                                       :error="form.errors.member_id"
                                       :options="props.members" id="member" label="Mitglied" autofocus/>
                             <MyTextInput class="sm:col-span-2" v-model="form.amount" :error="form.errors.amount"

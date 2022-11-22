@@ -2,7 +2,7 @@
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-vue3";
-import MySelect from '@/Shared/MySelect.vue';
+import MyListbox from '@/Shared/MyListbox.vue';
 import MyTextInput from '@/Shared/MyTextInput.vue';
 import MyTextArea from '@/Shared/MyTextArea.vue';
 import MyButton from '@/Shared/MyButton.vue';
@@ -12,7 +12,7 @@ let props = defineProps({
     origin: String,
     itemMember: Object,
     memberId: Number,
-    items: Object,
+    items: Array,
 });
 
 let form = useForm({
@@ -23,21 +23,18 @@ let form = useForm({
 });
 
 let showDeletion = ref(false);
-let editMode = ref(false);
 
 onMounted(() => {
     if (props.itemMember !== undefined) {
-        form.item_id = String(props.itemMember.item_id)
+        form.item_id = props.itemMember.item_id;
         form.from = props.itemMember.from;
         form.to = props.itemMember.to;
         form.memo = props.itemMember.memo;
-
-        editMode.value = true;
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/members/${props.memberId}/item/${props.itemMember.id}/`);
     } else {
         form.post(`/members/${props.memberId}/item`);
@@ -49,13 +46,9 @@ let deleteItemMember = () => {
     Inertia.delete(`/members/${props.memberId}/item/${props.itemMember.id}`);
 };
 
-const title = computed(() => {
-    return editMode.value ? "Inventar bearbeiten" : "Neues Inventar";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
+const editMode = computed(() => props.itemMember !== undefined);
+const title = computed(() => editMode.value ? "Inventar bearbeiten" : "Neues Inventar");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 </script>
 
@@ -74,7 +67,7 @@ const submitButtonText = computed(() => {
                 <form @submit.prevent="submit" class="space-y-8 divide-y divide-gray-200">
                     <div class="space-y-8 divide-y divide-gray-200 my-3 mx-2">
                         <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
-                            <MySelect class="sm:col-span-4" v-model="form.item_id"
+                            <MyListbox class="sm:col-span-4" v-model="form.item_id"
                                       :error="form.errors.item_id"
                                       :options="props.items" id="item" label="Inventar" autofocus/>
                             <MyTextInput class="sm:col-span-3" v-model="form.from"

@@ -8,17 +8,18 @@ import {throttle} from "lodash";
 import MyPagination from "@/Shared/MyPagination.vue";
 import MyButton from "@/Shared/MyButton.vue";
 import MyTextInput from "@/Shared/MyTextInput.vue";
+import MyListbox from "@/Shared/MyListbox.vue";
 import MySelect from "@/Shared/MySelect.vue";
 
 let props = defineProps({
     members: Object,
     options: Object,
-    filters: Object,
+    filters: Array,
     clubAdmin: Boolean,
     currentFilter: String,
-    years: Object,
+    years: Array,
     currentYear: Number,
-    sorts: Object,
+    sorts: Array,
     currentSort: Number,
     exportFormats: Object,
 });
@@ -32,9 +33,9 @@ let exportFormat = ref('');
 
 const state = reactive({
     search: props.options.search,
-    filter: String(props.currentFilter),
-    year: String(props.currentYear),
-    sort: String(props.currentSort),
+    filter: props.currentFilter,
+    year: props.currentYear,
+    sort: props.currentSort,
 });
 
 let refresh = () => {
@@ -73,8 +74,8 @@ watch(exportFormat, (newValue) => {
             <MySelect class="sm:col-span-3" v-model="state.filter" :options="props.filters" id="quick-filters" :label="`Auswahl (${members.meta.total} Personen)`" />
             <MyTextInput class="sm:col-span-2" v-model="state.search" id="search" label="Suchen"
                    placeholder="Suchen..."/>
-            <MySelect class="sm:col-span-2" v-model="state.sort" :options="props.sorts" id="sorts" label="Sortierung"/>
-            <MySelect class="sm:col-span-1" :disabled="!yearEnabled" v-model="state.year" :options="props.years" id="years" label="Jahr" :hideDisabled="true"/>
+            <MyListbox class="sm:col-span-2" v-model="state.sort" :options="props.sorts" id="sorts" label="Sortierung"/>
+            <MyListbox class="sm:col-span-1" :disabled="!yearEnabled" v-model="state.year" :options="props.years" id="years" label="Jahr" :hideDisabled="true"/>
         </div>
 
         <div class="flex">

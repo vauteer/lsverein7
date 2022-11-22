@@ -3,36 +3,34 @@ import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm, usePage} from "@inertiajs/inertia-vue3";
 import MyTextInput from '@/Shared/MyTextInput.vue';
-import MySelect from "@/Shared/MySelect.vue";
 import MyConfirmation from "@/Shared/MyConfirmation.vue";
 import MyButton from "@/Shared/MyButton.vue";
+import MyListbox from "@/Shared/MyListbox.vue";
 
 let props = defineProps({
     origin: String,
     section: Object,
     deletable: Boolean,
-    blsvSections: Object,
+    blsvSections: Array,
 });
 
 let form = useForm({
     name: '',
     blsv_id: null,
+    person_id: null,
 });
 
 const user = computed(() => usePage().props.value.auth.user);
-let editMode = ref(false);
 
 onMounted(() => {
     if (props.section !== undefined) {
         form.name = props.section.name;
-        form.blsv_id = String(props.section.blsv_id);
-
-        editMode.value = true;
+        form.blsv_id = props.section.blsv_id;
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/sections/${props.section.id}`);
     } else {
         form.post('/sections');
@@ -45,13 +43,9 @@ let deleteEntity = () => {
     Inertia.delete(`/sections/${props.section.id}`);
 };
 
-const title = computed(() => {
-    return editMode.value ? "Abteilung bearbeiten" : "Neue Abteilung";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
+const editMode = computed(() => props.section !== undefined);
+const title = computed(() => editMode.value ? "Abteilung bearbeiten" : "Neue Abteilung");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 </script>
 
@@ -71,10 +65,10 @@ const submitButtonText = computed(() => {
                     <div class="space-y-8 divide-y divide-gray-200 my-3 mx-2">
                         <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
                             <MyTextInput class="sm:col-span-6" v-model="form.name" :error="form.errors.name"
-                                         id="name" label="Name" autofocus/>
-                            <MySelect v-if="blsvSections" class="sm:col-span-6" v-model="form.blsv_id" :error="form.errors.blsv_id"
-                                      :options="blsvSections" id="blsv-id" label="BLSV-Zuordnung"
-                                      nullValue="(BLSV-Sparte)"
+                                         id="name" label="Name" autofocus />
+                            <MyListbox v-if="blsvSections" class="sm:col-span-6" v-model="form.blsv_id" :error="form.errors.blsv_id"
+                                      :options="blsvSections" nullOption="(Keine)"
+                                       id="blsv-id" label="BLSV-Zuordnung"
                             />
                         </div>
                         <div class="py-5">

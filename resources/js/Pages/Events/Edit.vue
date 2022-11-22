@@ -17,18 +17,16 @@ let form = useForm({
 });
 
 const user = computed(() => usePage().props.value.auth.user);
-let editMode = ref(false);
+const editMode = computed(() => props.event !== undefined);
 
 onMounted(() => {
     if (props.event !== undefined) {
         form.name = props.event.name;
-
-        editMode.value = true;
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/events/${props.event.id}`);
     } else {
         form.post('/events');
@@ -41,13 +39,8 @@ let deleteEntity = () => {
     Inertia.delete(`/events/${props.event.id}`);
 };
 
-const title = computed(() => {
-    return editMode.value ? "Ereignis bearbeiten" : "Neues Ereignis";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
+const title = computed(() => editMode.value ? "Ereignis bearbeiten" : "Neues Ereignis");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 </script>
 

@@ -2,7 +2,7 @@
 import {computed, ref, onMounted} from "vue";
 import {Inertia} from "@inertiajs/inertia";
 import {useForm} from "@inertiajs/inertia-vue3";
-import MySelect from '@/Shared/MySelect.vue';
+import MyListbox from '@/Shared/MyListbox.vue';
 import MyTextInput from '@/Shared/MyTextInput.vue';
 import MyTextArea from '@/Shared/MyTextArea.vue';
 import MyButton from '@/Shared/MyButton.vue';
@@ -12,7 +12,7 @@ let props = defineProps({
     origin: String,
     eventMember: Object,
     memberId: Number,
-    events: Object,
+    events: Array,
 });
 
 let form = useForm({
@@ -22,20 +22,17 @@ let form = useForm({
 });
 
 let showDeletion = ref(false);
-let editMode = ref(false);
 
 onMounted(() => {
     if (props.eventMember !== undefined) {
-        form.event_id = String(props.eventMember.event_id)
+        form.event_id = props.eventMember.event_id;
         form.date = props.eventMember.date;
         form.memo = props.eventMember.memo;
-
-        editMode.value = true;
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/members/${props.memberId}/event/${props.eventMember.id}/`);
     } else {
         form.post(`/members/${props.memberId}/event`);
@@ -47,13 +44,9 @@ let deleteEventMember = () => {
     Inertia.delete(`/members/${props.memberId}/event/${props.eventMember.id}`);
 };
 
-const title = computed(() => {
-    return editMode.value ? "Ereignis bearbeiten" : "Neues Ereignis";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
+const editMode = computed(() => props.eventMember !== undefined);
+const title = computed(() => editMode.value ? "Ereignis bearbeiten" : "Neues Ereignis");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 </script>
 
@@ -75,7 +68,7 @@ const submitButtonText = computed(() => {
                             <MyTextInput class="sm:col-span-2" v-model="form.date"
                                          :error="form.errors.date"
                                          id="date" type="date" label="Datum" autofocus/>
-                            <MySelect class="sm:col-span-4" v-model="form.event_id"
+                            <MyListbox class="sm:col-span-4" v-model="form.event_id"
                                       :error="form.errors.event_id"
                                       :options="props.events" id="event" label="Ereignis"/>
                             <MyTextArea class="sm:col-span-6" v-model="form.memo" :error="form.errors.memo"

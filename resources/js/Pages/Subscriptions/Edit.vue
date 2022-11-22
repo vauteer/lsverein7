@@ -20,20 +20,17 @@ let form = useForm({
     memo: '',
 });
 
-let editMode = ref(false);
-
 onMounted(() => {
     if (props.subscription !== undefined) {
         form.name = props.subscription.name;
         form.amount = props.subscription.amount;
         form.transfer_text = props.subscription.transfer_text;
         form.memo = props.subscription.memo;
-        editMode.value = true;
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/subscriptions/${props.subscription.id}`);
     } else {
         form.post('/subscriptions');
@@ -46,13 +43,9 @@ let deleteEntity = () => {
     Inertia.delete(`/subscriptions/${props.subscription.id}`);
 };
 
-const title = computed(() => {
-    return editMode.value ? "Beitrag bearbeiten" : "Neuen Beitrag";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
+const editMode = computed(() => props.subscription !== undefined);
+const title = computed(() => editMode.value ? "Beitrag bearbeiten" : "Neuen Beitrag");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
 </script>
 

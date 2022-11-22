@@ -4,7 +4,7 @@ import {Inertia} from "@inertiajs/inertia";
 import { useForm, Head, Link } from "@inertiajs/inertia-vue3";
 import MyTextInput from "@/Shared/MyTextInput.vue";
 import MyCheckBox from "@/Shared/MyCheckBox.vue";
-import MySelect from "@/Shared/MySelect.vue";
+import MyListbox from "@/Shared/MyListbox.vue";
 import MyButton from "@/Shared/MyButton.vue";
 import MyImageUpload from "@/Shared/MyImageUpload.vue";
 import MyConfirmation from "@/Shared/MyConfirmation.vue";
@@ -13,7 +13,7 @@ let props = defineProps({
     origin: String,
     club: Object,
     deletable: Boolean,
-    displayStyles: Object,
+    displayStyles: Array,
 });
 
 let form = useForm({
@@ -29,7 +29,7 @@ let form = useForm({
     sepa: '',
     sepa_date: null,
     logo: '',
-    display: '1',
+    display: null,
     honor_years: '',
     use_items: false,
 });
@@ -47,17 +47,15 @@ onMounted(() => {
         form.bic = props.club.bic;
         form.sepa = props.club.sepa;
         form.sepa_date = props.club.sepa_date;
-        form.display = String(props.club.display);
+        form.display = props.club.display;
         form.logo = props.club.logo;
         form.honor_years = props.club.honor_years;
         form.use_items = Boolean(props.club.use_items)
-
-        editMode.value = true;
     }
 });
 
 let submit = () => {
-    if (editMode.value === true) {
+    if (editMode.value) {
         form.put(`/clubs/${props.club.id}`);
     } else {
         form.post('/clubs');
@@ -70,19 +68,10 @@ let deleteEntity = () => {
     Inertia.delete(`/clubs/${props.club.id}`);
 };
 
-let editMode = ref(false);
-
-const title = computed(() => {
-    return editMode.value ? "Verein bearbeiten" : "Neuer Verein";
-});
-
-const submitButtonText = computed(() => {
-    return editMode.value ? "Speichern" : "Hinzufügen";
-});
-
-const getLogoUrl = computed(() => {
-    return form.logo ? '/storage/logo/' + form.logo : null;
-})
+const editMode = computed(() => props.club !== undefined);
+const title = computed(() => editMode.value ? "Verein bearbeiten" : "Neuer Verein");
+const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
+const getLogoUrl = computed(() => form.logo ? '/storage/logo/' + form.logo : null);
 
 function onLogoChanged(filename) {
     form.logo = filename;
@@ -140,7 +129,7 @@ function back() {
                                            type='date' label="Sepa-Mandatsdatum" />
                                 <MyTextInput class="sm:col-span-6" v-model="form.honor_years" :error="form.errors.honor_years"
                                            id="honor-years" label="Ehrungen Mitgliedsjahre" placeholder="10,20,..." />
-                                <MySelect class="sm:col-span-6" v-model="form.display" :error="form.errors.display"
+                                <MyListbox class="sm:col-span-6" v-model="form.display" :error="form.errors.display"
                                           :options="props.displayStyles" id="display" label="Anzeige"/>
                                 <MyCheckBox class="sm:col-span-6" v-model="form.blsv_member" :error="form.errors.blsv_member"
                                           id="blsv-member" label="BLSV-Mitglied"/>
