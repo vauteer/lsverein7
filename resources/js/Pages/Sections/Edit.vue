@@ -68,7 +68,7 @@ const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufü
                                          id="name" label="Name" autofocus />
                             <MyListbox v-if="blsvSections" class="sm:col-span-6" v-model="form.blsv_id" :error="form.errors.blsv_id"
                                       :options="blsvSections" nullOption="(Keine)"
-                                       id="blsv-id" label="BLSV-Zuordnung"
+                                       id="blsv-id" label="BLSV-Zuordnung" lowHeight
                             />
                         </div>
                         <div class="py-5">

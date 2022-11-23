@@ -20,6 +20,14 @@ const props = defineProps({
     disabled: {
         type: [Boolean, Function]
     },
+    optionsUp: {
+        type: Boolean,
+        default: false,
+    },
+    lowHeight: {
+        type: Boolean,
+        default: false,
+    }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -62,7 +70,9 @@ onMounted(() => {
             </ListboxButton>
 
             <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
-                <ListboxOptions class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                <ListboxOptions class="absolute z-40 mt-1 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                                :class="[lowHeight ? 'max-h-28' : 'max-h-60', { 'bottom-full' : optionsUp }]"
+                >
                     <ListboxOption as="template" v-for="option in props.options" :key="option.name" :value="option.id" v-slot="{ active, selected }">
                         <li :class="[active ? 'text-white bg-indigo-600' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
                             <span :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">{{ option.name }}</span>

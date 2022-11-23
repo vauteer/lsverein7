@@ -4,7 +4,6 @@ use App\Models\Club;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 
 if (!function_exists('isCli')) {
     function isCli(): bool

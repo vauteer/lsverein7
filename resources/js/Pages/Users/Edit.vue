@@ -71,7 +71,7 @@ const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufü
                                          id="email"
                                          label="Email"/>
                             <MyListbox class="sm:col-span-6" v-model="form.role" :error="form.errors.role"
-                                      :options="props.roles" id="role" label="Rolle"/>
+                                      :options="props.roles" id="role" label="Rolle" lowHeight/>
                         </div>
                         <div class="py-5">
                             <div class="flex justify-between">
