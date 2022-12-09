@@ -42,7 +42,7 @@ let deleteEntity = () => {
     Inertia.delete(`/users/${props.user.id}`);
 };
 
-const editMode = props.user !== undefined;
+const editMode = computed(() => props.user !== undefined);
 const title = computed(() => editMode.value ? "Benutzer bearbeiten" : "Neuer Benutzer");
 const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
 
