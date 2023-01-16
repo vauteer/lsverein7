@@ -162,11 +162,8 @@ class Club extends Model
         //$totalCsv = null;
         $totalCsv = "Titel;Name;Vorname;Namenszusatz;Geschlecht;Geburtsdatum;Spartennummer\r\n";
 
-        foreach (Section::orderBy('name')->get() as $section)
+        foreach (Section::whereNotNull('blsv_id')->orderBy('blsv_id')->get() as $section)
         {
-            if ($section->blsv_id === null)
-                continue;
-
             $csv = null;
             $stat = self::getBlankStat();
             $count = 0;
@@ -194,8 +191,8 @@ class Club extends Model
 
             if ($count > 0)
             {
-                $stats[$section->id] = $stat;
-                $stats[$section->id]['name'] = $section->name;
+                $stats[$section->blsv_id] = $stat;
+                $stats[$section->blsv_id]['name'] = $section->name;
                 $filename = "BE{$year}_{$section->name}.csv";
                 $path = storage_path("downloads/{$this->id}_" . $filename);
                 $handle = fopen($path, 'w');

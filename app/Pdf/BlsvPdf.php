@@ -117,14 +117,14 @@ class BlsvPdf extends BasePdf
         $this->Cell(20, $reducedHeight, '41-60', 0, 0, 'C');
         $this->Cell(20, $reducedHeight, 'ab 61', 0, 1, 'C');
 
-        $this->Cell(5, $cellHeight, '');
+        $this->Cell(7, $cellHeight, '');
         $this->Cell(23, $cellHeight, 'Abteilung');
         for ($i = 0; $i < 7; $i++)
         {
             $this->Cell(10, $cellHeight, 'M', 0, 0, 'R');
             $this->Cell(10, $cellHeight, 'W', 0, 0, 'R');
         }
-        $this->Cell(20, $cellHeight, 'Gesamt', 0, 1, 'R');
+        $this->Cell(18, $cellHeight, 'Gesamt', 0, 1, 'R');
 
         $tmp = $this->GetY();
         $this->Line(10, $tmp, 200, $tmp);
@@ -139,7 +139,7 @@ class BlsvPdf extends BasePdf
                 $tmp = $this->GetY() + 0.2;
                 $this->Rect(10, $tmp, 190, $cellHeight - 0.2, 'F');
             }
-            $this->Cell(5, $cellHeight, $key);
+            $this->Cell(7, $cellHeight, $key);
             $this->Cell(23, $cellHeight, $stat['name']);
 
             for ($i = 0; $i < 7; $i++)
@@ -153,7 +153,7 @@ class BlsvPdf extends BasePdf
                 $this->Cell(10, $cellHeight, $maleString, 0, 0, 'R');
                 $this->Cell(10, $cellHeight, $femaleString, 0, 0, 'R');
             }
-            $this->Cell(20, $cellHeight, $sumMale + $sumFemale, 0, 1, 'R');
+            $this->Cell(18, $cellHeight, $sumMale + $sumFemale, 0, 1, 'R');
 
         }
 
