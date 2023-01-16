@@ -1,4 +1,5 @@
 <script setup>
+import {Inertia} from "@inertiajs/inertia";
 import MyButton from "@/Shared/MyButton.vue";
 
 let props = defineProps({

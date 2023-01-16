@@ -159,7 +159,8 @@ class Club extends Model
             $stats[-1][$index][$gender] += 1;
         }
 
-        $totalCsv = null;
+        //$totalCsv = null;
+        $totalCsv = "Titel;Name;Vorname;Namenszusatz;Geschlecht;Geburtsdatum;Spartennummer\r\n";
 
         foreach (Section::orderBy('name')->get() as $section)
         {
@@ -180,8 +181,8 @@ class Club extends Model
                 $line = ';' . mb_convert_encoding($member->surname, 'ISO-8859-1', 'UTF-8') . ';' .
                     mb_convert_encoding($member->first_name, 'ISO-8859-1', 'UTF-8') . ';;' .
                     $gender . ';' .
-                    $member->birthday->format('d.m.y') . ';' .
-                    $section->id . "\r\n";
+                    '"' . $member->birthday->format('d.m.y') . '";' .
+                    $section->blsv_id . "\r\n";
 
                 $csv .= $line;
                 $totalCsv .= $line;
@@ -195,7 +196,7 @@ class Club extends Model
             {
                 $stats[$section->id] = $stat;
                 $stats[$section->id]['name'] = $section->name;
-                $filename = "BE{$year}_{$section->name}.txt";
+                $filename = "BE{$year}_{$section->name}.csv";
                 $path = storage_path("downloads/{$this->id}_" . $filename);
                 $handle = fopen($path, 'w');
                 fputs($handle, $csv);
@@ -207,7 +208,7 @@ class Club extends Model
 
         if ($totalCsv)
         {
-            $filename = "BE{$year}_Gesamt.txt";
+            $filename = "BE{$year}_Gesamt.csv";
             $path = storage_path("downloads/{$this->id}_" . $filename);
             $handle = fopen($path, 'w');
             fputs($handle, $totalCsv);
