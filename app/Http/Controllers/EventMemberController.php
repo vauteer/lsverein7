@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EventMemberRequest;
 use App\Models\Member;
-use App\Models\Eventmember;
+use App\Models\EventMember;
 use App\Models\Event;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Response;
@@ -42,7 +42,7 @@ class EventMemberController extends Controller
         ]));
     }
 
-    public function update(EventMemberRequest $request, Member $member, Eventmember $eventMember): RedirectResponse
+    public function update(EventMemberRequest $request, Member $member, EventMember $eventMember): RedirectResponse
     {
         $attributes = $request->validated();
 
