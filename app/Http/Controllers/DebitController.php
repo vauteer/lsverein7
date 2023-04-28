@@ -21,7 +21,7 @@ class DebitController extends Controller
         return inertia('Debits/Index', [
             'debits' => DebitResource::collection(Debit::query()
                 ->when($request->input('search'), function($query, $search) {
-                    $query->where('name', 'like', "%{$search}%");
+                    $query->where('transfer_text', 'like', "%{$search}%");
                 })
                 ->paginate(15)
                 ->withQueryString()

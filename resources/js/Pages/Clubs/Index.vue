@@ -76,7 +76,7 @@ watch(search, throttle(function (value) {
                                     <Link :href="`/clubs/${club.id}/blsv-statistic`"
                                           method="get" as="button" class="text-blue-500"
                                     >
-                                        BLSV-Statistik
+                                        Statistik(BLSV)
                                     </Link>
                                 </td>
                                 <td class="px-3">
