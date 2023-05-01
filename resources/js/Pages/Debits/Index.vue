@@ -26,7 +26,7 @@ let showMembers = (id) => {
 };
 
 let debit = () => {
-    Inertia.post('/debits/debit', { date: date });
+    Inertia.post('/debits/debit', { date: date.value });
 }
 
 let search = ref(props.options.search);

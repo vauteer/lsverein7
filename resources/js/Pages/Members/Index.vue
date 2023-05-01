@@ -138,7 +138,7 @@ watch(exportFormat, (newValue) => {
                             <tbody class="divide-y divide-gray-200 bg-white">
                             <tr v-for="member in members.data" :key="member.id" class="text-gray-500">
                                 <td class="py-2 pl-2 pr-3 text-right sm:pl-6">
-                                    {{ member.id }}
+                                    {{ member.member_id }}
                                 </td>
                                 <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm sm:pl-6">
                                     <div class="font-bold" :class="member.isMember ? '' : 'text-gray-400' ">

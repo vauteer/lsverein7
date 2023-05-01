@@ -122,7 +122,7 @@ class Subscription extends Model
                 'amount' => $debit['amount'],
                 'instdAmt' => sprintf('%01.2f', $debit['amount']),
                 'ustrd' => $transferText,
-                'mndtId' => $member->id,
+                'mndtId' => $member->member_id,
                 'dtOfSgntr' => $dateOfSignature->format('Y-m-d'),
             ];
         }

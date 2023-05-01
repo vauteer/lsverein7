@@ -121,8 +121,13 @@ class MemberController extends Controller
         $attributes = $request->validated();
         $entryData = $request->validate($this->entryRules());
         $attributes['iban'] = normalizeIban($attributes['iban']);
+        $clubId = currentClubId();
 
-        $member = Member::create(array_merge($attributes, ['club_id' => currentClubId()]));
+        $member = Member::create(array_merge($attributes,
+            [
+                'club_id' => $clubId,
+                'member_id' => Member::where('club_id', $clubId)->max('member_id') + 1,
+            ]));
 
         $member->memberships()->attach([$member->club_id => [
             'from' => $entryData['entry_date']

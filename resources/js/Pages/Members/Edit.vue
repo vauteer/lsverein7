@@ -139,7 +139,7 @@ const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufü
                                 <MyListbox v-if="!editMode" class="sm:col-span-2" v-model="form.subscription"
                                           :error="form.errors.subscription"
                                           :options="props.subscriptions" id="subscription" label="Beitrag"
-                                          nullValue="( Ohne )"/>
+                                          nullOption="( Ohne )"/>
                                 <MyListbox class="sm:col-span-1" v-model="form.payment_method"
                                           :error="form.errors.payment_method"
                                           :options="props.paymentMethods" id="payment-method" label="Zahlweise"/>
