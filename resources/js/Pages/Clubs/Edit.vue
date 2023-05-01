@@ -71,8 +71,7 @@ let deleteEntity = () => {
 const editMode = computed(() => props.club !== undefined);
 const title = computed(() => editMode.value ? "Verein bearbeiten" : "Neuer Verein");
 const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
-const getLogoUrl = computed(() => form.logo ? '/storage/logo/' + form.logo : null);
-
+const logoUrl = computed(() => props.club?.logoUrl);
 function onLogoChanged(filename) {
     form.logo = filename;
 }
@@ -100,7 +99,7 @@ function back() {
                                 label="Logo"
                                 class="sm:col-span-2"
                                 id="logo"
-                                :image-url="getLogoUrl"
+                                :image-url="logoUrl"
                                 location="logo"
                                 resize-height="150"
                                 v-on:change="onLogoChanged"

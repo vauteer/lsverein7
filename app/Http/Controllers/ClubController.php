@@ -68,7 +68,9 @@ class ClubController extends Controller
     public function edit(Club $club):Response
     {
         return inertia('Clubs/Edit', array_merge($this->editOptions(), [
-            'club' => $club->getAttributes(),
+            'club' => array_merge($club->getAttributes(), [
+                'logoUrl' => $club->logoUrl(),
+                ]),
             'deletable' => auth()->user()->admin,
         ]));
     }
