@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/inertia-vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import MyLayout from '@/Shared/MyLayout.vue';
 import MyButton from '@/Shared/MyButton.vue';
 

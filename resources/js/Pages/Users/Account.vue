@@ -1,7 +1,6 @@
 <script setup>
-import {onMounted, computed} from "vue";
-import {useForm, Head} from "@inertiajs/inertia-vue3";
-import {Inertia} from "@inertiajs/inertia";
+import { onMounted, computed } from "vue";
+import { router, useForm, Head } from "@inertiajs/vue3";
 import MyImageUpload from "@/Shared/MyImageUpload.vue";
 import MyTextInput from "@/Shared/MyTextInput.vue";
 import MyButton from "@/Shared/MyButton.vue";
@@ -83,7 +82,7 @@ function onProfileImageChanged(filename) {
                         </div>
                         <div class="py-5">
                             <div class="flex justify-end">
-                                <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
+                                <MyButton theme="abort" @click="router.get(origin)">Abbrechen</MyButton>
                                 <MyButton type="submit" class="mx-2" :disabled="form.processing">Speichern
                                 </MyButton>
                             </div>

@@ -1,9 +1,8 @@
 <script setup>
-import {computed, ref, watch} from "vue";
-import {Head, Link, usePage} from '@inertiajs/inertia-vue3';
-import {Inertia} from "@inertiajs/inertia";
-import {PencilIcon, CheckIcon } from '@heroicons/vue/24/outline';
-import {throttle} from "lodash";
+import { computed, ref, watch } from "vue";
+import { router, Head, Link, usePage } from '@inertiajs/vue3';
+import { PencilIcon, CheckIcon } from '@heroicons/vue/24/outline';
+import { throttle } from "lodash";
 import MyButton from "@/Shared/MyButton.vue";
 import MyPagination from "@/Shared/MyPagination.vue";
 
@@ -13,12 +12,12 @@ let props = defineProps({
     canCreate: Boolean,
 });
 
-const club = computed(() => usePage().props.value.auth.club);
+const club = computed(() => usePage().props.auth.club);
 
 let search = ref(props.options.search);
 
 let showMembers = (id) => {
-    Inertia.get('/members', {
+    router.get('/members', {
             filter: `hasSection_${id}`,
         },
         {
@@ -28,7 +27,7 @@ let showMembers = (id) => {
 };
 
 watch(search, throttle(function (value) {
-    Inertia.get('/sections', {search: value}, {
+    router.get('/sections', {search: value}, {
         preserveState: true,
         replace: true,
     });
@@ -60,7 +59,7 @@ watch(search, throttle(function (value) {
                                 <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Show Members</span></th>
                                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                     <span class="sr-only">Edit</span>
-                                    <MyButton v-if="props.canCreate" @click="Inertia.get('/sections/create')">Neu</MyButton>
+                                    <MyButton v-if="props.canCreate" @click="router.get('/sections/create')">Neu</MyButton>
                                 </th>
                             </tr>
                             </thead>

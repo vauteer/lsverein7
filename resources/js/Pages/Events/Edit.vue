@@ -1,7 +1,6 @@
 <script setup>
-import {computed, ref, onMounted} from "vue";
-import {Inertia} from "@inertiajs/inertia";
-import {useForm, usePage} from "@inertiajs/inertia-vue3";
+import { computed, ref, onMounted } from "vue";
+import { router, useForm, usePage } from "@inertiajs/vue3";
 import MyTextInput from '@/Shared/MyTextInput.vue';
 import MyButton from '@/Shared/MyButton.vue';
 import MyConfirmation from "@/Shared/MyConfirmation.vue";
@@ -16,7 +15,7 @@ let form = useForm({
     name: '',
 });
 
-const user = computed(() => usePage().props.value.auth.user);
+const user = computed(() => usePage().props.auth.user);
 const editMode = computed(() => props.event !== undefined);
 
 onMounted(() => {
@@ -36,7 +35,7 @@ let submit = () => {
 let showDeletion = ref(false);
 let deleteEntity = () => {
     showDeletion.value = false;
-    Inertia.delete(`/events/${props.event.id}`);
+    router.delete(`/events/${props.event.id}`);
 };
 
 const title = computed(() => editMode.value ? "Ereignis bearbeiten" : "Neues Ereignis");
@@ -67,7 +66,7 @@ const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufü
                                 <MyButton v-if="deletable" theme="danger" @click="showDeletion = true">Löschen
                                 </MyButton>
                                 <div class="w-full flex justify-end">
-                                    <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
+                                    <MyButton theme="abort" @click="router.get(origin)">Abbrechen</MyButton>
                                     <MyButton type="submit" class="ml-2" :disabled="form.processing">
                                         {{ submitButtonText }}
                                     </MyButton>

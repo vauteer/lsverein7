@@ -1,7 +1,6 @@
 <script setup>
-import {Head, Link} from '@inertiajs/inertia-vue3';
-import {Inertia} from "@inertiajs/inertia";
-import {XMarkIcon} from '@heroicons/vue/24/outline';
+import { router, Head, Link } from '@inertiajs/vue3';
+import { XMarkIcon } from '@heroicons/vue/24/outline';
 import MyButton from "@/Shared/MyButton.vue";
 
 let props = defineProps({
@@ -107,7 +106,7 @@ let props = defineProps({
                 </dl>
             </div>
             <div class="flex justify-center border-t border-gray-200 px-4 py-4 sm:px-6">
-                <MyButton theme="abort" @click="Inertia.get(origin)">Zurück</MyButton>
+                <MyButton theme="abort" @click="router.get(origin)">Zurück</MyButton>
             </div>
         </div>
     </div>

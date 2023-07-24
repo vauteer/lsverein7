@@ -1,7 +1,6 @@
 <script setup>
-import {computed, ref, watch} from "vue";
-import {Head, Link} from '@inertiajs/inertia-vue3';
-import {Inertia} from "@inertiajs/inertia";
+import { computed, ref, watch } from "vue";
+import { router, Head, Link } from '@inertiajs/vue3';
 import {PencilIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import {throttle} from "lodash";
 import MyButton from "@/Shared/MyButton.vue";
@@ -15,7 +14,7 @@ let props = defineProps({
 
 let showMembers = (id, current) => {
     let filter = current ? `hasItem_${id}` : `everItem_${id}`
-    Inertia.get('/members', {
+    router.get('/members', {
             filter: filter,
         },
         {
@@ -27,7 +26,7 @@ let showMembers = (id, current) => {
 let search = ref(props.options.search);
 
 watch(search, throttle(function (value) {
-    Inertia.get('/items', {search: value}, {
+    router.get('/items', {search: value}, {
         preserveState: true,
         replace: true,
     });
@@ -59,7 +58,7 @@ watch(search, throttle(function (value) {
                                 <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Show Members</span></th>
                                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                     <span class="sr-only">Edit</span>
-                                    <MyButton v-if="props.canCreate" @click="Inertia.get('/items/create')">Neu</MyButton>
+                                    <MyButton v-if="props.canCreate" @click="router.get('/items/create')">Neu</MyButton>
                                 </th>
                             </tr>
                             </thead>

@@ -1,9 +1,8 @@
 <script setup>
-import {Inertia} from "@inertiajs/inertia";
-import {ref, watch} from "vue";
-import { Head, Link } from '@inertiajs/inertia-vue3';
+import { ref, watch } from "vue";
+import { router, Head, Link } from '@inertiajs/vue3';
 import { PencilIcon, StarIcon, CheckIcon, ArrowLeftOnRectangleIcon } from '@heroicons/vue/24/outline';
-import {throttle} from "lodash";
+import { throttle } from "lodash";
 import MyPagination from '@/Shared/MyPagination.vue';
 import MyButton from "@/Shared/MyButton.vue";
 
@@ -17,7 +16,7 @@ let props = defineProps({
 let search = ref(props.options.search);
 
 watch(search, throttle(function (value) {
-    Inertia.get('/users', {search: value}, {
+    router.get('/users', {search: value}, {
         preserveState: true,
         replace: true,
     });
@@ -42,7 +41,7 @@ watch(search, throttle(function (value) {
                                 <th scope="col" class="py-3.5 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Email</th>
                                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                     <span class="sr-only">Edit</span>
-                                    <MyButton v-if="props.canCreate" @click="Inertia.get('/users/create')">Neu</MyButton>
+                                    <MyButton v-if="props.canCreate" @click="router.get('/users/create')">Neu</MyButton>
                                 </th>
                             </tr>
                             </thead>

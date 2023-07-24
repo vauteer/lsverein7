@@ -1,5 +1,5 @@
 <script setup>
-import {Inertia} from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import MyButton from "@/Shared/MyButton.vue";
 
 let props = defineProps({
@@ -53,7 +53,7 @@ let props = defineProps({
             </div>
         </div>
         <div class="py-5 flex justify-end">
-            <MyButton theme="abort" @click="Inertia.get(origin)">Zurück</MyButton>
+            <MyButton theme="abort" @click="router.get(origin)">Zurück</MyButton>
         </div>
     </div>
 </template>

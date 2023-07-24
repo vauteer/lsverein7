@@ -1,7 +1,6 @@
 <script setup>
 import {computed, ref, onMounted} from "vue";
-import {Inertia} from "@inertiajs/inertia";
-import {useForm} from "@inertiajs/inertia-vue3";
+import { router, useForm } from "@inertiajs/vue3";
 import MyTextArea from '@/Shared/MyTextArea.vue';
 import MyButton from '@/Shared/MyButton.vue';
 import MyConfirmation from "@/Shared/MyConfirmation.vue";
@@ -38,7 +37,7 @@ let submit = () => {
 
 let deleteMemberSubscription = () => {
     showDeletion.value = false;
-    Inertia.delete(`/members/${props.memberId}/subscription/${props.memberSubscription.id}`);
+    router.delete(`/members/${props.memberId}/subscription/${props.memberSubscription.id}`);
 };
 
 const editMode = computed(() => props.memberSubscription !== undefined);
@@ -74,7 +73,7 @@ const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufü
                                     Löschen
                                 </MyButton>
                                 <div class="w-full flex justify-end">
-                                    <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
+                                    <MyButton theme="abort" @click="router.get(origin)">Abbrechen</MyButton>
                                     <MyButton type="submit" class="ml-2" :disabled="form.processing">
                                         {{ submitButtonText }}
                                     </MyButton>

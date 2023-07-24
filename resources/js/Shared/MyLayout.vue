@@ -1,15 +1,14 @@
 <script setup>
 import { computed } from 'vue';
-import { Inertia } from "@inertiajs/inertia";
-import { Link } from '@inertiajs/inertia-vue3';
+import { router, Link } from '@inertiajs/vue3';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { Bars3Icon, XMarkIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/outline'
-import { usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/vue3";
 
-const user = computed(() => usePage().props.value.auth.user);
-const club = computed(() => usePage().props.value.auth.club);
-const flashSuccess = computed(() => usePage().props.value.flash.success);
-const flashError = computed(() => usePage().props.value.flash.error);
+const user = computed(() => usePage().props.auth.user);
+const club = computed(() => usePage().props.auth.club);
+const flashSuccess = computed(() => usePage().props.flash.success);
+const flashError = computed(() => usePage().props.flash.error);
 
 const getNavigation = computed(() => {
     return [
@@ -24,7 +23,7 @@ const getNavigation = computed(() => {
 })
 
 let logout = () => {
-    Inertia.post("/logout");
+    router.post("/logout");
 };
 </script>
 

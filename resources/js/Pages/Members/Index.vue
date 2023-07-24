@@ -1,10 +1,9 @@
 <script setup>
-import {computed, ref, reactive, watch} from "vue";
-import {Head, Link} from '@inertiajs/inertia-vue3';
-import {Inertia} from "@inertiajs/inertia";
+import { computed, ref, reactive, watch } from "vue";
+import { router, Head, Link } from '@inertiajs/vue3';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
-import {PencilIcon, IdentificationIcon, ChevronDownIcon } from '@heroicons/vue/24/outline';
-import {throttle} from "lodash";
+import { PencilIcon, IdentificationIcon, ChevronDownIcon } from '@heroicons/vue/24/outline';
+import { throttle } from "lodash";
 import MyPagination from "@/Shared/MyPagination.vue";
 import MyButton from "@/Shared/MyButton.vue";
 import MyTextInput from "@/Shared/MyTextInput.vue";
@@ -39,7 +38,7 @@ const state = reactive({
 });
 
 let refresh = () => {
-    Inertia.get('/members', state,
+    router.get('/members', state,
         {
         preserveState: true,
         replace: true,
@@ -61,7 +60,7 @@ watch(exportFormat, (newValue) => {
     const url = `/members/${newValue}?${params}`;
     document.getElementById('export-format').value = "";
     window.open(url, '_blank');
-    // Inertia.get(url);
+    // router.get(url);
 });
 
 </script>
@@ -131,7 +130,7 @@ watch(exportFormat, (newValue) => {
                                 <th scope="col" class="px-3 py-3.5 w-6 text-center">
                                 </th>
                                 <th scope="col" class="relative pl-3 pr-2 sm:pr-2 w-6">
-                                    <MyButton v-if="clubAdmin" @click="Inertia.get('/members/create')">Neu</MyButton>
+                                    <MyButton v-if="clubAdmin" @click="router.get('/members/create')">Neu</MyButton>
                                 </th>
                             </tr>
                             </thead>

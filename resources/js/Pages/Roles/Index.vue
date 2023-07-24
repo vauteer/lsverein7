@@ -1,9 +1,8 @@
 <script setup>
-import {ref, watch} from "vue";
-import {Head, Link} from '@inertiajs/inertia-vue3';
-import {Inertia} from "@inertiajs/inertia";
-import {PencilIcon } from '@heroicons/vue/24/outline';
-import {throttle} from "lodash";
+import { ref, watch } from "vue";
+import { router, Head, Link } from '@inertiajs/vue3';
+import { PencilIcon } from '@heroicons/vue/24/outline';
+import { throttle } from "lodash";
 import MyButton from "@/Shared/MyButton.vue";
 import MyPagination from "@/Shared/MyPagination.vue";
 
@@ -15,7 +14,7 @@ let props = defineProps({
 
 let showMembers = (id, current) => {
     let filter = current ? `hasRole_${id}` : `everRole_${id}`
-    Inertia.get('/members', {
+    router.get('/members', {
             filter: filter,
         },
         {
@@ -27,7 +26,7 @@ let showMembers = (id, current) => {
 let search = ref(props.options.search);
 
 watch(search, throttle(function (value) {
-    Inertia.get('/roles', {search: value}, {
+    router.get('/roles', {search: value}, {
         preserveState: true,
         replace: true,
     });
@@ -60,7 +59,7 @@ watch(search, throttle(function (value) {
                                 <th scope="col" class="px-3 py-3.5 w-6"><span class="sr-only">Show Members</span></th>
                                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 w-6">
                                     <span class="sr-only">Edit</span>
-                                    <MyButton v-if="props.canCreate" @click="Inertia.get('/roles/create')">Neu</MyButton>
+                                    <MyButton v-if="props.canCreate" @click="router.get('/roles/create')">Neu</MyButton>
                                 </th>
                             </tr>
                             </thead>

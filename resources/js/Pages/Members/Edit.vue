@@ -1,8 +1,7 @@
 <script setup>
-import {computed, ref, onMounted} from "vue";
-import {Inertia} from "@inertiajs/inertia";
-import {useForm, Link, Head, usePage} from "@inertiajs/inertia-vue3";
-import {PencilIcon} from '@heroicons/vue/24/outline';
+import { computed, ref, onMounted } from "vue";
+import { router, useForm, Link, Head, usePage } from "@inertiajs/vue3";
+import { PencilIcon } from '@heroicons/vue/24/outline';
 import MyTextInput from "@/Shared/MyTextInput.vue";
 import MyTextArea from "@/Shared/MyTextArea.vue"
 import MyListbox from "@/Shared/MyListbox.vue";
@@ -77,11 +76,11 @@ let submit = () => {
 };
 
 let resign = () => {
-    Inertia.put(`/members/${props.member.id}/resign`, { date: resignDate.value })
+    router.put(`/members/${props.member.id}/resign`, { date: resignDate.value })
 };
 
 let resignDate = ref(props.date);
-const club = computed(() => usePage().props.value.auth.club);
+const club = computed(() => usePage().props.auth.club);
 const editMode = computed(() => props.member !== undefined);
 const title = computed(() => editMode.value ? "Mitglied bearbeiten" : "Neues Mitglied");
 const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufügen");
@@ -170,7 +169,7 @@ const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufü
                                                                 Mitgliedschaft(en)
                                                             </th>
                                                             <th scope="col" class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
-                                                                <MyButton class="py-1" @click="Inertia.get(`/members/${props.member.id}/club/create`)">
+                                                                <MyButton class="py-1" @click="router.get(`/members/${props.member.id}/club/create`)">
                                                                     Neu
                                                                 </MyButton>
                                                             </th>
@@ -218,7 +217,7 @@ const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufü
 
                                                             </th>
                                                             <th scope="col" class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
-                                                                <MyButton class="py-1" @click="Inertia.get(`/members/${props.member.id}/section/create`)">
+                                                                <MyButton class="py-1" @click="router.get(`/members/${props.member.id}/section/create`)">
                                                                     Neu
                                                                 </MyButton>
                                                             </th>
@@ -265,7 +264,7 @@ const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufü
 
                                                             </th>
                                                             <th scope="col" class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
-                                                                <MyButton class="py-1" @click="Inertia.get(`/members/${props.member.id}/subscription/create`)">
+                                                                <MyButton class="py-1" @click="router.get(`/members/${props.member.id}/subscription/create`)">
                                                                     Neu
                                                                 </MyButton>
                                                             </th>
@@ -312,7 +311,7 @@ const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufü
 
                                                             </th>
                                                             <th scope="col" class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
-                                                                <MyButton class="py-1" @click="Inertia.get(`/members/${props.member.id}/event/create`)">
+                                                                <MyButton class="py-1" @click="router.get(`/members/${props.member.id}/event/create`)">
                                                                     Neu
                                                                 </MyButton>
                                                             </th>
@@ -360,7 +359,7 @@ const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufü
                                                             </th>
                                                             <th scope="col" class="w-5 py-0 pl-3 pr-1 sm:pr-2">
                                                                 <MyButton class="py-1"
-                                                                    @click="Inertia.get(`/members/${props.member.id}/role/create`)"
+                                                                    @click="router.get(`/members/${props.member.id}/role/create`)"
                                                                 >
                                                                     Neu
                                                                 </MyButton>
@@ -409,7 +408,7 @@ const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufü
                                                             </th>
                                                             <th scope="col"
                                                                 class="relative w-5 py-0 pl-3 pr-1 sm:pr-2">
-                                                                <MyButton class="py-1" @click="Inertia.get(`/members/${props.member.id}/item/create`)">
+                                                                <MyButton class="py-1" @click="router.get(`/members/${props.member.id}/item/create`)">
                                                                     Neu
                                                                 </MyButton>
                                                             </th>
@@ -444,7 +443,7 @@ const submitButtonText = computed(() => editMode.value ? "Speichern" : "Hinzufü
                         <div class="py-5">
                             <div class="flex justify-between">
                                 <div class="w-full flex justify-end">
-                                    <MyButton theme="abort" @click="Inertia.get(origin)">Abbrechen</MyButton>
+                                    <MyButton theme="abort" @click="router.get(origin)">Abbrechen</MyButton>
                                     <MyButton type="submit" class="ml-2" :disabled="form.processing">
                                         {{ submitButtonText }}
                                     </MyButton>
