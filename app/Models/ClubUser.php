@@ -6,32 +6,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class ClubMember extends Pivot
+class ClubUser extends Pivot
 {
     use HasFactory;
 
-    protected $table = "club_member";
+    protected $table = "club_user";
     public $incrementing = true;
 
     protected $guarded = [];
-
-    protected $casts = [
-        'from' => 'date',
-        'to' => 'date',
-    ];
 
     public function club(): BelongsTo
     {
         return $this->belongsTo(Club::class);
     }
 
-    public function member(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Member::class);
+        return $this->belongsTo(User::class);
     }
 
-    public function range(): string
-    {
-        return getRange($this->from, $this->to, 'm.Y');
-    }
 }

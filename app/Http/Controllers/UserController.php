@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\ActionType;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Tracing;
 use App\Models\User;
 use App\Notifications\UserNotification;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +23,9 @@ class UserController extends Controller
 
         return inertia('Users/Index', [
             'users' => UserResource::collection(User::hasClub()
-                ->when($request->input('search'), function($query, $search) {
+                ->withRole()
+                ->withLastLoginAt()
+                ->when($request->input('search'), function ($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
                 })
                 ->paginate(10)
@@ -53,13 +57,11 @@ class UserController extends Controller
         $role = $request->validate(['role' => 'required|int'])['role'];
 
         $user = User::where('email', $attributes['email'])->first();
-        if ($user)
-        {
+        if ($user) {
             $user->clubs()->attach(currentClubId(), [
                 'role' => $role,
             ]);
-        }
-        else {
+        } else {
             $password = Str::random(8);
             Log::info("Created User {$attributes['name']} with Password {$password}");
 
@@ -111,8 +113,7 @@ class UserController extends Controller
         if ($user->clubs()->count() >= 2) {
             $user->clubs()->detach(currentClubId());
             $user->update(['club_id' => $user->clubs()->first()->id]);
-        }
-        else {
+        } else {
             $user->delete();
         }
 

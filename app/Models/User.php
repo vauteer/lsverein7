@@ -78,6 +78,34 @@ class User extends Authenticatable
         $query->whereRaw($where, [$clubId]);
     }
 
+    public function scopeWithLastLoginAt($query)
+    {
+        $query->addSelect(
+            [
+                'last_login_at' => Tracing::select('at')
+                    ->whereColumn('tracings.user_id', 'users.id')
+                    ->where('action_type', ActionType::Login)
+                    ->orderByDesc('at')
+                    ->take(1)
+            ]
+        )
+        ->withCasts(['last_login_at' => 'datetime']);
+    }
+
+    public function scopeWithRole($query, ?int $clubId = null)
+    {
+        if ($clubId === null)
+            $clubId = currentClubId();
+
+        $query->addSelect(
+            [
+                'role' => ClubUser::select('role')
+                ->where('club_id', $clubId)
+                ->whereColumn('user_id', 'users.id')
+                ->take(1)
+            ]
+        );
+    }
     public function hasAdminRights(?int $clubId = null)
     {
         return $this->clubRole($clubId) >= ClubRole::Admin->value;
@@ -97,8 +125,7 @@ class User extends Authenticatable
     {
         $clubId = $clubId ?? currentClubId();
 
-        if (!isset($this->clubRoles[$clubId]))
-        {
+        if (!isset($this->clubRoles[$clubId])) {
             $club = $this->Clubs()->where('club_id', $clubId)->first();
             $this->clubRoles[$clubId] = $club ? $club->pivot->role : -1;
         }
@@ -119,8 +146,7 @@ class User extends Authenticatable
             $path = public_path('storage/profile/' . $this->profile_image);
             if (file_exists($path)) {
                 return asset('storage/profile/' . $this->profile_image);
-            }
-            else {
+            } else {
                 $this->update(['profile_image' => null]);
             }
         }
