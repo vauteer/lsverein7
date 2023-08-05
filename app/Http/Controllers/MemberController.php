@@ -342,7 +342,8 @@ class MemberController extends Controller
                 $query->orderBy('city')->orderBy('street')->orderBy('surname')->orderBy('first_name');
                 break;
             case 3 :
-                $query->orderByRaw('MONTH(birthday)')->orderByRaw('DAY(birthday)');
+                $query->orderByRaw('date_format(birthday, "%m-%d")');
+                //$query->orderByRaw('MONTH(birthday)')->orderByRaw('DAY(birthday)');
                 break;
             case 4 :
                 $query->orderBy('birthday', 'desc');

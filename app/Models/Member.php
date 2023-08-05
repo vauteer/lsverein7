@@ -31,6 +31,13 @@ class Member extends Model
         'gender' => Gender::class,
     ];
 
+    protected static function booted()
+    {
+        static::addGlobalScope('club', function (Builder $builder) {
+            $builder->where('club_id', currentClubId());
+        });
+    }
+
     protected $appends = ['age'];
     public static ?Carbon $_keyDate = null;
 
@@ -74,14 +81,7 @@ class Member extends Model
         return in_array($years, explode(',', currentClub()->honor_years)) ? $years : 0;
     }
 
-    protected static function booted()
-    {
-        static::addGlobalScope('club', function (Builder $builder) {
-            $builder->where('club_id', currentClubId());
-        });
-    }
-
-    public function club(): BelongsTo
+        public function club(): BelongsTo
     {
         return $this->belongsTo(Club::class);
     }

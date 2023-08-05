@@ -21,7 +21,8 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'role' => ClubRole::from($this->role)->name,
-            'lastLogin' => $this->last_login_at?->format('d.m.Y H:i'),
+//            'lastLogin' => $this->last_login_at?->format('d.m.Y H:i'),
+            'lastLogin' => $this->last_login_at?->diffForHumans(),
 
             'modifiable' => $request->user()->can('update', $this->resource),
         ];

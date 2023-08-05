@@ -74,7 +74,7 @@ class User extends Authenticatable
         if ($clubId === null)
             $clubId = currentClubId();
 
-        $where = 'id in (select user_id from club_user where club_id = ?)';
+        $where = 'users.id in (select user_id from club_user where club_id = ?)';
 
         $query->whereRaw($where, [$clubId]);
     }
@@ -107,6 +107,17 @@ class User extends Authenticatable
             ]
         );
     }
+
+    public function scopeOrderByLastLogin($query)
+    {
+        $query->orderByDesc(Tracing::select('at')
+            ->whereColumn('user_id', 'users.id')
+            ->where('action_type', ActionType::Login)
+            ->latest('at')
+            ->take(1)
+        );
+    }
+
     public function hasAdminRights(?int $clubId = null)
     {
         return $this->clubRole($clubId) >= ClubRole::Admin->value;

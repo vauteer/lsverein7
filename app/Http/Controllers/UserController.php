@@ -22,12 +22,14 @@ class UserController extends Controller
         $this->setLastUrl();
 
         return inertia('Users/Index', [
-            'users' => UserResource::collection(User::hasClub()
+            'users' => UserResource::collection(User::query()
+                ->hasClub()
                 ->withRole()
                 ->withLastLoginAt()
                 ->when($request->input('search'), function ($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
                 })
+                ->orderByLastLogin()
                 ->paginate(10)
                 ->withQueryString()
             ),
