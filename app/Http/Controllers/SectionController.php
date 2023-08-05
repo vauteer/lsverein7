@@ -17,6 +17,7 @@ class SectionController extends Controller
 
         return inertia('Sections/Index', [
             'sections' => SectionResource::collection(Section::query()
+                ->withCount('members')
                 ->when($request->input('search'), function($query, $search) {
                     $query->where('name', 'like', "%{$search}%");
                 })

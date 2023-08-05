@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class Member extends Model
 {
@@ -49,10 +50,10 @@ class Member extends Model
     public function age(): Attribute
     {
         return new Attribute(
-            get: function() {
+            get: function () {
                 $keyDate = $this->gone() ? $this->death_day : self::getKeyDate() ?? now();
                 return $this->birthday->diffInYears($keyDate);
-                },
+            },
         );
     }
 
@@ -70,7 +71,7 @@ class Member extends Model
     public function dueHonor(): int
     {
         $years = $this->membershipYears();
-        return in_array($years, explode(',',currentClub()->honor_years)) ? $years : 0;
+        return in_array($years, explode(',', currentClub()->honor_years)) ? $years : 0;
     }
 
     protected static function booted()
@@ -187,7 +188,7 @@ class Member extends Model
 
             $to = $keyDate->min($pivot->to);
 
-            // grobe Berechnung
+            // roughly calculation
             $years += $to->year - $pivot->from->year;
         }
 
@@ -240,21 +241,31 @@ class Member extends Model
         return join('|', $subscriptions);
     }
 
-    public function scopeMembers($query, ?Carbon $keyDate = null, bool $isMember = true)
+    public static function memberIds(?Carbon $keyDate = null,)
     {
         if ($keyDate === null)
             $keyDate = self::getKeyDate();
 
-        $where = $isMember ? 'id in' : 'id not in';
-        $where .= ' (select p.id from members p join club_member m on p.id = m.member_id ' .
-            'where (p.death_day is null or p.death_day > ?) and (m.from <= ? and (m.to is null or m.to >= ?)))';
+        return DB::table('members')->join('club_member', 'members.id', '=', 'club_member.member_id')
+            ->where('members.club_id', currentClubId())
+            ->where(function ($query) use ($keyDate) {
+                $query->whereNull('members.death_day')->orWhere('members.death_day', '>', $keyDate);
+            })
+            ->where('club_member.from', '<=', $keyDate)
+            ->where(function ($query) use ($keyDate) {
+                $query->whereNull('club_member.to')->orWhere('club_member.to', '>=', $keyDate);
+            })
+            ->pluck('members.id');
+    }
 
-        $query->whereRaw($where, [$keyDate, $keyDate, $keyDate]);
+    public function scopeMembers($query, ?Carbon $keyDate = null, bool $isMember = true)
+    {
+        $query->whereIn('id', self::memberIds($keyDate));
     }
 
     public function scopeNoMembers($query, ?Carbon $keyDate = null)
     {
-        $this->scopeMembers($query, $keyDate, false);
+        $query->whereNotIn('id', self::memberIds($keyDate));
     }
 
     public function scopeInSections($query, array|int $sections, ?Carbon $keyDate = null)
@@ -264,11 +275,19 @@ class Member extends Model
 
         $sections = Arr::wrap($sections);
 
-        $where = 'id in (select distinct(p.id) from members p join member_section m on p.id = m.member_id ' .
-            'where (m.section_id in (' . join(', ',$sections) .')) and (p.death_day is null or p.death_day > ?) and ' .
-            '(m.from <= ? and (m.to is null or m.to >= ?)))';
-
-        $query->whereRaw($where, [$keyDate, $keyDate, $keyDate]);
+        $query->whereIn('id', DB::table('members')
+            ->join('member_section', 'members.id', '=', 'member_section.member_id')
+            ->where('members.club_id', currentClubId())
+            ->where(function ($query) use ($keyDate) {
+                $query->whereNull('members.death_day')->orWhere('members.death_day', '>', $keyDate);
+            })
+            ->whereIn('member_section.section_id', $sections)
+            ->where('member_section.from', '<=', $keyDate)
+            ->where(function ($query) use ($keyDate) {
+                $query->whereNull('member_section.to')->orWhere('member_section.to', '>=', $keyDate);
+            })
+            ->pluck('members.id')
+        );
     }
 
     public function scopeInBlsvSections($query, array|int $sections, ?Carbon $keyDate = null)
@@ -278,12 +297,20 @@ class Member extends Model
 
         $sections = Arr::wrap($sections);
 
-        $where = 'id in (select distinct(p.id) from members p join member_section m on p.id = m.member_id ' .
-            'join sections s on s.id = m.section_id ' .
-            'where (s.blsv_id in (' . join(', ',$sections) .')) and (p.death_day is null or p.death_day > ?) and ' .
-            '(m.from <= ? and (m.to is null or m.to >= ?)))';
-
-        $query->whereRaw($where, [$keyDate, $keyDate, $keyDate]);
+        $query->whereIn('id', DB::table('members')
+            ->join('member_section', 'members.id', '=', 'member_section.member_id')
+            ->join('sections', 'sections.id', '=', 'member_section.section_id')
+            ->where('members.club_id', currentClubId())
+            ->where(function ($query) use ($keyDate) {
+                $query->whereNull('members.death_day')->orWhere('members.death_day', '>', $keyDate);
+            })
+            ->whereIn('sections.blsv_id', $sections)
+            ->where('member_section.from', '<=', $keyDate)
+            ->where(function ($query) use ($keyDate) {
+                $query->whereNull('member_section.to')->orWhere('member_section.to', '>=', $keyDate);
+            })
+            ->pluck('members.id')
+        );
     }
 
     public function scopeAgeRange($query, ?int $from, ?int $to)
@@ -311,7 +338,8 @@ class Member extends Model
         if ($year === null)
             $year = self::getKeyDate()->year;
 
-        $query->whereRaw('id in (select member_id from club_member where (YEAR(`from`) = ?))', [$year]);
+        $query->whereIn('id', ClubMember::whereRaw('YEAR(`from`) = ?', [$year])
+            ->pluck('member_id'));
     }
 
     public function scopeRetired($query, ?int $year = null)
@@ -319,7 +347,8 @@ class Member extends Model
         if ($year === null)
             $year = self::getKeyDate()->year;
 
-        $query->whereRaw('id in (select member_id from club_member where (YEAR(`to`) = ?))', [$year]);
+        $query->whereIn('id', ClubMember::whereRaw('YEAR(`to`) = ?', $year)
+            ->pluck('member_id'));
     }
 
     public function scopeDead($query, ?int $year = null)
@@ -347,15 +376,11 @@ class Member extends Model
         if ($keyDate === null)
             $keyDate = self::getKeyDate();
 
-        $where = '`id` in (select distinct(`member_id`) from `event_member` where (`date` < ?)';
-
-        if ($id) {
-            $where .= " and (event_id = {$id})";
-        }
-
-        $where .= ')';
-
-        $query->whereRaw($where, [$keyDate]);
+        $query->whereIn('id', EventMember::where('date', '<', $keyDate)
+            ->when($id, function ($query, $id) {
+                $query->where('event_id', $id);
+            })->pluck('member_id')
+        );
     }
 
     public function scopeHasRole($query, int|null $id = null, ?Carbon $keyDate = null)
@@ -363,16 +388,14 @@ class Member extends Model
         if ($keyDate === null)
             $keyDate = self::getKeyDate();
 
-        $where = 'id in (select distinct(p.member_id) from member_role p ' .
-            'where (`from` < ?) and (`to` is null or `to` > ?)';
-
-        if ($id) {
-            $where .= " and (p.role_id = {$id})";
-        }
-
-        $where .= ')';
-
-        $query->whereRaw($where, [$keyDate, $keyDate]);
+        $query->whereIn('id', MemberRole::where('from', '<', $keyDate)
+            ->where(function ($query) use ($keyDate) {
+                $query->whereNull('to')->orWhere('to', '>', $keyDate);
+            })
+            ->when($id, function ($query, $id) {
+                $query->where('role_id', $id);
+            })
+            ->pluck('member_id'));
     }
 
     public function scopeEverRole($query, int|null $id = null, ?Carbon $keyDate = null)
@@ -380,16 +403,10 @@ class Member extends Model
         if ($keyDate === null)
             $keyDate = self::getKeyDate();
 
-        $where = 'id in (select distinct(p.member_id) from member_role p ' .
-            'where (`from` < ?)';
-
-        if ($id) {
-            $where .= " and (p.role_id = {$id})";
-        }
-
-        $where .= ')';
-
-        $query->whereRaw($where, [$keyDate]);
+        $query->whereIn('id', MemberRole::where('from', '<', $keyDate)
+            ->when($id, function ($query, $id) {
+                $query->where('role_id', $id);
+            })->pluck('member_id'));
     }
 
     public function scopeHasItem($query, int|null $id = null, ?Carbon $keyDate = null)
@@ -397,16 +414,14 @@ class Member extends Model
         if ($keyDate === null)
             $keyDate = self::getKeyDate();
 
-        $where = 'id in (select distinct(p.member_id) from item_member p ' .
-            'where (`from` < ?) and (`to` is null or `to` > ?)';
-
-        if ($id) {
-            $where .= " and (p.item_id = {$id})";
-        }
-
-        $where .= ')';
-
-        $query->whereRaw($where, [$keyDate, $keyDate]);
+        $query->whereIn('id', ItemMember::where('from', '<', $keyDate)
+            ->where(function ($query) use ($keyDate) {
+                $query->whereNull('to')->orWhere('to', '>', $keyDate);
+            })
+            ->when($id, function ($query, $id) {
+                $query->where('item_id', $id);
+            })
+            ->pluck('member_id'));
     }
 
     public function scopeEverItem($query, int|null $id = null, ?Carbon $keyDate = null)
@@ -414,35 +429,28 @@ class Member extends Model
         if ($keyDate === null)
             $keyDate = self::getKeyDate();
 
-        $where = 'id in (select distinct(p.member_id) from item_member p ' .
-            'where (`from` < ?)';
-
-        if ($id) {
-            $where .= " and (p.item_id = {$id})";
-        }
-
-        $where .= ')';
-
-        $query->whereRaw($where, [$keyDate]);
+        $query->whereIn('id', ItemMember::where('from', '<', $keyDate)
+            ->when($id, function ($query, $id) {
+                $query->where('item_id', $id);
+            })->pluck('member_id'));
     }
 
-    public function scopeHasSubscription($query, null|string|array $subscriptionTypes = null, bool $reverse = false)
+    public function scopeHasSubscription($query, null|string|array $subscriptionTypes = null)
     {
-        $where = $reverse ? 'id not in ' : 'id in ';
-        $where .= '(select distinct(p.member_id) from member_subscription p ';
-
-        if ($subscriptionTypes) {
-            $subscriptionTypes = Arr::wrap($subscriptionTypes);
-            $where .= 'where p.subscription_id in (' . join(', ', $subscriptionTypes) . ')';
-        }
-        $where .= ')';
-
-        $query->whereRaw($where);
+        $query->whereIn('id', MemberSubscription::when($subscriptionTypes,
+            function ($query, $subscriptionTypes) {
+                $subscriptionTypes = Arr::wrap($subscriptionTypes);
+                $query->whereIn('subscription_id', $subscriptionTypes);
+            })->pluck('member_id'));
     }
 
     public function scopeNoSubscription($query, null|string|array $subscriptionTypes = null)
     {
-        $this->scopeHasSubscription($query, $subscriptionTypes, true);
+        $query->whereNotIn('id', MemberSubscription::when($subscriptionTypes,
+            function ($query, $subscriptionTypes) {
+                $subscriptionTypes = Arr::wrap($subscriptionTypes);
+                $query->whereIn('subscription_id', $subscriptionTypes);
+            })->pluck('member_id'));
     }
 
     public function scopeDueHonor($query, ?Carbon $keyDate = null)
@@ -454,17 +462,16 @@ class Member extends Model
         if ($honorYears === null)
             return;
 
-        $where = 'id in (SELECT p.member_id FROM club_member p ' .
-            'GROUP BY member_id HAVING SUM(YEAR(LEAST(IFNULL(`to`, ?), ?)) - YEAR(`from`)) IN (' .
-            $honorYears . '))';
-
-        $query->whereRaw($where, [$keyDate, $keyDate]);
+        $query->whereIn('id',
+            ClubMember::groupBy('member_id') // add if member has several memberships
+            ->havingRaw("SUM(YEAR(LEAST(IFNULL(`to`, ?), ?)) - YEAR(`from`)) IN ($honorYears)",
+                [$keyDate, $keyDate])->pluck('member_id'));
     }
 
     public function scopeLike($query, string $like)
     {
         $like = '%' . $like . '%';
-        $query->where(function($query) use ($like) {
+        $query->where(function ($query) use ($like) {
             $query->where('first_name', 'like', $like)
                 ->orWhere('surname', 'like', $like)
                 ->orWhere('street', 'like', $like)

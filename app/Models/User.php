@@ -6,6 +6,7 @@ namespace App\Models;
 use App\ActionType;
 use App\ClubRole;
 use App\Mail\MarkDownMail;
+use App\Models\Scopes\WithRoleScope;
 use App\Notifications\InvoicePaid;
 use App\Notifications\UserNotification;
 use Carbon\Carbon;
