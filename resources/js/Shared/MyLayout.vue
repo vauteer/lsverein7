@@ -149,7 +149,7 @@ let logout = () => {
                                           class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
                             Backups
                         </DisclosureButton>
-                        <DisclosureButton v-if="user.admin" as="a" :href="route('export')"
+                        <DisclosureButton v-if="user.admin" as="a" :href="route('export.club')"
                                           class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
                             Export
                         </DisclosureButton>
