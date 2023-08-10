@@ -7,6 +7,7 @@ use App\Http\Controllers\ClubMemberController;
 use App\Http\Controllers\DebitController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventMemberController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemMemberController;
 use App\Http\Controllers\MemberController;
@@ -183,6 +184,9 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/members/{member}/role/{memberRole}/edit', [MemberRoleController::class, 'edit'])->can('update', 'member');
     Route::put('/members/{member}/role/{memberRole}', [MemberRoleController::class, 'update'])->can('update', 'member');
     Route::delete('/members/{member}/role/{memberRole}', [MemberRoleController::class, 'destroy'])->can('update', 'member');
+
+    Route::get('/exportclub', [ExportController::class, 'exportClub'])->can('download', Club::class)
+    ->name('export.club');;
 });
 
 require __DIR__.'/auth.php';
