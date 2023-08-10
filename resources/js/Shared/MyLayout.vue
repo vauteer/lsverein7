@@ -87,10 +87,10 @@ let logout = () => {
                                             </Link>
                                         </MenuItem>
                                         <MenuItem v-if="user.admin" v-slot="{ active, close }">
-                                            <Link :href="route('export.club')" preserve-state @click="close"
+                                            <a :href="route('export.club')" preserve-state @click="close"
                                                   :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
                                                 Export
-                                            </Link>
+                                            </a>
                                         </MenuItem>
                                         <MenuItem v-slot="{ active, close }">
                                             <Link :href="route('account.edit')" preserve-state @click="close"
@@ -148,10 +148,6 @@ let logout = () => {
                         <DisclosureButton v-if="user.admin" as="a" :href="route('backups')"
                                           class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
                             Backups
-                        </DisclosureButton>
-                        <DisclosureButton v-if="user.admin" as="a" :href="route('export.club')"
-                                          class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
-                            Export
                         </DisclosureButton>
                         <DisclosureButton as="a" :href="route('account.edit')"
                                           class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">

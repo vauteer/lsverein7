@@ -26,10 +26,10 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ExportController extends Controller
 {
-    public function exportClub():BinaryFileResponse
+    public function exportClub()
     {
         $club = currentClub();
-        $path = storage_path('exports/' . 'exportClub_' . $club->id . '.sql');
+        $path = storage_path('exports/' . 'export_club_' . $club->id . '.sql');
 
         $handle = fopen($path, 'w');
         set_time_limit(120);
