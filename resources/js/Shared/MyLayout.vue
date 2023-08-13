@@ -86,7 +86,7 @@ let logout = () => {
                                                 Backups
                                             </Link>
                                         </MenuItem>
-                                        <MenuItem v-if="user.admin" v-slot="{ active, close }">
+                                        <MenuItem v-if="user.clubAdmin" v-slot="{ active, close }">
                                             <a :href="route('export.club')" preserve-state @click="close"
                                                   :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
                                                 Export

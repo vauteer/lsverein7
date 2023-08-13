@@ -39,7 +39,7 @@ class ExportController extends Controller
 
         fclose($handle);
 
-        return response()->download($path, 'lsverein_' . Carbon::now()->format('Ymd') . '.sql');
+        return response()->download($path, 'lsverein7_export_' . Carbon::now()->format('Ymd') . '.sql');
     }
 
     private function writeHead($handle)
@@ -62,6 +62,7 @@ class ExportController extends Controller
             ->orderBy('id'))
             ->write($handle);
         SqlConverter::fromBuilder(Club::where('id', $club->id))
+            ->cast('sepa_date', 'date')
             ->write($handle);
         SqlConverter::fromBuilder(ClubUser::where('club_id', $club->id)
         ->orderBy('id'))
@@ -90,7 +91,9 @@ class ExportController extends Controller
         SqlConverter::fromBuilder(Item::where('club_id', $club->id)->orderBy('id'))
             ->write($handle);
         SqlConverter::fromBuilder(ItemMember::whereIn('member_id', $memberIds))
-        ->write($handle);
+            ->cast('from', 'date')
+            ->cast('to', 'date')
+            ->write($handle);
         SqlConverter::fromBuilder(Role::where('club_id', $club->id)->orderBy('id'))
             ->write($handle);
         SqlConverter::fromBuilder(MemberRole::whereIn('member_id', $memberIds))
@@ -100,7 +103,7 @@ class ExportController extends Controller
         SqlConverter::fromBuilder(Subscription::where('club_id', $club->id)->orderBy('id'))
             ->write($handle);
         SqlConverter::fromBuilder(MemberSubscription::whereIn('member_id', $memberIds))
-        ->write($handle);
+            ->write($handle);
     }
 
 }

@@ -15,8 +15,6 @@ class SqlConverter
     private array $values = [];
     private array $closures = [];
     private array $casts = [];
-    private bool $eloquent = false;
-
     private Builder|null $query = null;
     private int $rowCount = 0;
 
@@ -24,7 +22,6 @@ class SqlConverter
     {
         $instance = new SqlConverter();
         $instance->query = $query;
-        $instance->eloquent = true;
         $item = $query->clone()->first();
         $instance->tableName = $query->getModel()->getTable();
         if ($item === null)
@@ -48,16 +45,16 @@ class SqlConverter
         $result = "TRUNCATE `$this->tableName`;" . PHP_EOL;
         if ($this->rowCount > 0) {
             $result .= "INSERT INTO `$this->tableName` (";
+            $columnNames = array();
 
             foreach ($this->columns as $column) {
                 $columnName = isset($this->mappings[$column]) ? $this->mappings[$column] : $column;
-                $result .= "`$columnName`, ";
+                $columnNames[] = $this->query->getGrammar()->wrap($columnName);
             }
-
-            $result = rtrim($result, ", ") . ") VALUES";
+            $result .= join(', ', $columnNames) . ") VALUES";
         }
 
-        return rtrim($result, ", ");
+        return $result;
     }
 
     /**
@@ -67,23 +64,17 @@ class SqlConverter
     function getSql(mixed $row): string
     {
         $rowSql = PHP_EOL . "(";
+        $values = array();
         foreach ($this->columns as $column) {
             if (isset($this->closures[$column])) {
                 $value = $this->closures[$column]($row);
             } else {
-                if ($this->eloquent) {
-                    $value = $this->values[$column] ?? $row->getAttribute($column);
-                } else {
-                    $value = $this->values[$column] ?? $row->$column;
-                }
+                $value = $this->values[$column] ?? $row->getAttribute($column);
             }
 
             if (isset($this->casts[$column])) {
                 $type = $this->casts[$column];
                 switch ($type) {
-                    case "bool" :
-                        $value = Str::StartsWith($value, 'T') ? 1 : 0;
-                        break;
                     case "date":
                         if ($value)
                             $value = (new Carbon($value))->format('Y-m-d');
@@ -103,18 +94,20 @@ class SqlConverter
 
             switch (gettype($value)) {
                 case "NULL":
-                    $rowSql .= "NULL, ";
+                    $values[] = "NULL";
                     break;
                 case "string":
-                    $value = trim($value);
-                    $rowSql .= "'" . str_replace("'", "\'", $value) . "', ";
+                    $values[] = "'" . str_replace("'", "\'", trim($value)) . "'";
+                    break;
+                case "boolean":
+                    $values[] = $value ? '1' : '0';
                     break;
                 default:
-                    $rowSql .= "$value, ";
+                    $values[] = $value;
             }
         }
 
-        return rtrim($rowSql, ", ") . "), ";
+        return $rowSql . join(', ', $values). "), ";
     }
 
     private function getValues(): string
