@@ -1,8 +1,7 @@
-## About LS-Verein 7
+## Über LS-Verein 7
 
 'LS-Verein 7' ist eine übersichtliche Webanwendung 
 mit der man die Mitglieder eines Vereins verwalten kann.
-
 Es ist eine 'Single-Page-Application' und kann per Browser von verschiedenen Endgeräten benutzt werden.
 ### Enthaltene Funktionen:
 - Eingabe der Stammdaten
@@ -26,11 +25,10 @@ Es ist eine 'Single-Page-Application' und kann per Browser von verschiedenen End
 ## Installation
 1. Das Projekt clonen/installieren
 2. In das Projekt-Verzeichnis wechseln
-2. Die Konfigurations-Datei erzeugen<br>cp .env.example .env
-3. php artisan key:generate
-4. composer install --optimize-autoloader --no-dev
-5. php artisan config:cache
-6. Eine leere MySQL Datenbank erzeugen
+3. Die Konfigurations-Datei erzeugen<br>cp .env.example .env
+1. composer install --optimize-autoloader --no-dev
+4. php artisan key:generate
+5. Eine leere MySQL Datenbank erzeugen
 7. Die Konfigurations-Datei anpassen (Datenbank, Titel, ...)
 8. php artisan migrate
 9. Einen Administrator anlegen<br>php artisan app:user 'Max Mustermann' 'max@mustermann.de' --password=******** --admin
