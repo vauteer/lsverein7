@@ -38,7 +38,7 @@ class HandleInertiaRequests extends Middleware
         $user = Auth::user();
 
         if ($user && $user->club_id === null) {
-            $user->update(['club_id' => $user->clubs()->first()->id]);
+            $user->update(['club_id' => $user->clubs()->first()?->id]);
         }
 
         $club = $user?->club;
