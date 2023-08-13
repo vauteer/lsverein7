@@ -54,7 +54,7 @@ class SqlConverter
                 $result .= "`$columnName`, ";
             }
 
-            $result .= ") VALUES";
+            $result = rtrim($result, ", ") . ") VALUES";
         }
 
         return rtrim($result, ", ");
