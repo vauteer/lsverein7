@@ -5,6 +5,9 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 
+const SEPA_REGEX = "/^[a-zA-Z0-9?:()+, \/\.\-]*$/";
+const BIC_REGEX = "/^[A-Z]{6}[0-9A-Z]{2}([0-9A-Z]{3})?$/";
+
 if (!function_exists('isCli')) {
     function isCli(): bool
     {

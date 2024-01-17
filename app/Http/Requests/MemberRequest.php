@@ -37,9 +37,9 @@ class MemberRequest extends FormRequest
             'phone' => 'nullable|string',
             'payment_method' => 'required',
             'bank' => 'nullable|string|required_if:payment_method,k',
-            'account_owner' => 'nullable|string|required_if:payment_method,k',
+            'account_owner' => 'nullable|regex:' . SEPA_REGEX . '|required_if:payment_method,k',
             'iban' => ['nullable', 'required_if:payment_method,k', new Iban()],
-            'bic' => 'nullable|regex:/^[A-Z]{6}[0-9A-Z]{2}([0-9A-Z]{3})?$/|required_if:payment_method,k',
+            'bic' => 'nullable|regex:' . BIC_REGEX . '|required_if:payment_method,k',
             'memo' => 'nullable|string',
         ];
     }

@@ -33,7 +33,7 @@ class SubscriptionRequest extends FormRequest
                     ->ignore($this->subscription?->id),
             ],
             'amount' => 'numeric|min:0',
-            'transfer_text' => 'required|string',
+            'transfer_text' => 'required|regex:/^[a-zA-Z0-9:()+<>, \/\.\-]*$/',
             'memo' => 'nullable|string',
         ];
     }

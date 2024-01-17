@@ -27,7 +27,8 @@ class SectionRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                'string',
+                // don't allow characters that can make proplems within a path
+                'regex:/^[a-zA-Z0-9öäüß?()+,\- ]*$/',
                 Rule::unique('sections')
                     ->where(fn ($query) => $query->where('club_id', currentClubId()))
                     ->ignore($this->section?->id),

@@ -28,7 +28,7 @@ class ClubRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                'string',
+                'regex:' . SEPA_REGEX,
                 Rule::unique('clubs')->ignore($this->club?->id),
             ],
             'street' => 'required|string',
