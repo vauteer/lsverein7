@@ -224,14 +224,11 @@ class MemberController extends Controller
     private function availableYears(): array
     {
         $now = now();
-//        $result[$now->year] = formatDate($now);
-        $result[$now->year] = $now->format('Y');
 
-        $lastYear = $now->year - 1;
-        $firstYear = $lastYear - 9;
+        $lastYear = $now->year;
+        $firstYear = $lastYear - 10;
 
         for ($i = $lastYear; $i > $firstYear; $i--) {
-//            $result[$i] = "31.12.{$i}";
             $result[$i] = "{$i}";
         }
 
@@ -244,7 +241,8 @@ class MemberController extends Controller
         $result['search'] = $request->input('search', '');
         $result['sort'] = intval($request->input('sort', 1));
         $result['year'] = intval($request->input('year', now()->year));
-        $result['keyDate'] = Carbon::create($result['year'], 12, 31, 23, 59, 59)->min(now());
+        $result['keyDate'] = Carbon::create($result['year'], 12, 31, 23, 59, 59)
+            ->min(now()); // future is not (yet) allowed
         Member::$_keyDate = $result['keyDate'];
 
         $query = Member::query()->with(['memberships', 'events', 'sections', 'subscriptions', 'roles']);
