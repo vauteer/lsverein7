@@ -225,7 +225,7 @@ class MemberController extends Controller
     {
         $now = now();
 
-        $lastYear = $now->year;
+        $lastYear = $now->year + 1;
         $firstYear = $lastYear - 10;
 
         for ($i = $lastYear; $i > $firstYear; $i--) {
@@ -237,12 +237,13 @@ class MemberController extends Controller
 
     private function currentSelection(Request $request): array
     {
+        $now = now();
         $result['filter'] = $request->input('filter', "1");
         $result['search'] = $request->input('search', '');
         $result['sort'] = intval($request->input('sort', 1));
-        $result['year'] = intval($request->input('year', now()->year));
-        $result['keyDate'] = Carbon::create($result['year'], 12, 31, 23, 59, 59)
-            ->min(now()); // future is not (yet) allowed
+        $result['year'] = intval($request->input('year', $now->year));
+        $result['keyDate'] = $result['year'] === now()->year ? $now :
+            Carbon::create($result['year'], 12, 31, 23, 59, 59);
         Member::$_keyDate = $result['keyDate'];
 
         $query = Member::query()->with(['memberships', 'events', 'sections', 'subscriptions', 'roles']);
