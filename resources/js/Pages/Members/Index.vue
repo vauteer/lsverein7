@@ -143,7 +143,7 @@ watch(exportFormat, (newValue) => {
                                     <div class="font-bold" :class="member.isMember ? '' : 'text-gray-400' ">
                                         {{ member.surname }} {{ member.first_name}} <span v-if="member.gone">†</span>
                                     </div>
-                                    <div>{{ member.birthday }} {{ member.age }} <span v-if="clubAdmin">/ {{ member.membershipYears }}</span> Jahre</div>
+                                    <div>{{ member.birthday }} {{ member.age }} <span>/ {{ member.membershipYears }}</span> Jahre</div>
                                 </td>
                                 <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm sm:pl-6 hidden md:table-cell">
                                     <div>{{ member.sections }} {{ member.roles }}</div>
