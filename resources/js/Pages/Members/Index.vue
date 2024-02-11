@@ -69,7 +69,7 @@ watch(exportFormat, (newValue) => {
     <Head title="Mitglieder"/>
     <div
         class="w-full max-w-4xl mx-auto bg-gray-100 text-gray-900 text-sm sm:rounded sm:border sm:shadow sm:overflow-hidden mt-2 px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-8 py-2 mt-2">
+        <div class="grid grid-cols-1 gap-y-4 gap-x-2 sm:grid-cols-8 py-2 mt-2">
             <MySelect class="sm:col-span-3" v-model="state.filter" :options="props.filters" id="quick-filters" :label="`Auswahl (${members.meta.total} Personen)`" />
             <MyTextInput class="sm:col-span-2" v-model="state.search" id="search" label="Suchen"
                    placeholder="Suchen..."/>

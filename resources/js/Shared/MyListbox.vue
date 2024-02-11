@@ -60,7 +60,7 @@ onMounted(() => {
         :modelValue="modelValue"
         @update:modelValue="value => emit('update:modelValue', value)">
         <ListboxLabel v-if="label" class="block text-sm font-medium text-gray-700 ml-2">{{ label }}</ListboxLabel>
-        <div class="relative mt-1">
+        <div class="relative">
             <ListboxButton class="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm" :id="id">
                 <span class="block truncate" v-if="buttonText">{{ buttonText }}</span>
                 <span v-else class="text-gray-500">{{ placeholder }}</span>
