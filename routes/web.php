@@ -71,7 +71,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/users/{user}', [UserController::class, 'destroy'])
         ->can('delete', 'user');
     Route::post('/users/{user}/login', [UserController::class, 'loginAs'])
-        ->can('create', 'user');
+        ->can('root', User::class);
+    Route::get('/show-log', [UserController::class, 'showLog'])
+        ->can('root', User::class);
 
     Route::get('/backups', [BackupController::class, 'index'])
         ->can('view', Backup::class)

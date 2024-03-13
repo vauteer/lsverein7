@@ -73,4 +73,8 @@ class UserPolicy
         return $user->hasAdminRights();
     }
 
+    public function root(User $user)
+    {
+        return $user->admin;
+    }
 }
