@@ -125,7 +125,7 @@ class Backup
                 'carbon' => $date,
                 'date' => $date->format('Y-m-d H:i:s'),
                 'filename' => basename($filename),
-                'age' => $now->diffInMinutes($date),
+                'age' => (int)$now->diffInMinutes($date),
             ];
         }
 

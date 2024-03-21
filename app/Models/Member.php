@@ -51,7 +51,7 @@ class Member extends Model
 
 //    public function getAgeAttribute()
 //    {
-//        return now()->diffInYears($this->birthday);
+//        return now()->(int)diffInYears($this->birthday);
 //    }
 //
     public function age(): Attribute
@@ -59,7 +59,7 @@ class Member extends Model
         return new Attribute(
             get: function () {
                 $keyDate = $this->gone() ? $this->death_day : self::getKeyDate() ?? now();
-                return $this->birthday->diffInYears($keyDate);
+                return (int)$this->birthday->diffInYears($keyDate);
             },
         );
     }
