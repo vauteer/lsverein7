@@ -216,6 +216,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/members/pdf', [MemberController::class, 'exportPdf'])
         ->can('viewAny', Member::class)
         ->name('members.pdf');
+    Route::get('/members/pdf-roles', [MemberController::class, 'exportRolesPdf'])
+        ->can('viewAny', Member::class)
+        ->name('members.pdf');
     Route::get('/members/csv', [MemberController::class, 'exportCsv'])
         ->can('viewAny', Member::class)
         ->name('members.csv');

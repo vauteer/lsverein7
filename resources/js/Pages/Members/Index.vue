@@ -83,7 +83,7 @@ watch(exportFormat, (newValue) => {
             <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="min-w-full py-2 align-middle md:px-6 lg:px-8">
                     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-300">
+                        <table class="min-w-full min-h-72 divide-y divide-gray-300">
                             <thead class="bg-gray-50">
                             <tr class="font-semibold text-gray-900">
                                 <th scope="col" class="w-5 py-3.5 pl-2 pr-3 sm:pl-6 text-right">
@@ -101,22 +101,28 @@ watch(exportFormat, (newValue) => {
 
                                         <transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 translate-y-1" enter-to-class="opacity-100 translate-y-0" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
                                             <PopoverPanel class="absolute left-1/2 z-10 mt-3 w-screen max-w-xs -translate-x-1/2 transform px-2 sm:px-0">
-                                                <div class="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-                                                    <div class="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
+                                                <div class="overflow rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                                                    <div class="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-4">
                                                         <a  :href="outputUrl('pdf')" target="_blank"
-                                                            class="-m-3 block rounded-md p-3 transition duration-150 ease-in-out hover:bg-gray-50"
+                                                            class="-m-3 block rounded-md px-2 transition duration-150 ease-in-out hover:bg-gray-50"
                                                         >
-                                                            <p class="text-base font-medium text-gray-900"> PDF </p>
+                                                            <p class="text-base font-medium text-gray-900"> PDF (Adressen)</p>
+                                                            <p class="mt-1 text-sm text-gray-500"> Adobe PDF </p>
+                                                        </a>
+                                                        <a  :href="outputUrl('pdf-roles')" target="_blank"
+                                                            class="-m-3 block rounded-md px-2 transition duration-150 ease-in-out hover:bg-gray-50"
+                                                        >
+                                                            <p class="text-base font-medium text-gray-900"> PDF (Funktionen)</p>
                                                             <p class="mt-1 text-sm text-gray-500"> Adobe PDF </p>
                                                         </a>
                                                         <a  :href="outputUrl('vcf')" target="_blank"
-                                                            class="-m-3 block rounded-md p-3 transition duration-150 ease-in-out hover:bg-gray-50"
+                                                            class="-m-3 block rounded-md px-2 transition duration-150 ease-in-out hover:bg-gray-50"
                                                         >
                                                             <p class="text-base font-medium text-gray-900"> vCard </p>
                                                             <p class="mt-1 text-sm text-gray-500"> elektronische Visitenkarten </p>
                                                         </a>
                                                         <a  :href="outputUrl('csv')" target="_blank"
-                                                            class="-m-3 block rounded-md p-3 transition duration-150 ease-in-out hover:bg-gray-50"
+                                                            class="-m-3 block rounded-md px-2 transition duration-150 ease-in-out hover:bg-gray-50"
                                                         >
                                                             <p class="text-base font-medium text-gray-900"> CSV </p>
                                                             <p class="mt-1 text-sm text-gray-500"> Komma-separierte Datei </p>

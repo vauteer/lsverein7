@@ -25,6 +25,7 @@ use App\Models\Role;
 use App\Models\Section;
 use App\Models\Subscription;
 use App\Pdf\MemberPdf;
+use App\Pdf\MemberRolesPdf;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -371,6 +372,21 @@ class MemberController extends Controller
             ->header('Content-Type', 'application/pdf; name="MyFile.pdf"');
     }
 
+    public function exportRolesPdf(Request $request): \Illuminate\Http\Response
+    {
+        $currentSelection = $this->currentSelection($request);
+        $query = $currentSelection['query'];
+        $leftHeadline = $currentSelection['quickFilters'][$currentSelection['filter']] . ' ' . $currentSelection['year'];
+        $leftHeadline .= ' (' . $query->count() . ' Personen)';
+        $rightHeadline = 'Stand: ' . formatDate($currentSelection['keyDate']);
+        $pdf = new MemberRolesPdf('P', 'mm', 'A4');
+
+        $content = $pdf->getOutput($query->get(), currentClub()->name, $leftHeadline, $rightHeadline);
+
+        return response($content)
+            ->header('Content-Type', 'application/pdf; name="MyFile.pdf"');
+    }
+
     public function exportCsv(Request $request): \Illuminate\Http\Response
     {
         $currentSelection = $this->currentSelection($request);
@@ -378,7 +394,8 @@ class MemberController extends Controller
 
         $handle = fopen('php://memory', 'r+');
 
-        $header = ['ID', 'Vorname', 'Nachname', 'Strasse', 'Plz', 'Ort', 'Alter', 'Geschlecht', 'MGJahre', 'Ehrung'];
+        $header = ['ID', 'Vorname', 'Nachname', 'Strasse', 'Plz', 'Ort', 'Alter', 'Geschlecht', 'MGJahre', 'Ehrung',
+            'Sparten', 'Funktionen'];
 
         // commas in data will be handled from fputcsv !
         fputcsv($handle, $header);
@@ -395,6 +412,8 @@ class MemberController extends Controller
                 mb_convert_encoding($member->city, 'ISO-8859-1', 'UTF-8'),
                 $member->age, $member->gender->value,
                 $member->membershipYears(), $member->dueHonor(),
+                mb_convert_encoding($member->currentSections(), 'ISO-8859-1', 'UTF-8'),
+                mb_convert_encoding($member->currentRoles(), 'ISO-8859-1', 'UTF-8'),
             );
 
             fputcsv($handle, $fields);
