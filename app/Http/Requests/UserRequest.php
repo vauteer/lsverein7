@@ -24,7 +24,8 @@ class UserRequest extends FormRequest
      */
     public function rules()
     {
-        // $this->user() is not the same as $this->user !
+        // $this->user is the user we create or edit, not the logged-in user
+
         return [
             'name' => 'required|string',
             'email' => [
