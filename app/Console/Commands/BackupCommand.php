@@ -29,6 +29,7 @@ class BackupCommand extends Command
     {
         if (!Backup::isDirty()) {
             $this->info('The database has not changed since the last backup');
+            Log::info('app:backup No changes since the last backup');
             return;
         }
 

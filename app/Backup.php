@@ -173,8 +173,10 @@ class Backup
 
         foreach (self::TABLES as $table) {
             $latestUpdate = DB::table($table)->max('updated_at');
-            if ($latestUpdate !== null && $latestUpdate > $latestBackup)
+            if ($latestUpdate !== null && $latestUpdate > $latestBackup) {
+                Log::info("Backup: $table was dirty");
                 return true;
+            }
         }
 
         return false;
