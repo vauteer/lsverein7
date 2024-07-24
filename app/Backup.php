@@ -20,8 +20,12 @@ class Backup
 
     public static function create(): string|array
     {
-        if (!self::isDirty())
-            return "Kein Backup gemacht. Keine Änderungen seit dem letzten Backup.";
+        if (!self::isDirty()) {
+            $message = "Kein Backup gemacht. Keine Änderungen seit dem letzten Backup.";
+            Log::info($message);
+
+            return $message;
+        }
 
         self::deleteOld(180, 10);
 
@@ -41,6 +45,7 @@ class Backup
 
         if (file_exists($filePath)) {
             self::copyS3($filePath);
+            Log::info('Backup erfolgreich: ' . $filePath);
 
             return $filePath;
         } else {
