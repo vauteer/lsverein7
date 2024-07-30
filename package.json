@@ -22,6 +22,7 @@
         "@headlessui/vue": "^1.6.7",
         "@heroicons/vue": "^2.0.10",
         "@inertiajs/vue3": "^1.0.9",
+        "caniuse-lite": "^1.0.30001643",
         "dropzone": "^6.0.0-beta.2"
     }
 }

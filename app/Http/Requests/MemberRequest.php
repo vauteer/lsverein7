@@ -43,4 +43,13 @@ class MemberRequest extends FormRequest
             'memo' => 'nullable|string',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'bic.regex' => 'Ungültige BIC',
+            'account_owner.regex' => 'Ungültige Sonderzeichen (äöüß&...)',
+        ];
+    }
+
 }

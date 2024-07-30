@@ -37,4 +37,12 @@ class SubscriptionRequest extends FormRequest
             'memo' => 'nullable|string',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'transfer_text.regex' => 'Ungültige Sonderzeichen (äöüß&...)',
+        ];
+    }
+
 }
