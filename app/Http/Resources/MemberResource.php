@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class MemberResource extends JsonResource
 {
@@ -20,8 +21,8 @@ class MemberResource extends JsonResource
             'surname' => $this->surname,
             'first_name' => $this->first_name,
             'address' => $this->zipcode . ' ' . $this->city . ' ' . $this->street,
-            'subscriptions' => $this->currentSubscriptions(),
-            'lastRole' => "",
+            'subscriptions' => Str::limit($this->currentSubscriptions(), 25),
+            'currentRoles' => Str::limit($this->currentRoles(), 25),
             'gender' => $this->gender,
             'sex' => $this->gender->name,
             'birthday' => formatDate($this->birthday),
@@ -29,8 +30,8 @@ class MemberResource extends JsonResource
             'gone' => $this->gone(),
             'isMember' => $this->isMember(),
             'membershipYears' => $this->membershipYears(),
-            'sections' => $this->currentSections(),
-            'lastEvent' => $this->lastEvent(),
+            'sections' => Str::limit($this->currentSections(), 25),
+            'lastEvent' => Str::limit($this->lastEvent(), 25),
 
             'modifiable' => $request->user()->can('update', $this->resource),
         ];

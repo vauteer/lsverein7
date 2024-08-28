@@ -230,14 +230,6 @@ class Member extends Model
         return join('|', $roles);
     }
 
-    public function lastRole()
-    {
-        $roleName = $this->roles->first()?->name;
-
-        return $roleName;
-    }
-
-
     public function currentSubscriptions()
     {
         $subscriptions = [];
