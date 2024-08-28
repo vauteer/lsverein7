@@ -21,7 +21,7 @@ class MemberResource extends JsonResource
             'first_name' => $this->first_name,
             'address' => $this->zipcode . ' ' . $this->city . ' ' . $this->street,
             'subscriptions' => $this->currentSubscriptions(),
-            'roles' => $this->currentRoles(),
+            'lastRole' => "",
             'gender' => $this->gender,
             'sex' => $this->gender->name,
             'birthday' => formatDate($this->birthday),
