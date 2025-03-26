@@ -2,15 +2,12 @@
 
 namespace App;
 
-use App\Models\Fixture;
-use App\Models\Member;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use function PHPUnit\Framework\isFalse;
 
 class Backup
 {
@@ -70,7 +67,7 @@ class Backup
             $unzippedPath = substr($path, 0, strlen($path) - 3);
             $cmd = 'mysql --user=' . config('database.connections.mysql.username') .
                 ' --password=' . config('database.connections.mysql.password') .
-                ' '  . config('database.connections.mysql.database') .
+                ' --host=127.0.0.1 '  . config('database.connections.mysql.database') .
                 ' < ' . $unzippedPath;
             shell_exec($cmd);
             shell_exec('gzip ' . $unzippedPath);
@@ -97,10 +94,10 @@ class Backup
 
     private static function copyS3(string $filePath): void
     {
-        if (!env('AWS_ENABLED', false))
+        if (!config('services.aws.enabled', false))
             return;
 
-        $destinationPath = env('AWS_ROOT', '') . DIRECTORY_SEPARATOR .
+        $destinationPath = config('services.aws.root', '') . DIRECTORY_SEPARATOR .
             pathinfo($filePath, PATHINFO_BASENAME);
 
         $fp = fopen($filePath, 'r');
@@ -187,10 +184,4 @@ class Backup
         return false;
     }
 
-    public static function latestDBUpdate()
-    {
-        $db = env('DB_DATABASE');
-        return DB::scalar("SELECT MAX(UPDATE_TIME) AS last_update FROM information_schema.tables " .
-            "WHERE TABLE_SCHEMA='$db' GROUP BY TABLE_SCHEMA;");
-    }
 }
