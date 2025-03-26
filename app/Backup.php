@@ -131,7 +131,7 @@ class Backup
             ];
         }
 
-        return Arr::sort($result, function ($value) {
+        return Arr::sortDesc($result, function ($value) {
             return $value['age'];
         });
     }
