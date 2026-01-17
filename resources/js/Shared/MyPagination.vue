@@ -9,7 +9,7 @@ let props = defineProps({
 
 let getUrl = function(page) {
   if (page < 1 || page > props.meta.last_page) {
-      return null;
+      return '#';
   } else {
       return props.meta.links[1].url.replace(/page=\d+/, 'page=' + page);
   }
@@ -30,13 +30,13 @@ let getLinks = computed(() => {
         links.push({
             active: false,
             label: "...",
-            url: null,
+            url: '#',
         });
     }
 
     for (let i = props.meta.current_page - 1; i < props.meta.current_page + 2; i++) {
         let url = getUrl(i);
-        if (url) {
+        if (url !== '#') {
             links.push({
                 active: i === props.meta.current_page,
                 label: String(i),
@@ -49,7 +49,7 @@ let getLinks = computed(() => {
         links.push({
             active: false,
             label: "...",
-            url: null,
+            url: '#',
         });
     }
 
@@ -60,7 +60,6 @@ let getLinks = computed(() => {
             url: getUrl(props.meta.last_page),
         });
     }
-
     return links;
 });
 

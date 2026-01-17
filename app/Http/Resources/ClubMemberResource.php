@@ -21,7 +21,7 @@ class ClubMemberResource extends JsonResource
             'range' => $this->range(),
             'memo' => $this->memo,
 
-            'modifiable' => $request->user()->can('update', $this->member),
+            'modifiable' => $request?->user()?->can('update', $this->member) ?? false,
         ];
     }
 }

@@ -31,9 +31,9 @@ class MemberResource extends JsonResource
             'isMember' => $this->isMember(),
             'membershipYears' => $this->membershipYears(),
             'sections' => Str::limit($this->currentSections(), 25),
-            'lastEvent' => Str::limit($this->lastEvent(), 25),
+            'lastEvent' => $this->lastEvent(),
 
-            'modifiable' => $request->user()->can('update', $this->resource),
+            'modifiable' => $request?->user()?->can('update', $this->resource) ?? false,
         ];
     }
 }
