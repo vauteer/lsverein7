@@ -410,7 +410,7 @@ class MemberController extends Controller
                 mb_convert_encoding($member->street, 'ISO-8859-1', 'UTF-8'),
                 $member->zipcode,
                 mb_convert_encoding($member->city, 'ISO-8859-1', 'UTF-8'),
-                formatDate($member->birthday),
+                formatDate($member->birthday, 'd-m-Y'),
                 $member->age, $member->gender->value,
                 $member->membershipYears(), $member->dueHonor(),
                 mb_convert_encoding($member->currentSections(), 'ISO-8859-1', 'UTF-8'),
