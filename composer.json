@@ -44,6 +44,14 @@
         }
     },
     "scripts": {
+        "deploy": [
+            "composer install --no-dev --optimize-autoloader",
+            "npm ci",
+            "npm run build",
+            "@php artisan optimize:clear --ansi",
+            "@php artisan config:cache --ansi",
+            "@php artisan route:cache --ansi"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
